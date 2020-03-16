@@ -1,8 +1,15 @@
 package io.github.zap.zombiesplugin.manager;
 
-import io.github.zap.zombiesplugin.Map;
-
 public class GameManager {
+    private GameSettings settings;
     private PlayerManager playerManager;
-    private Map map;
+
+    /**
+     * A GameManager instance is created for every game.
+     * @param settings The settings to start the game with.
+     */
+    public GameManager(GameSettings settings) {
+        this.settings = settings;
+        playerManager = new PlayerManager(this);
+    }
 }
