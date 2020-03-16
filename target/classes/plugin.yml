@@ -1,0 +1,6 @@
+name: ZombiesPlugin
+version: 1.0-SNAPSHOT
+main: io.github.zap.zombiesplugin.ZombiesPlugin
+api-version: 1.13
+authors: [LimeSlayer420, thamid, TachibanaYui]
+description: An improved version of the Hypixel minigame Zombies.
