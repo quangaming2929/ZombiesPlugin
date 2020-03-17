@@ -1,5 +1,5 @@
-io\github\zap\zombiesplugin\game\GameState.class
-io\github\zap\zombiesplugin\game\Map.class
-io\github\zap\zombiesplugin\game\PlayerManager.class
+io\github\zap\zombiesplugin\manager\GameState.class
+io\github\zap\zombiesplugin\Map.class
+io\github\zap\zombiesplugin\manager\PlayerManager.class
 io\github\zap\zombiesplugin\ZombiesPlugin.class
-io\github\zap\zombiesplugin\game\GameManager.class
+io\github\zap\zombiesplugin\manager\GameManager.class
