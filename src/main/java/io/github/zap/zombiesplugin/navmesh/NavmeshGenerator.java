@@ -1,16 +1,17 @@
 package io.github.zap.zombiesplugin.navmesh;
 
 import io.github.zap.zombiesplugin.utils.MathUtils;
+import io.github.zap.zombiesplugin.utils.WorldUtils;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NavmeshGenerator {
     private World world;
 
-    private int headroomTest;
+    private int headroomTestLimit;
 
     private int northLimit;
     private int southLimit;
@@ -21,10 +22,10 @@ public class NavmeshGenerator {
     private int upLimit;
     private int downLimit;
 
-    private ArrayList<MeshBlock> meshBlocks = new ArrayList<>();
+    private HashMap<Vector,MeshBlock> meshBlocks = new HashMap<>();
 
-    public NavmeshGenerator(World world, int maxHeadroomTest, Vector corner1, Vector corner2) {
-        headroomTest = maxHeadroomTest;
+    public NavmeshGenerator(World world, int headroomTestLimit, Vector corner1, Vector corner2) {
+        this.headroomTestLimit = headroomTestLimit;
 
         northLimit = Math.min(corner1.getBlockZ(), corner2.getBlockZ());
         southLimit = Math.max(corner1.getBlockZ(), corner2.getBlockZ());
@@ -38,7 +39,7 @@ public class NavmeshGenerator {
 
     public void generateNavmesh(Vector origin, MeshBlock previousMesh) {
         //if the origin is in the air, go down first
-        if(getBlockAdjacent(origin, Direction.DOWN, 1).isEmpty() && previousMesh == null) {
+        if(WorldUtils.getBlockAdjacent(world, origin, Direction.DOWN, 1).isEmpty() && previousMesh == null) {
             generateNavmesh(origin.setY(origin.getY() - 1), null);
             return;
         }
@@ -52,94 +53,55 @@ public class NavmeshGenerator {
     private void tryConnect(Vector origin, Direction direction, MeshBlock previous) {
         if(previous == null) return;
 
-        Block block = getBlockAdjacent(origin, direction, 1);
+        Block block = WorldUtils.getBlockAdjacent(world, origin, direction, 1);
         Vector vector = block.getLocation().toVector();
 
+        //bounds check
+        if(vector.getBlockX() > eastLimit || vector.getBlockX() < westLimit || vector.getBlockY() > upLimit ||
+                vector.getBlockY() < downLimit || vector.getBlockZ() < northLimit || vector.getBlockZ() > southLimit) return;
+
         if(block.isEmpty()) {
-            if(getBlockAdjacent(block, Direction.DOWN, 1).isEmpty()) {
-                int dropDistance = seekDown(vector);
+            if(WorldUtils.getBlockAdjacent(block, Direction.DOWN, 1).isEmpty()) {
+                Vector downVector = WorldUtils.seekDown(world, vector);
+                if(meshBlocks.get(downVector).hasConnectedHeading(direction)) return;
 
-                MeshBlock currentMesh = new MeshBlock(generateNodes(vector));
-                meshBlocks.add(currentMesh);
+                MeshBlock currentMesh = new MeshBlock(this);
+                meshBlocks.put(downVector, currentMesh);
 
-                previous.connectTo(currentMesh, reverse(direction), -dropDistance);
+                previous.connectTo(currentMesh, direction, downVector.getBlockY() - vector.getBlockY());
                 generateNavmesh(vector, currentMesh);
             }
             else {
-                MeshBlock currentMesh = new MeshBlock(generateNodes(vector));
-                meshBlocks.add(currentMesh);
+                if(meshBlocks.get(vector).hasConnectedHeading(direction)) return;
 
-                previous.connectTo(currentMesh, reverse(direction), 0);
+                MeshBlock currentMesh = new MeshBlock(this);
+                currentMesh.generateNodes(vector);
+
+                meshBlocks.put(vector, currentMesh);
+
+                previous.connectTo(currentMesh, direction, 0);
                 generateNavmesh(vector, currentMesh);
             }
         }
-        else if(getHeadroom(vector, 2) > 0) {
-            MathUtils.getVectorAlong(vector, Direction.UP, 1);
+        else if(WorldUtils.getHeadroom(world, vector, 2) > 0) {
+            vector = MathUtils.pushVectorAlong(vector, Direction.UP, 1);
+            if(meshBlocks.get(vector).hasConnectedHeading(direction)) return;
 
-            MeshBlock currentMesh = new MeshBlock(generateNodes(vector));
-            meshBlocks.add(currentMesh);
+            MeshBlock currentMesh = new MeshBlock(this);
+            currentMesh.generateNodes(vector);
 
-            previous.connectTo(currentMesh, reverse(direction), 0);
-            generateNavmesh(block.getLocation().toVector(), currentMesh);
+            meshBlocks.put(vector, currentMesh);
+
+            previous.connectTo(currentMesh, direction, 0);
+            generateNavmesh(vector, currentMesh);
         }
     }
 
-    private Direction reverse(Direction direction) {
-        switch (direction) {
-            case NORTH:
-                return Direction.SOUTH;
-            case EAST:
-                return Direction.WEST;
-            case SOUTH:
-                return  Direction.NORTH;
-            case WEST:
-                return Direction.EAST;
-            case UP:
-                return Direction.DOWN;
-            case DOWN:
-                return Direction.UP;
-            default:
-                return null; //this can never happen
-        }
+    public World getWorld() {
+        return world;
     }
 
-    private Block getBlockAdjacent(Vector origin, Direction direction, int amount) {
-        Vector adjacent = MathUtils.getVectorAlong(origin, direction, amount);
-        return world.getBlockAt(adjacent.getBlockX(), adjacent.getBlockY(), adjacent.getBlockZ());
-    }
-
-    private Block getBlockAdjacent(Block block, Direction direction, int amount) {
-        Vector adjacent = MathUtils.getVectorAlong(block.getLocation().toVector(), direction, amount);
-        return world.getBlockAt(adjacent.getBlockX(), adjacent.getBlockY(), adjacent.getBlockZ());
-    }
-
-    private int getHeadroom(Vector origin, int limitInclusive) {
-        int i = 0;
-        while(world.getBlockAt(origin.getBlockX(), origin.getBlockY() + i + 1, origin.getBlockZ()).isEmpty() &&
-                i < limitInclusive) {
-            i++;
-        }
-        return i;
-    }
-
-    private int seekDown(Vector origin) {
-        int i = 0;
-        while(world.getBlockAt(origin.getBlockX(), origin.getBlockY() - 1, origin.getBlockZ()).isEmpty()) {
-            origin.setY(origin.getY() - 1);
-            i++;
-        }
-        return i;
-    }
-
-    //currently creates 5 nodes per block but could be easily changed to create more
-    private Node[] generateNodes(Vector origin) {
-        int headroom = getHeadroom(MathUtils.getVectorAlong(origin, Direction.DOWN, 1), headroomTest);
-        Node[] nodes = new Node[5];
-        nodes[0] = new Node(new Vector(origin.getX(), origin.getY() - 1, origin.getZ()), headroom);
-        nodes[1] = new Node(new Vector(origin.getX() + 1, origin.getY() - 1, origin.getZ()), headroom);
-        nodes[2] = new Node(new Vector(origin.getX() + 0.5, origin.getY() - 1, origin.getZ() + 0.5), headroom);
-        nodes[3] = new Node(new Vector(origin.getX(), origin.getY() - 1, origin.getZ() + 1), headroom);
-        nodes[4] = new Node(new Vector(origin.getX() + 1, origin.getY() - 1, origin.getZ() + 1), headroom);
-        return nodes;
+    public int getHeadroomTestLimit() {
+        return headroomTestLimit;
     }
 }

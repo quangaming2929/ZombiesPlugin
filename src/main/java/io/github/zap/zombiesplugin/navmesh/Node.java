@@ -16,6 +16,18 @@ public class Node {
     }
 
     public void connectTo(Node node, double weight) {
-        connections.add(new Connection(node, node.coordinates.distance(coordinates), weight, true));
+        connections.add(new Connection(node, node.coordinates.distance(coordinates), weight, node.headroom,true));
+    }
+
+    public void merge(Node from) {
+        connections.addAll(from.connections);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof Node) {
+            return coordinates.equals(((Node)other).coordinates);
+        }
+        else return false;
     }
 }
