@@ -3,8 +3,6 @@ package io.github.zap.zombiesplugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;

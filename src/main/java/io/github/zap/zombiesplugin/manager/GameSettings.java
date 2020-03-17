@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.manager;
 
-import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.map.Map;
 
 /**
  * Currently only includes difficulty and map, but could hold data about "modes" like Endless or other things
@@ -8,5 +8,5 @@ import io.github.zap.zombiesplugin.map.GameMap;
  */
 public class GameSettings {
     public GameDifficulty difficulty;
-    public GameMap gameMap;
+    public Map map;
 }
