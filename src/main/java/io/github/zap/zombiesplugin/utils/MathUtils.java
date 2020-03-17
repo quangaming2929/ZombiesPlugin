@@ -4,7 +4,7 @@ import io.github.zap.zombiesplugin.navmesh.Direction;
 import org.bukkit.util.Vector;
 
 public class MathUtils {
-    public static Vector getVectorAlong(Vector vector, Direction direction, int amount) {
+    public static Vector pushVectorAlong(Vector vector, Direction direction, int amount) {
         Vector copy = new Vector(vector.getX(), vector.getY(), vector.getZ());
         switch (direction) {
             case NORTH:
@@ -26,7 +26,7 @@ public class MathUtils {
                 copy.setX(copy.getY() - amount);
                 return copy;
             default:
-                return null; //this can never happen
+                return new Vector(); //this can never happen
         }
     }
 }
