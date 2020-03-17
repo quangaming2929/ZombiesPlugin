@@ -2,13 +2,12 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
+import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import java.util.ArrayList;
 
 public class PlayerManager implements Listener {
     public final int GAME_SIZE = 4;
@@ -16,7 +15,7 @@ public class PlayerManager implements Listener {
     private GameManager gameManager;
 
     private Player[] players = new Player[GAME_SIZE];
-    private ArrayList<Player> spectators;
+    private List<Player> spectators;
 
     public PlayerManager(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -68,5 +67,18 @@ public class PlayerManager implements Listener {
         if(CollectionUtils.ReferenceContains(players, player)) {
             //right click code here
         }
+    }
+
+    /** Gets all players in the game
+     *
+     * @return The players
+     */
+    public Player[] getActivePlayers() {
+        // TODO: Implement
+        return null; // TODO: Placeholder
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 }
