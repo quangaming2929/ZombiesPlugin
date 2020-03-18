@@ -11,15 +11,27 @@ public class HologramLine {
 	public HologramLine(Location location, String name) {
 		armorStand = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
 
-		armorStand.setGravity(false);
-		armorStand.setCustomNameVisible(true);
 		armorStand.setVisible(false);
+		armorStand.setGravity(false);
+		show();
 		setName(name);
 	}
 
 	public void remove() {
 		if (armorStand != null) {
 			armorStand.remove();
+		}
+	}
+
+	public void show() {
+		if (armorStand != null) {
+			armorStand.setCustomNameVisible(true);
+		}
+	}
+
+	public void hide() {
+		if (armorStand != null) {
+			armorStand.setCustomNameVisible(false);
 		}
 	}
 
