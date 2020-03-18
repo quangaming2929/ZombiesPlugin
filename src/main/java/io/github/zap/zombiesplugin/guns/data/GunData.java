@@ -12,7 +12,7 @@ import org.bukkit.util.Vector;
 import java.util.Hashtable;
 import java.util.List;
 
-public class  GunData {
+public class GunData {
     public String name = "Default gun";
     public Material displayItem = Material.BARRIER;
     public Vector knockBack; // knockback is not a good word here and is it a vector because how zapper kb
@@ -35,8 +35,13 @@ public class  GunData {
     }
 
     public ItemStack getDefaultVisual(int level, ItemStack overrideStack) {
-
-        ItemStack item = (overrideStack == null) ? new ItemStack(displayItem, 1) : overrideStack;
+        ItemStack item;
+        if (overrideStack == null) {
+            item = new ItemStack(displayItem, 1); // TODO: Default ammo?
+        } else {
+            item = overrideStack;
+            item.setType(displayItem);
+        }
         ItemMeta meta = item.getItemMeta();
 
         setDisplayName(level, meta);

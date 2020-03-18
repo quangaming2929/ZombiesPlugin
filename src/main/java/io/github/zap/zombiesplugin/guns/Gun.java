@@ -111,5 +111,9 @@ public abstract class Gun {
         return gunStats.stats.get(getUltimateLevel());
     }
 
+    public GunData getGunStats() {
+        return gunStats;
+    }
+
     public abstract void shoot();
 }
