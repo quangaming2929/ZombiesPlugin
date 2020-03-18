@@ -19,6 +19,21 @@ public class Node {
         connections.add(new Connection(this, node, node.coordinates.distance(coordinates), weight, true));
     }
 
+    public Connection lowestCost(Connection exclude, int minHeadroom, Node goal) {
+        double previousCost = -1;
+        Connection bestConnection = null;
+        for(Connection connection : connections) {
+            if(connection == exclude || connection.getHeadroom() < minHeadroom) continue;
+
+            double cost = connection.getScore() + connection.heuristic(goal);
+            if(previousCost == -1 || cost < previousCost) {
+                bestConnection = connection;
+            }
+        }
+
+        return bestConnection;
+    }
+
     @Override
     public boolean equals(Object other) {
         if(other instanceof Node) {
