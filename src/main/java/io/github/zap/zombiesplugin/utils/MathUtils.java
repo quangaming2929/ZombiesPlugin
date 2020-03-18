@@ -8,7 +8,7 @@ public class MathUtils {
         Vector copy = new Vector(vector.getX(), vector.getY(), vector.getZ());
         switch (direction) {
             case NORTH:
-                copy.setZ(copy.getY() - amount);
+                copy.setZ(copy.getZ() - amount);
                 return copy;
             case EAST:
                 copy.setX(copy.getX() + amount);
@@ -23,7 +23,7 @@ public class MathUtils {
                 copy.setY(copy.getY() + amount);
                 return copy;
             case DOWN:
-                copy.setX(copy.getY() - amount);
+                copy.setY(copy.getY() - amount);
                 return copy;
             default:
                 return new Vector(); //this can never happen

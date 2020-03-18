@@ -1,35 +1,32 @@
 package io.github.zap.zombiesplugin.utils;
 
 import io.github.zap.zombiesplugin.navmesh.Direction;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 public class WorldUtils {
     public static int getHeadroom(World world, Vector origin, int limitInclusive) {
-        int i = 0;
-        while(world.getBlockAt(origin.getBlockX(), origin.getBlockY() + i + 1, origin.getBlockZ()).isEmpty() &&
-                i < limitInclusive) {
-            i++;
-        }
-        return i;
-    }
+        Vector copy = new Vector(origin.getX(), origin.getY() + 1, origin.getZ());
 
-    public static int getHeadroom(World world, Block block, int limitInclusive) {
         int i = 0;
-        while(world.getBlockAt(block.getX(), block.getY() + i + 1, block.getZ()).isEmpty() && i < limitInclusive) {
+        while(world.getBlockAt(copy.getBlockX(), copy.getBlockY(), copy.getBlockZ()).isPassable()) {
+            copy.setY(copy.getY() + 1);
             i++;
+            if(i == limitInclusive) return i;
         }
+
         return i;
     }
 
     public static Vector seekDown(World world, Vector origin) {
-        int i = 0;
         Vector copy = new Vector(origin.getX(), origin.getY(), origin.getZ());
-        while(world.getBlockAt(copy.getBlockX(), copy.getBlockY() - 1, copy.getBlockZ()).isEmpty()) {
-            copy.setY(origin.getY() - 1);
-            i++;
+
+        while(world.getBlockAt(copy.getBlockX(), copy.getBlockY(), copy.getBlockZ()).isPassable()) {
+            copy.setY(copy.getY() - 1);
         }
+        copy.setY(copy.getY() + 1);
         return copy;
     }
 
@@ -58,7 +55,7 @@ public class WorldUtils {
             case DOWN:
                 return Direction.UP;
             default:
-                return direction.UP;
+                return Direction.UP;
         }
     }
 }

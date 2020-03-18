@@ -6,13 +6,9 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 public class GameManager {
+    //map is stored in GameSettings
     private GameSettings settings;
     private PlayerManager playerManager;
-
-    /**
-     * The map of the game
-     */
-    private final Map map;
 
     private List<Player> players;
 
@@ -25,9 +21,8 @@ public class GameManager {
      * A GameManager instance is created for every game.
      * @param settings The settings to start the game with.
      */
-    public GameManager(GameSettings settings, Map map) {
+    public GameManager(GameSettings settings) {
         this.settings = settings;
-        this.map = map;
         playerManager = new PlayerManager(this);
     }
 
@@ -35,7 +30,7 @@ public class GameManager {
      * Starts the next round
      */
     public void startNextRound() {
-        Round[] rounds = map.getRounds();
+        Round[] rounds = settings.map.getRounds();
 
         if (lastRound == rounds.length) {
             // TODO: Endgame sequence
@@ -58,6 +53,6 @@ public class GameManager {
      * @return The map
      */
     public Map getMap() {
-        return map;
+        return settings.map;
     }
 }

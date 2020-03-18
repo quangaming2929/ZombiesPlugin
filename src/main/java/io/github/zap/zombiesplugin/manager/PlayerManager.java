@@ -1,13 +1,22 @@
 package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.navmesh.Direction;
+import io.github.zap.zombiesplugin.navmesh.NavmeshGenerator;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import java.util.List;
+import java.util.logging.Level;
+
+import io.github.zap.zombiesplugin.utils.MathUtils;
+import io.github.zap.zombiesplugin.utils.WorldUtils;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 public class PlayerManager implements Listener {
     public final int GAME_SIZE = 4;
@@ -53,6 +62,7 @@ public class PlayerManager implements Listener {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -64,8 +74,27 @@ public class PlayerManager implements Listener {
     @EventHandler(priority= EventPriority.HIGH)
     public void onPlayerUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        System.out.println("onPlayerUse");
         if(CollectionUtils.ReferenceContains(players, player)) {
             //right click code here
+        }
+
+        //navmesh testing
+        /*Vector origin = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
+        NavmeshGenerator generator = new NavmeshGenerator(event.getPlayer().getWorld(), 3,
+                new Vector(origin.getBlockX() - 50, origin.getBlockY() - 50, origin.getBlockZ() - 50),
+                new Vector(origin.getBlockX() + 50, origin.getBlockY() + 50,origin.getBlockZ() + 50));
+
+        generator.generateNavmesh(origin, null);*/
+    }
+
+    @EventHandler
+    public void onPlayerBreakBlock(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        System.out.println("onPlayerBreakBlock");
+        if(event.getBlock().getType() == Material.BARREL) {
+            Vector vector = event.getBlock().getLocation().toVector();
+
         }
     }
 
