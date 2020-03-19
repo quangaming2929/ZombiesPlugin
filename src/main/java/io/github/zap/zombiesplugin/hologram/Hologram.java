@@ -5,8 +5,11 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 
-public class Hologram {
+public class Hologram implements Listener {
 
 	private final List<HologramLine> hologramLines = new ArrayList<>();
 
@@ -48,19 +51,41 @@ public class Hologram {
 		return this;
 	}
 
-	public void hide() {
+	public Hologram hide() {
 		for (HologramLine hologramLine : hologramLines) {
 			hologramLine.hide();
 		}
+
+		return this;
 	}
 
-	public void show() {
+	public Hologram show() {
 		for (HologramLine hologramLine : hologramLines) {
 			hologramLine.show();
 		}
+
+		return this;
+	}
+
+	public Hologram remove() {
+		for (int i = 0; i < hologramLines.size(); i++) {
+			hologramLines.get(i).remove();
+			hologramLines.remove(0);
+		}
+
+		return this;
 	}
 
 	public List<HologramLine> getHologramLines() {
 		return hologramLines;
+	}
+
+	@EventHandler
+	public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+		for (HologramLine hologramLine : hologramLines) {
+			if (hologramLine.getArmorStand().equals(event.getRightClicked())) {
+				event.setCancelled(true);
+			}
+		}
 	}
 }
