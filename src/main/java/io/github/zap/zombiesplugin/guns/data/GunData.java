@@ -1,28 +1,26 @@
 package io.github.zap.zombiesplugin.guns.data;
 
-import io.github.zap.zombiesplugin.guns.data.gunattributes.BaseFeature;
+import io.github.zap.zombiesplugin.guns.data.gunattributes.GunAttribute;
 import io.github.zap.zombiesplugin.utils.RomanNumber;
 import io.github.zap.zombiesplugin.utils.WeaponStatsLoreBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.Vector;
 
-import java.util.Hashtable;
 import java.util.List;
 
 public class  GunData {
     public String name = "Default gun";
     public Material displayItem = Material.BARRIER;
-    public Vector knockBack; // knockback is not a good word here and is it a vector because how zapper kb
+    public SoundFx gunFx;
     public int rewardGold;
     public String[] description = new String[] {
             "This is a default gun description",
             "This will be parsed from a config file" };
 
-    private Hashtable<String, String> gunFeature;
-    public BaseFeature feature;
+    public GunAttribute feature;
 
     // represent gun leveling
     // index:
@@ -30,28 +28,34 @@ public class  GunData {
     //  1+ : ultimate levels
     public List<BulletStats> stats;
 
-    public void updateFeatureInfo(String field, String value) {
-        gunFeature.replace(field, value);
-    }
-
     public ItemStack getDefaultVisual(int level, ItemStack overrideStack) {
 
         ItemStack item = (overrideStack == null) ? new ItemStack(displayItem, 1) : overrideStack;
+        item.setType(displayItem);
         ItemMeta meta = item.getItemMeta();
 
         setDisplayName(level, meta);
-        meta.setLore(getLore(0).build());
+        meta.setLore(getLore(level).build());
+        if(level > 0) {
+            if(meta.getEnchants().size() == 0) {
+                meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
+            }
+        } else {
+            for (Enchantment etch : meta.getEnchants().keySet() ) {
+                meta.removeEnchant(etch);
+            }
+        }
 
+        item.setItemMeta(meta);
         return item;
     }
 
     protected void setDisplayName(int level, ItemMeta meta) {
 
-
         if (level > 0) {
             String displayName = ChatColor.GOLD.toString() + ChatColor.BOLD + name + " Ultimate";
             if (stats.size() > 2) {
-                displayName += RomanNumber.toRoman(level);
+                displayName += " " + RomanNumber.toRoman(level);
             }
 
             meta.setDisplayName(displayName);

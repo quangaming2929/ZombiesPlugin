@@ -3,7 +3,10 @@ package io.github.zap.zombiesplugin.guns.logics;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Mob;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
@@ -64,5 +67,8 @@ public class LinearBeam {
 
     protected void damageEntity(Entity entity) {
         // TODO: Damaging the entities
+        if(entity instanceof LivingEntity){
+            ((LivingEntity)entity).addPotionEffect(new PotionEffect(PotionEffectType.HARM, 1, 1));
+        }
     }
 }

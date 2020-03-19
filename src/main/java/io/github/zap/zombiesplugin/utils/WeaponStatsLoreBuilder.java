@@ -27,8 +27,8 @@ public class WeaponStatsLoreBuilder {
 
     public static String[] getGunPlaceHolderLore() {
         return new String[] {
-                "Purchase guns at " + ChatColor.GOLD + "Shops " + ChatColor.GRAY + "or at",
-                "the " + ChatColor.DARK_PURPLE + "Lucky Chest" + ChatColor.GRAY + "!"
+                ChatColor.GRAY.toString() + "Purchase guns at " + ChatColor.GOLD + "Shops " + ChatColor.GRAY + "or at",
+                ChatColor.GRAY.toString() + "the " + ChatColor.DARK_PURPLE + "Lucky Chest" + ChatColor.GRAY + "!"
         };
     }
 
@@ -63,10 +63,8 @@ public class WeaponStatsLoreBuilder {
      * @return current builder
      */
     public WeaponStatsLoreBuilder addStats(String name, Object oldValue, Object newValue, String unit) {
-        // TODO: Fix the chat color, use String.format? to improve readability
-        // stats.add(name + ": " + ChatColor.DARK_GRAY + oldValue + " " + unit + " ➔ " + ChatColor.GREEN + newValue + " " + unit);
-
-        stats.add(String.format("%s: %s%s %s ➔ %s%s %s", name, ChatColor.DARK_GRAY, oldValue, unit, ChatColor.GREEN, newValue, unit));
+        //stats.add(String.format("%s%c %s%s: %s%s %s ➔ %s%s %s", ChatColor.GRAY,'·', name, ChatColor.GRAY, oldValue, unit, ChatColor.GREEN, newValue, unit));
+        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.DARK_GRAY + oldValue +  " " + unit + " ➔ " + ChatColor.GREEN + newValue + " " + unit );
         return this;
     }
 
@@ -77,7 +75,7 @@ public class WeaponStatsLoreBuilder {
      * @return current builder
      */
     public WeaponStatsLoreBuilder addStats(String name, Object value, String unit) {
-        stats.add(name + ": " + ChatColor.GREEN + value + " " + unit);
+        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.GREEN + value + " " + unit);
 
         return this;
     }
@@ -113,7 +111,7 @@ public class WeaponStatsLoreBuilder {
     public List<String> build() {
         List<String> lore = new ArrayList<String>();
         for (String item : descriptions) {
-            lore.add(item);
+            lore.add(ChatColor.GRAY + item);
         }
 
         lore.add("");
