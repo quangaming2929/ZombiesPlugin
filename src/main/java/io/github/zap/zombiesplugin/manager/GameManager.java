@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.manager;
 
-public class GameManager {
+public class GameManager{
     private GameSettings settings;
     private PlayerManager playerManager;
 
@@ -11,5 +11,9 @@ public class GameManager {
     public GameManager(GameSettings settings) {
         this.settings = settings;
         playerManager = new PlayerManager(this);
+
+
     }
+
+
 }

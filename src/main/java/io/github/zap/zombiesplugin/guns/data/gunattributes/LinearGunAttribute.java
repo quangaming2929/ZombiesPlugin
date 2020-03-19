@@ -4,7 +4,7 @@ import org.bukkit.Particle;
 
 import java.util.Hashtable;
 
-public class LinearGunFeature extends BaseFeature {
+public class LinearGunAttribute extends GunAttribute {
     // Name of feature data
     private final String maxHitEntitiesName = "maxHitEntities";
     private final String particleName = "particle";
@@ -12,15 +12,15 @@ public class LinearGunFeature extends BaseFeature {
     protected int maxHitEntities;
     protected Particle particle;
 
-    public LinearGunFeature(Hashtable<String, String> customFeatureValues) {
+    public LinearGunAttribute(Hashtable<String, String> customFeatureValues) {
         super(customFeatureValues);
 
-        maxHitEntities = Integer.parseInt(getFeatureValue(maxHitEntitiesName));
-        particle = Particle.valueOf(getFeatureValue(particleName));
+        maxHitEntities = Integer.parseInt(getAttribute(maxHitEntitiesName));
+        particle = Particle.valueOf(getAttribute(particleName));
     }
 
     @Override
-    public String getFeatureName() {
+    public String getBehaviourName() {
         return "LinearGun";
     }
 
@@ -30,7 +30,7 @@ public class LinearGunFeature extends BaseFeature {
 
     public void setMaxHitEntities(int maxHitEntities) {
         this.maxHitEntities = maxHitEntities;
-        updateFeatureValue(maxHitEntitiesName, String.valueOf(maxHitEntities));
+        updateAttribute(maxHitEntitiesName, String.valueOf(maxHitEntities));
     }
 
     public Particle getParticle() {
@@ -39,6 +39,6 @@ public class LinearGunFeature extends BaseFeature {
 
     public void setParticle(Particle particle) {
         this.particle = particle;
-        updateFeatureValue(particleName, particle.name());
+        updateAttribute(particleName, particle.name());
     }
 }

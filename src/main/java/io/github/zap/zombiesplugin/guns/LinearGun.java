@@ -1,9 +1,9 @@
 package io.github.zap.zombiesplugin.guns;
 
 import io.github.zap.zombiesplugin.guns.data.GunData;
-import io.github.zap.zombiesplugin.guns.data.gunattributes.LinearGunFeature;
+import io.github.zap.zombiesplugin.guns.data.gunattributes.LinearGunAttribute;
 import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
-import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.player.GunUser;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -19,22 +19,27 @@ public class LinearGun extends Gun {
     protected final int maxHitEntities;
     protected final Particle particle;
 
-    LinearGun(GunData data, User user) {
+    public LinearGun(GunData data, GunUser user) {
         super(data, user);
 
-        LinearGunFeature feature = (LinearGunFeature) gunStats.feature;
+        LinearGunAttribute feature = (LinearGunAttribute) gunStats.feature;
         this.maxHitEntities = feature.getMaxHitEntities();
         this.particle = feature.getParticle();
     }
 
     public void shoot(){
-        Player player = this.gunOwner.getPlayer();
+        if(!canShoot())
+            return;
+
+        Player player = this.gunOwner.user.getPlayer();
         World world = player.getWorld();
         Vector eyeLocation = player.getEyeLocation().toVector().clone();
         Vector eyeDirection = player.getEyeLocation().getDirection().clone();
         Vector targetBlockVector = getTargetBlockVector(player, eyeLocation, eyeDirection);
 
         sendShot(world, eyeLocation, eyeDirection, targetBlockVector);
+
+        updateVisualAfterShoot();
     }
 
 
