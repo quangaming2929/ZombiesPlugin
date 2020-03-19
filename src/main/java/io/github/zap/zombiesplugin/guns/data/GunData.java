@@ -31,7 +31,6 @@ public class  GunData {
     public ItemStack getDefaultVisual(int level, ItemStack overrideStack) {
 
         ItemStack item = (overrideStack == null) ? new ItemStack(displayItem, 1) : overrideStack;
-        item.setType(displayItem);
         ItemMeta meta = item.getItemMeta();
 
         setDisplayName(level, meta);
@@ -47,6 +46,7 @@ public class  GunData {
         }
 
         item.setItemMeta(meta);
+        item.setType(displayItem);
         return item;
     }
 
@@ -77,14 +77,14 @@ public class  GunData {
             builder.addStats("Damage", previousStats.baseDamage, currentStats.baseDamage, "HP")
                     .addStats("Ammo", previousStats.baseAmmoSize, currentStats.baseAmmoSize, "")
                     .addStats("Clip Ammo", previousStats.baseClipAmmoSize, currentStats.baseClipAmmoSize, "" )
-                    .addStats("Fire Rate", previousStats.fireRate, currentStats.fireRate, "s")
-                    .addStats("Reload", previousStats.reloadRate, currentStats.reloadRate, "s");
+                    .addStats("Fire Rate", previousStats.baseFireRate, currentStats.baseFireRate, "s")
+                    .addStats("Reload", previousStats.baseReloadRate, currentStats.baseReloadRate, "s");
         } else {
             builder.addStats("Damage", currentStats.baseDamage, "HP")
                     .addStats("Ammo", currentStats.baseAmmoSize, "")
                     .addStats("Clip Ammo", currentStats.baseClipAmmoSize, "" )
-                    .addStats("Fire Rate", currentStats.fireRate, "s")
-                    .addStats("Reload", currentStats.reloadRate, "s");
+                    .addStats("Fire Rate", currentStats.baseFireRate, "s")
+                    .addStats("Reload", currentStats.baseReloadRate, "s");
         }
 
         return builder;

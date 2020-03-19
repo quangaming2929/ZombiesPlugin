@@ -7,30 +7,21 @@ import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.player.GunUser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public abstract class Gun implements HotbarObject {
+public abstract class Gun extends HotbarObject {
     public final GunData gunStats;
 
-    /**
-     * Note: Please accessing player inventory through this field will consideration,
-     *       This class is designed to maintain and update certain item slot
-     *      If you need to access the current item slot, use gunSlot
-     */
     protected GunUser gunOwner;
-    protected int ammo;
-    protected int clipAmmo;
-    protected int ultimateLevel;
-    protected volatile boolean isVisible;
 
+    private int ammo;
+    private int clipAmmo;
+    private int ultimateLevel;
 
-    protected ItemStack gunSlot;
-
-    // previous data from drawGun()
-    protected ItemStack preDraw;
 
     public Gun(GunData gunStats, GunUser user) {
         this.gunStats = gunStats;
@@ -38,46 +29,56 @@ public abstract class Gun implements HotbarObject {
     }
 
     /**
-      * Getting call when the gun is equipped by a player
-      */
+     * Set the current gun level, it will update the visual of the gun and
+     * set the gun ammo to max. If you want to ultimate this gun, use the ultimate()
+     * instead
+     * @param level the level to set
+     */
     public void setLevel(int level) {
         if (level < gunStats.stats.size() - 1 && level >= 0) {
-            ultimateLevel = level;
+            setUltimateLevel(level);
+
+            setSlot(gunStats.getDefaultVisual(getUltimateLevel(), getSlot()));
+            refill();
         }
-
-        gunSlot = gunStats.getDefaultVisual(ultimateLevel, gunSlot);
-
-        ammo = getCurrentStats().baseAmmoSize;
-        clipAmmo = getCurrentStats().baseClipAmmoSize;
-        gunSlot.setAmount(getCurrentStats().baseClipAmmoSize);
     }
 
+    /**
+     * Ultimate this gun
+     */
+    public void ultimate() {
+        if(getUltimateLevel() < gunStats.stats.size() - 1) {
+            getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            setLevel(getUltimateLevel() + 1);
+        } else {
+            getPlayer().sendMessage(ChatColor.RED + "This gun is too OP to ultimate z");
+        }
+    }
 
     private long lastReloadTime = 0;
     public void reload() {
         // If we have enough ammo to refill
-        if(clipAmmo >= Math.min(getCurrentStats().baseClipAmmoSize, ammo))
+        if(getClipAmmo() >= Math.min(getCurrentStats().getClipAmmoSize(), getAmmo()))
             return;
 
         // if we are reloading
-        if(System.currentTimeMillis() - getCurrentStats().reloadRate * 1000 < lastReloadTime) {
+        if(System.currentTimeMillis() - getCurrentStats().getReloadRate() * 1000 < lastReloadTime) {
             return;
         }
 
         lastReloadTime = System.currentTimeMillis();
 
+        getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_HORSE_GALLOP, 1 ,0.5f);
+
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ZombiesPlugin.instance, new Runnable() {
             private  int step = 0;
             private  int maxVal = gunStats.displayItem.getMaxDurability();
-            private  float stepVal = 1 / (float)getCurrentStats().reloadRate / 20 * maxVal;
+            private  float stepVal = 1 / (float)getCurrentStats().getReloadRate() / 20 * maxVal;
 
             @Override
             public void run() {
-                if(step < (int)(getCurrentStats().reloadRate * 20)) {
-                    Damageable dmg = (Damageable)gunSlot.getItemMeta();
-                    dmg.setDamage((int)(maxVal - (step + 1) * stepVal));
-                    gunSlot.setItemMeta((ItemMeta)dmg);
-
+                if(step < (int)(getCurrentStats().getReloadRate() * 20)) {
+                    setItemDamage((int)(maxVal - (step + 1) * stepVal));
                     step++;
                 }
             }
@@ -89,71 +90,53 @@ public abstract class Gun implements HotbarObject {
                 Bukkit.getScheduler().cancelTask(taskID);
 
                 // Make sure we don't have weird durability value
-                Damageable dmg = (Damageable)gunSlot.getItemMeta();
-                dmg.setDamage(0);
-                gunSlot.setItemMeta((ItemMeta)dmg);
-
-                clipAmmo = Math.min(getCurrentStats().baseClipAmmoSize, ammo);
-                gunSlot.setAmount(clipAmmo);
+                setItemDamage(0);
+                setClipAmmo(Math.min(getCurrentStats().getClipAmmoSize(), getAmmo()));
             }
-        }, (int)(getCurrentStats().reloadRate * 20));
-    }
-
-    public void ultimate() {
-        if(ultimateLevel < gunStats.stats.size() - 1) {
-            ultimateLevel++;
-            gunSlot = gunStats.getDefaultVisual(ultimateLevel, gunSlot);
-            ammo = getCurrentStats().baseAmmoSize;
-            clipAmmo = getCurrentStats().baseClipAmmoSize;
-
-            gunSlot.setAmount(clipAmmo);
-            gunOwner.user.getPlayer().setLevel(ammo);
-        } else {
-            gunOwner.user.getPlayer().sendMessage(ChatColor.RED + "This gun is too OP to ultimate z");
-        }
+        }, (int)(getCurrentStats().getReloadRate() * 20));
     }
 
     public void refill () {
-        gunSlot.setAmount(getCurrentStats().baseClipAmmoSize);
-        ammo = getCurrentStats().baseAmmoSize;
+        setClipAmmo(getCurrentStats().getClipAmmoSize());
+        setAmmo(getCurrentStats().getAmmoSize());
     }
 
-    // Perform a check for weapon firerate cooldown, reloading, out of ammo, etc
+    /**
+     * Check if the gun is ready to shoot, every subclass
+     * of this class should call this before actual shoot
+     */
     protected boolean canShoot() {
-        return System.currentTimeMillis() - getCurrentStats().fireRate * 1000 > lastShotTime &&
-                System.currentTimeMillis() - getCurrentStats().reloadRate * 1000 > lastReloadTime &&
-                ammo > 0;
+         return System.currentTimeMillis() - getCurrentStats().getFireRate() * 1000 > lastShotTime &&
+                System.currentTimeMillis() - getCurrentStats().getReloadRate() * 1000 > lastReloadTime &&
+                getAmmo() > 0 && getClipAmmo() > 0;
 
     }
 
     // Subclass can call this method to update gun visual and animate gun cooldown
     long lastShotTime = 0;
+
+    /**
+     * Update the guns visual such as animating the xp bar
+     * and set the gun item amount, every subclass of this
+     * class should call to this method after a successful
+     * shot
+     */
     protected void updateVisualAfterShoot() {
         lastShotTime = System.currentTimeMillis();
 
-        ammo--;
-        clipAmmo--;
-        if(clipAmmo > 0) {
-            gunSlot.setAmount(clipAmmo);
-        }
-        else {
-            Damageable dmg = (Damageable)gunSlot.getItemMeta();
-            dmg.setDamage(gunStats.displayItem.getMaxDurability());
-            gunSlot.setItemMeta((ItemMeta)dmg);
-        }
+        setAmmo(getAmmo() - 1);
+        setClipAmmo(getClipAmmo() - 1);
 
-        gunOwner.user.getPlayer().setLevel(ammo);
-
-        if (clipAmmo > 0) {
+        if (getClipAmmo() > 0) {
             // Animate xp bar
             int task = Bukkit.getScheduler().scheduleSyncRepeatingTask(ZombiesPlugin.instance, new Runnable() {
                 private int step = 0;
-                private float stepVal = 1 / (float)getCurrentStats().fireRate / 20;
+                private float stepVal = 1 / (float)getCurrentStats().getFireRate() / 20;
 
                 @Override
                 public void run() {
-                   if(step < (int)(getCurrentStats().fireRate * 20)) {
-                       gunOwner.user.getPlayer().setExp((step + 1) * stepVal);
+                   if(step < (int)(getCurrentStats().getFireRate() * 20) && isSelected()) {
+                       getPlayer().setExp((step + 1) * stepVal);
                        step++;
                    }
                 }
@@ -161,68 +144,117 @@ public abstract class Gun implements HotbarObject {
             Bukkit.getScheduler().scheduleSyncDelayedTask(ZombiesPlugin.instance, new Runnable() {
                 @Override
                 public void run() {
+                    if(isSelected()) {
+                        getPlayer().setExp(1);
+                    }
+
                     Bukkit.getScheduler().cancelTask(task);
                 }
-            }, (int)(getCurrentStats().fireRate * 20));
+            }, (int)(getCurrentStats().getFireRate() * 20));
         } else {
-            if (ammo > 0) {
+            if (getAmmo() > 0) {
                 reload();
             } else {
-                gunOwner.user.getPlayer().sendMessage(ChatColor.RED + "Tahmid took all of your ammo bro");
-                gunOwner.user.getPlayer().sendMessage(ChatColor.GREEN + "Note: Tachibana Yui sells ammo for cheap :)");
+                getPlayer().sendMessage(ChatColor.RED + "Tahmid took all of your ammo bro");
+                getPlayer().sendMessage(ChatColor.GREEN + "Note: Tachibana Yui sells ammo for cheap :)");
             }
         }
     }
-    public int getUltimateLevel() {
-        return ultimateLevel;
-    }
 
+    /**
+     * Get the current stats for the current gun
+     * ultimate level
+     */
     public BulletStats getCurrentStats() {
         return gunStats.stats.get(getUltimateLevel());
     }
 
+    /**
+     * Utility method to set the item durability
+     * @param val the damage value to set
+     */
+    private void setItemDamage(int val) {
+        Damageable dmg = (Damageable)getSlot().getItemMeta();
+        dmg.setDamage(val);
+        getSlot().setItemMeta((ItemMeta)dmg);
+    }
+
     public abstract void shoot();
 
-
-    @Override
-    public ItemStack getSlot() {
-        return gunSlot;
-    }
-
-    @Override
-    public void update() {
-
-    }
-
-    @Override
-    public void onRemoved() {
-        gunSlot = new ItemStack(null, 0);
-    }
-
-    // Use to hide gun when player knockdown or died
     @Override
     public void setVisibility(boolean visibility) {
+        super.setVisibility(visibility);
+
         if(visibility) {
-            gunSlot = gunStats.getDefaultVisual(ultimateLevel, gunSlot);
-            gunSlot.setAmount(clipAmmo);
+            setSlot(gunStats.getDefaultVisual(getUltimateLevel(), getSlot()));
+            // Set the clipAmmo to itself to update the visual
+            setClipAmmo(getClipAmmo());
+            setAmmo(getAmmo());
         } else {
-            gunSlot.setType(null); // or .setAmount(0)
+            getSlot().setAmount(0);
         }
-
-        isVisible = visibility;
     }
 
     @Override
-    public void init(ItemStack slot, Player player) {
-        gunSlot = slot;
+    public boolean onRightClick(Block clickedBlock, BlockFace clickedFace) {
+        super.onRightClick(clickedBlock, clickedFace);
+        shoot();
+        return true;
     }
 
     @Override
-    public boolean onThrow() {
-        // we do nothing here just tell the hotbar manager that we don't want to be thrown
+    public boolean onLeftClick(Block clickedBlock, BlockFace clickedFace) {
+        super.onLeftClick(clickedBlock, clickedFace);
+        reload();
+        return true;
+    }
+
+    @Override
+    public boolean onSlotDeSelected() {
+        super.onSlotDeSelected();
+        getPlayer().setLevel(0);
+        getPlayer().setExp(0);
         return false;
     }
 
+    @Override
+    public void onSlotSelected() {
+        super.onSlotSelected();
+        getPlayer().setLevel(getAmmo());
+        getPlayer().setExp(1);
+    }
 
 
+    public int getAmmo() {
+        return ammo;
+    }
+
+    protected void setAmmo(int ammo) {
+        this.ammo = ammo;
+        getPlayer().setLevel(ammo);
+    }
+
+    public int getClipAmmo() {
+        return clipAmmo;
+    }
+
+    protected void setClipAmmo(int clipAmmo) {
+        this.clipAmmo = clipAmmo;
+
+        if(clipAmmo > 0) {
+            setItemDamage(0);
+            getSlot().setAmount(clipAmmo);
+        } else {
+            setItemDamage(gunStats.displayItem.getMaxDurability());
+            getSlot().setAmount(1);
+        }
+    }
+
+    public int getUltimateLevel() {
+        return ultimateLevel;
+    }
+
+    protected void setUltimateLevel(int ultimateLevel) {
+        this.ultimateLevel = ultimateLevel;
+    }
 }

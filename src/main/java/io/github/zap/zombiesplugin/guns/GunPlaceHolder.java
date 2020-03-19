@@ -10,8 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public class GunPlaceHolder implements HotbarObject {
-    private ItemStack slot;
+public class GunPlaceHolder extends HotbarObject {
     private int slotNo;
 
     public GunPlaceHolder(int slotNo) {
@@ -19,40 +18,13 @@ public class GunPlaceHolder implements HotbarObject {
     }
 
     @Override
-    public ItemStack getSlot() {
-        return slot;
-    }
+    public void init(int slot, Player player) {
+        super.init(slot, player);
 
-    @Override
-    public void update() {
-
-    }
-
-    @Override
-    public void onRemoved() {
-        slot = null;
-    }
-
-    @Override
-    public void setVisibility(boolean isVisible) {
-
-    }
-
-    @Override
-    public void init(ItemStack slot, Player player) {
-        if(slot != null) {
-            slot.setType(Material.WHITE_DYE);
-            ItemMeta meta =  slot.getItemMeta();
-
-            meta.setDisplayName(ChatColor.GOLD + "Gun #" + slotNo);
-            meta.setLore(Arrays.asList(WeaponStatsLoreBuilder.getGunPlaceHolderLore()));
-            slot.setItemMeta(meta);
-            slot.setType(Material.LIGHT_GRAY_DYE);
-        }
-    }
-
-    @Override
-    public boolean onThrow() {
-        return false;
+        ItemMeta meta = getSlot().getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Gun #" + slotNo);
+        meta.setLore(Arrays.asList(WeaponStatsLoreBuilder.getGunPlaceHolderLore()));
+        getSlot().setItemMeta(meta);
+        getSlot().setType(Material.LIGHT_GRAY_DYE);
     }
 }

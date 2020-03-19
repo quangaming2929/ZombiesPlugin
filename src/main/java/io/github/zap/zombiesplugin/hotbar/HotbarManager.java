@@ -23,8 +23,7 @@ public class HotbarManager {
     public HotbarManager(Player player) {
         this.player = player;
         this.profiles = new Hashtable<>();
-        this.profiles.put("Default", new ArrayList<>());
-        this.currentProfile = this.profiles.get("Default");
+        this.switchProfile("Default");
     }
 
     /**
@@ -45,7 +44,7 @@ public class HotbarManager {
      */
     public void addObject(HotbarObject object, int slot) {
         for (HotbarObject obj : currentProfile) {
-            if(obj.getSlot() == player.getInventory().getItem(slot)){
+            if(obj.getSlotID() == slot){
                 removeObject(obj);
                 break;
             }
@@ -94,7 +93,7 @@ public class HotbarManager {
      */
     public HotbarObject getHotbarObject(int slotId, String profileName) {
         List<HotbarObject> obj = profiles.get(profileName);
-        if(obj != null && obj.size() < slotId) {
+        if(obj != null && slotId < obj.size()) {
             for (HotbarObject o : obj) {
                 if (o.getSlotID() == slotId) {
                     return  o;
@@ -115,11 +114,14 @@ public class HotbarManager {
             profiles.put(name, new ArrayList<>());
         }
 
-        for (HotbarObject obj : currentProfile) {
-            obj.setVisibility(false);
+        if(currentProfile != null) {
+            for (HotbarObject obj : currentProfile) {
+                obj.setVisibility(false);
+            }
         }
 
         currentProfile = profiles.get(name);
+        currentProfileName = name;
 
         for (HotbarObject obj : currentProfile) {
             obj.setVisibility(true);
@@ -156,7 +158,7 @@ public class HotbarManager {
         if (preObj != null) {
             isCanceled = preObj.onSlotDeSelected();
         }
-
+        event.setCancelled(isCanceled);
         if (newObj != null && !isCanceled) {
             newObj.onSlotSelected();
         }
