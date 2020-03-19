@@ -120,8 +120,8 @@ public class GunUser {
             s.baseClipAmmoSize = (int)(10 + 20 * (float) i / 2);
             s.baseDamage = 10 + 20 * (float)i / 2;
             s.baseRange = 100 + 20 * (float)i / 2;
-            s.fireRate = 0.25;
-            s.reloadRate = 1;
+            s.baseFireRate = 0.25;
+            s.baseReloadRate = 1;
             data.stats.add(s);
         }
 
