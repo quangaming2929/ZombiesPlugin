@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.GameSettings;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public final class ZombiesPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        games.add(new GameManager(new GameSettings()));
+        GameManager manager = new GameManager(new GameSettings());
     }
 
     @Override

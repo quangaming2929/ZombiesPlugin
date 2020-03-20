@@ -1,7 +1,11 @@
 package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.ai.AStar;
+import io.github.zap.zombiesplugin.ai.Path;
 import io.github.zap.zombiesplugin.navmesh.Direction;
+import io.github.zap.zombiesplugin.navmesh.MeshBlock;
+import io.github.zap.zombiesplugin.navmesh.Navmesh;
 import io.github.zap.zombiesplugin.navmesh.NavmeshGenerator;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import java.util.List;
@@ -16,6 +20,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class PlayerManager implements Listener {
@@ -26,10 +32,19 @@ public class PlayerManager implements Listener {
     private Player[] players = new Player[GAME_SIZE];
     private List<Player> spectators;
 
+    //DEBUG
+    NavmeshGenerator generator;
+    Navmesh navmesh = null;
+    AStar astar = new AStar();
+
+    Vector startVector = null;
+    Vector goalVector = null;
+    //END DEBUG
+
     public PlayerManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
-        //self-register
+        System.out.println("PlayerManager instance created.");
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
 
@@ -74,27 +89,53 @@ public class PlayerManager implements Listener {
     @EventHandler(priority= EventPriority.HIGH)
     public void onPlayerUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        System.out.println("onPlayerUse");
-        if(CollectionUtils.ReferenceContains(players, player)) {
-            //right click code here
-        }
+        if(event.getHand() == EquipmentSlot.HAND) {
+            System.out.println("onPlayerUse: "+event.getAction().toString());
 
-        //navmesh testing
-        /*Vector origin = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
-        NavmeshGenerator generator = new NavmeshGenerator(event.getPlayer().getWorld(), 3,
-                new Vector(origin.getBlockX() - 50, origin.getBlockY() - 50, origin.getBlockZ() - 50),
-                new Vector(origin.getBlockX() + 50, origin.getBlockY() + 50,origin.getBlockZ() + 50));
+            if(CollectionUtils.ReferenceContains(players, player)) {
+                //right click code here
+            }
 
-        generator.generateNavmesh(origin, null);*/
-    }
+            ItemStack heldItem = player.getInventory().getItemInMainHand();
 
-    @EventHandler
-    public void onPlayerBreakBlock(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        System.out.println("onPlayerBreakBlock");
-        if(event.getBlock().getType() == Material.BARREL) {
-            Vector vector = event.getBlock().getLocation().toVector();
+            if(event.getClickedBlock() == null) {
+                System.out.println("No target block.");
+                return;
+            }
 
+            //TESTING CODE
+            if(heldItem.getType() == Material.STICK && navmesh == null) {
+                Vector origin = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
+                generator = new NavmeshGenerator(event.getPlayer().getWorld(), 3,
+                        new Vector(origin.getBlockX() - 200, origin.getBlockY() - 200, origin.getBlockZ() - 200),
+                        new Vector(origin.getBlockX() + 200, origin.getBlockY() + 200, origin.getBlockZ() + 200));
+
+                navmesh = generator.generateNavmesh(origin);
+            }
+            else if(heldItem.getType() == Material.CARROT_ON_A_STICK) {
+                if(navmesh != null && startVector == null) {
+                    startVector = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
+                }
+                else if(navmesh != null && goalVector == null) {
+                    goalVector = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
+                    Path result = astar.navigateTo(navmesh.getMeshBlocks().get(startVector).getNode(), navmesh.getMeshBlocks().get(goalVector).getNode(), 2);
+
+                    startVector = null;
+                    goalVector = null;
+
+                    if(result == null) {
+                        System.out.println("Path is impossible or an error occurred.");
+                        return;
+                    }
+
+                    Path.Segment segment = result.getFirst();
+                    do {
+                        player.getWorld().getBlockAt(segment.start.getBlockX(), segment.start.getBlockY(), segment.start.getBlockZ()).setType(Material.IRON_BLOCK);
+                        segment = segment.next;
+                    }
+                    while(segment != null);
+                }
+            }
         }
     }
 

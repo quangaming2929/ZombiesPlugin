@@ -10,13 +10,29 @@ public class MathUtils {
             case NORTH:
                 copy.setZ(copy.getZ() - amount);
                 return copy;
+            case NORTHEAST:
+                copy.setZ(copy.getZ() - amount);
+                copy.setX(copy.getX() + amount);
+                return copy;
             case EAST:
+                copy.setX(copy.getX() + amount);
+                return copy;
+            case SOUTHEAST:
+                copy.setZ(copy.getZ() + amount);
                 copy.setX(copy.getX() + amount);
                 return copy;
             case SOUTH:
                 copy.setZ(copy.getZ() + amount);
                 return copy;
+            case SOUTHWEST:
+                copy.setZ(copy.getZ() + amount);
+                copy.setX(copy.getX() - amount);
+                return copy;
             case WEST:
+                copy.setX(copy.getX() - amount);
+                return copy;
+            case NORTHWEST:
+                copy.setZ(copy.getZ() - amount);
                 copy.setX(copy.getX() - amount);
                 return copy;
             case UP:
@@ -28,5 +44,9 @@ public class MathUtils {
             default:
                 return new Vector(); //this can never happen
         }
+    }
+
+    public static double distanceSquared(Vector first, Vector second) {
+        return Math.pow(first.getX() - second.getX(), 2) + Math.pow(first.getY() - second.getY(), 2) + Math.pow(first.getZ() - second.getZ(), 2);
     }
 }
