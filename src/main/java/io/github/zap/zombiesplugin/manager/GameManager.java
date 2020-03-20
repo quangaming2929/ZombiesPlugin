@@ -23,6 +23,7 @@ public class GameManager {
      */
     public GameManager(GameSettings settings) {
         this.settings = settings;
+        System.out.println("GameManager instance created.");
         playerManager = new PlayerManager(this);
     }
 
