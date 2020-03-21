@@ -38,6 +38,7 @@ idea/artifacts
 *.ipr
 target/
 ${dir}/
+.idea/
 
 # CMake
 cmake-build-*/
