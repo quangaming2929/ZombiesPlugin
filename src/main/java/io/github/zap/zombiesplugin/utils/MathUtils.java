@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.utils;
 
-import io.github.zap.zombiesplugin.navmesh.Direction;
+import io.github.zap.zombiesplugin.memes.Direction;
 import org.bukkit.util.Vector;
 
 public class MathUtils {

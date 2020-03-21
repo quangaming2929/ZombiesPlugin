@@ -1,24 +1,20 @@
 package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.ai.AStar;
-import io.github.zap.zombiesplugin.ai.Path;
-import io.github.zap.zombiesplugin.navmesh.Direction;
-import io.github.zap.zombiesplugin.navmesh.MeshBlock;
-import io.github.zap.zombiesplugin.navmesh.Navmesh;
-import io.github.zap.zombiesplugin.navmesh.NavmeshGenerator;
+import io.github.zap.zombiesplugin.memes.AStar;
+import io.github.zap.zombiesplugin.memes.Path;
+import io.github.zap.zombiesplugin.memes.Direction;
+import io.github.zap.zombiesplugin.memes.Navmesh;
+import io.github.zap.zombiesplugin.memes.NavmeshGenerator;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import java.util.List;
-import java.util.logging.Level;
 
 import io.github.zap.zombiesplugin.utils.MathUtils;
-import io.github.zap.zombiesplugin.utils.WorldUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -92,7 +88,7 @@ public class PlayerManager implements Listener {
         if(event.getHand() == EquipmentSlot.HAND) {
             System.out.println("onPlayerUse: "+event.getAction().toString());
 
-            if(CollectionUtils.ReferenceContains(players, player)) {
+            if(CollectionUtils.referenceContains(players, player)) {
                 //right click code here
             }
 

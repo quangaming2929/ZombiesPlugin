@@ -1,6 +1,4 @@
-package io.github.zap.zombiesplugin.navmesh;
-
-import io.github.zap.zombiesplugin.utils.MathUtils;
+package io.github.zap.zombiesplugin.memes;
 
 public class Connection {
     private Node from;

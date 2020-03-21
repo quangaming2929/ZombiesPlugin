@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.navmesh;
+package io.github.zap.zombiesplugin.memes;
 
 import io.github.zap.zombiesplugin.utils.MathUtils;
 import io.github.zap.zombiesplugin.utils.Tuple;
@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class NavmeshGenerator {
     private class ConnectionInformation {

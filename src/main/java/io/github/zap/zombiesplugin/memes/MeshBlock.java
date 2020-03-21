@@ -1,7 +1,5 @@
-package io.github.zap.zombiesplugin.navmesh;
+package io.github.zap.zombiesplugin.memes;
 
-import io.github.zap.zombiesplugin.utils.MathUtils;
-import io.github.zap.zombiesplugin.utils.WorldUtils;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;

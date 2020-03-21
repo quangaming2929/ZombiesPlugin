@@ -1,7 +1,5 @@
-package io.github.zap.zombiesplugin.ai;
+package io.github.zap.zombiesplugin.memes;
 
-import io.github.zap.zombiesplugin.navmesh.Connection;
-import io.github.zap.zombiesplugin.navmesh.Node;
 import org.bukkit.util.Vector;
 
 public class Path {

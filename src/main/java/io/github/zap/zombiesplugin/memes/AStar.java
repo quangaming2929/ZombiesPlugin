@@ -1,9 +1,6 @@
-package io.github.zap.zombiesplugin.ai;
+package io.github.zap.zombiesplugin.memes;
 
-import io.github.zap.zombiesplugin.navmesh.Connection;
-import io.github.zap.zombiesplugin.navmesh.Node;
 import io.github.zap.zombiesplugin.utils.MathUtils;
-import org.bukkit.World;
 
 import java.util.*;
 
@@ -11,6 +8,8 @@ public class AStar {
     private class ConnectionWrapper implements Comparable<ConnectionWrapper> {
         public ConnectionWrapper previous;
         public Connection connection;
+
+        public boolean closed;
 
         public double g = 0;
         public double h = 0;
@@ -42,7 +41,7 @@ public class AStar {
         if(start == null ||  goal == null || start.getConnections().size() == 0) return null;
 
         PriorityQueue<ConnectionWrapper> openSet = new PriorityQueue<>();
-        HashSet<Node> closedSet = new HashSet<>();
+        HashSet<Node> closedSet = new HashSet<>(); //should have O(1) .contains() implementation
 
         openSet.add(new ConnectionWrapper(start.getConnections().get(0)));
 
@@ -50,7 +49,7 @@ public class AStar {
             ConnectionWrapper currentConnection = openSet.remove();
             closedSet.add(currentConnection.connection.getTo());
 
-            if(currentConnection.connection.getTo() == goal) {
+            if(currentConnection.connection.getTo() == goal) { //success condition
                 Path result = new Path(start, goal);
                 while(currentConnection != null) {
                     result.prependConnection(currentConnection.connection);
@@ -63,19 +62,13 @@ public class AStar {
             for(ConnectionWrapper child : nodes) {
                 if(closedSet.contains(child.connection.getTo())) continue;
 
-                boolean setContains = setContainsNode(openSet, child.connection.getTo());
-                ConnectionWrapper childCopy = null;
-
-                if(setContains) {
-                    childCopy = copy(child);
-                }
-
                 child.g = currentConnection.g + child.connection.getDistance();
                 child.h = MathUtils.distanceSquared(child.connection.getTo().getCoordinates(), goal.getCoordinates());
                 child.f = child.g + child.h;
 
-                if(setContains) {
-                    if(child.g > childCopy.g) {
+                ConnectionWrapper setConnection = setContainsNode(openSet, child.connection.getTo());
+                if(setConnection != null) {
+                    if(child.g > setConnection.g) {
                         continue;
                     }
                 }
@@ -83,21 +76,13 @@ public class AStar {
                 openSet.add(child);
             }
         }
-        return null;
+        return null; //fail condition
     }
 
-    private ConnectionWrapper copy(ConnectionWrapper input) {
-        ConnectionWrapper wrapper = new ConnectionWrapper(input.connection);
-        wrapper.g = input.g;
-        wrapper.h = input.h;
-        wrapper.f = input.f;
-        return wrapper;
-    }
-
-    private boolean setContainsNode(PriorityQueue<ConnectionWrapper> queue, Node node) {
-        for(ConnectionWrapper connection : queue) {
-            if(connection.connection.getTo() == node) return true;
+    private ConnectionWrapper setContainsNode(PriorityQueue<ConnectionWrapper> queue, Node node) {
+        for(ConnectionWrapper wrapper : queue) {
+            if(wrapper.connection.getTo() == node) return wrapper;
         }
-        return false;
+        return null;
     }
 }

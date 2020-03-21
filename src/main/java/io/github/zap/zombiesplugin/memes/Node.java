@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.navmesh;
+package io.github.zap.zombiesplugin.memes;
 
 import org.bukkit.util.Vector;
 

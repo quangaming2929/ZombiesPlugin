@@ -1,7 +1,6 @@
 package io.github.zap.zombiesplugin.utils;
 
-import io.github.zap.zombiesplugin.navmesh.Direction;
-import org.bukkit.Material;
+import io.github.zap.zombiesplugin.memes.Direction;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
