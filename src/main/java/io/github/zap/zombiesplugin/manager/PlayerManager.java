@@ -51,7 +51,6 @@ public class PlayerManager implements Listener {
      * @return Whether or not the player was added
      */
     public boolean addPlayer(Player player) {
-
         if(players.size() - 1 < getGameSize())
         {
             for(User user : players) {

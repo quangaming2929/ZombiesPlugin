@@ -2,15 +2,13 @@ package io.github.zap.zombiesplugin.player;
 
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunPlaceHolder;
-import io.github.zap.zombiesplugin.guns.LinearGun;
-import io.github.zap.zombiesplugin.guns.data.BulletStats;
-import io.github.zap.zombiesplugin.guns.data.GunData;
-import io.github.zap.zombiesplugin.guns.data.gunattributes.LinearGunAttribute;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
+/**
+ * Add slot parameter in this class refer to the slotCount like the first slot is the 2nd actual slot in the hotbar
+ */
 public class GunUser {
     public final  User user;
 
@@ -18,18 +16,26 @@ public class GunUser {
     private final Hashtable<String, Integer> usedGun;
 
     // slot for gun
-    private final List<Integer> preservedSlot;
+    private final List<Integer> preservedSlots;
     private int slotCount;
 
-    public GunUser(User parent, int initialSlotCount, Integer... preservedSlot) {
+    public GunUser(User parent, int initialSlotCount, Integer... preservedSlots) {
         this.user = parent;
         this.slotCount = initialSlotCount;
         this.usedGun = new Hashtable<String, Integer>();
-        this.preservedSlot = new ArrayList<Integer>();
-        Collections.addAll(this.preservedSlot, preservedSlot);
+        this.preservedSlots = new ArrayList<Integer>();
+        Collections.addAll(this.preservedSlots, preservedSlots);
         guns = new ArrayList<Gun>();
 
         setSlotCount(2);
+    }
+
+    public int getPreservedSlot(int actualSlot) {
+        return preservedSlots.indexOf(actualSlot);
+    }
+
+    public int getActualSlot(int preservedSlot) {
+        return preservedSlots.get(preservedSlot);
     }
 
     public Gun getGunBySlot(int id) {
@@ -46,37 +52,36 @@ public class GunUser {
 
     public Gun getGunByItemStack(ItemStack item) {
         for (Gun gun : guns) {
-            if(item.getType().equals(gun.gunStats.displayItem))
+            if(item.getType().equals(gun.gunData.displayItem))
                 return gun;
         }
 
         return null;
     }
 
-    public void equipGun(String gunName) throws Exception {
+    public void equipGun(Gun gun) {
         if(guns.size() < getSlotCount()) {
-            addGun(preservedSlot.get(guns.size()), gunName);
+            addGun(guns.size(), gun);
         }
     }
 
-    public void replaceGunSlot(int slot, String gunName) throws Exception {
+    public void replaceGunSlot(int slot, Gun gun) {
         if (guns.size() < getSlotCount() - 1) {
-            equipGun(gunName);
+            equipGun(gun);
         }
 
-        addGun(slot, gunName);
+        addGun(slot, gun);
     }
 
-    private void addGun(int slot, String gunName) throws Exception {
+    private void addGun(int slot, Gun gun) {
         if(slot >= 0 && slot < getSlotCount()) {
-            Gun gun = getGunByName(gunName);
             if (gun != null) {
-                saveOldGunValue(slot);
+                removeGun(slot);
 
                 // Get the slot for our new gun
-                user.getHotbar().addObject(gun, slot);
+                user.getHotbar().addObject(gun, preservedSlots.get(slot));
                 // Check for the previous gun ultimate level
-                Integer ultimateLevel = usedGun.get(gunName);
+                Integer ultimateLevel = usedGun.get(gun.gunData.name);
                 if(ultimateLevel != null) {
                     gun.setLevel(ultimateLevel);
                 } else {
@@ -90,74 +95,39 @@ public class GunUser {
         }
     }
 
-    private void saveOldGunValue(int slot) {
+    private void removeGun(int slot) {
         // release old gun if any
         if(slot < guns.size()) {
             Gun oldGun =  guns.get(slot);
             if(oldGun != null) {
-                if(usedGun.containsKey(oldGun.gunStats.name)) {
-                    usedGun.replace(oldGun.gunStats.name, oldGun.getUltimateLevel());
+                if(usedGun.containsKey(oldGun.gunData.name)) {
+                    usedGun.replace(oldGun.gunData.name, oldGun.getUltimateLevel());
                 } else {
-                    usedGun.put(oldGun.gunStats.name, oldGun.getUltimateLevel());
+                    usedGun.put(oldGun.gunData.name, oldGun.getUltimateLevel());
                 }
+
+                guns.remove(oldGun);
             }
         }
     }
-
-
-    // Test code
-    private Gun getGunByName(String name) throws Exception {
-        GunData data = new GunData();
-        data.description = new String[] { "TestGun" , "Test object will be remove later" };
-        data.displayItem = Material.IRON_HOE;
-        data.name = "Development gun";
-        data.rewardGold = 10;
-        // stats
-        data.stats = new ArrayList<BulletStats>();
-        for (int i = 0; i < 4; i++) {
-            BulletStats s = new BulletStats();
-            s.baseAmmoSize = (int)(20 + 20 * (float)i / 2);
-            s.baseClipAmmoSize = (int)(10 + 20 * (float) i / 2);
-            s.baseDamage = 10 + 20 * (float)i / 2;
-            s.baseRange = 100 + 20 * (float)i / 2;
-            s.baseFireRate = 0.25;
-            s.baseReloadRate = 1;
-            data.stats.add(s);
-        }
-
-        // data feature
-        Hashtable<String, String> iv = new Hashtable<>();
-        iv.put("maxHitEntities", "2");
-        iv.put("particle", "CRIT");
-        data.feature = new LinearGunAttribute(iv);
-
-        LinearGun gun = new LinearGun(data, this);
-        return  gun;
-    }
-
-    /*private Gun getGunByName(String name) throws Exception {
-        GunData data = ZombiesPlugin.instance.getGunProvider().getGun(name);
-        return (Gun)Class.forName(GUN_PACKAGES + data.feature)
-                .getConstructor(GunData.class, GunUser.class).newInstance(data, this);
-    }*/
 
     public int getSlotCount() {
         return slotCount;
     }
 
     public void setSlotCount(int slotCount) {
-        if(slotCount > 0 && slotCount < preservedSlot.size()) {
+        if(slotCount > 0 && slotCount < preservedSlots.size()) {
             this.slotCount = slotCount;
 
             // remove gun to fit the player slot count
             for(int i = guns.size() - 1; i >= getSlotCount(); i--) {
-                saveOldGunValue(getSlotIDByGun(guns.get(i)));
                 user.getHotbar().removeObject(guns.get(i));
+                removeGun(getSlotIDByGun(guns.get(i)));
             }
 
             // add gun place holder
             for(int i = guns.size(); i < getSlotCount(); i++) {
-                user.getHotbar().addObject(new GunPlaceHolder(i + 1), preservedSlot.get(i));
+                user.getHotbar().addObject(new GunPlaceHolder(i + 1), preservedSlots.get(i));
             }
 
         } else {

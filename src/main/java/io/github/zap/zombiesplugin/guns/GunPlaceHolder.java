@@ -20,11 +20,11 @@ public class GunPlaceHolder extends HotbarObject {
     @Override
     public void init(int slot, Player player) {
         super.init(slot, player);
-
-        ItemMeta meta = getSlot().getItemMeta();
+        ItemStack item = new ItemStack(Material.LIGHT_GRAY_DYE, 1);
+        ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "Gun #" + slotNo);
         meta.setLore(Arrays.asList(WeaponStatsLoreBuilder.getGunPlaceHolderLore()));
-        getSlot().setItemMeta(meta);
-        getSlot().setType(Material.LIGHT_GRAY_DYE);
+        item.setItemMeta(meta);
+        setSlot(item);
     }
 }
