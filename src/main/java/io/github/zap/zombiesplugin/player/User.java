@@ -12,6 +12,8 @@ public class User {
     private GunUser gunUser;
     private HotbarManager hotbar;
 
+    private int gold;
+
     public User(Player player) {
         this.player = player;
         this.hotbar = new HotbarManager(player);
@@ -28,5 +30,9 @@ public class User {
 
     public HotbarManager getHotbar() {
         return hotbar;
+    }
+
+    public int getGold() {
+        return gold;
     }
 }

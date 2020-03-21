@@ -4,11 +4,12 @@ import io.github.zap.zombiesplugin.guns.data.GunData;
 import io.github.zap.zombiesplugin.guns.data.gunattributes.LinearGunAttribute;
 import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
 import io.github.zap.zombiesplugin.player.GunUser;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import java.util.Objects;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -53,11 +54,20 @@ public class LinearGun extends Gun {
 
         materials.add(Material.AIR);
         materials.add(Material.CAVE_AIR);
+        materials.add(Material.VOID_AIR);
 
         // TODO: Add slab blocks
-        int range = (int) Math.ceil(this.getCurrentStats().baseRange);
-        BoundingBox targetedBlockBoundingBox = player.getTargetBlock(materials, range).getBoundingBox();
+        int range = (int) Math.ceil(this.getCurrentStats().baseRange);;
+        Block targetBlock = player.getTargetBlock(materials, range);
+        BoundingBox boundingBox;
 
-        return targetedBlockBoundingBox.rayTrace(eyeLocation, eyeDirection, range).getHitPosition();
+        if (targetBlock.getType().equals(Material.AIR) || targetBlock.getType().equals(Material.CAVE_AIR) || targetBlock.getType().equals(Material.VOID_AIR)) {
+            Location location = targetBlock.getLocation();
+            boundingBox = new BoundingBox(location.getX(), targetBlock.getY(), targetBlock.getZ(), location.getX() + 1, location.getY() + 1, targetBlock.getZ() + 1);
+        } else {
+            boundingBox = targetBlock.getBoundingBox();
+        }
+
+        return boundingBox.rayTrace(player.getEyeLocation().toVector(), player.getEyeLocation().getDirection(), range + 1.74).getHitPosition();
     }
 }
