@@ -46,14 +46,14 @@ public class WeaponsChestGunSwapper implements Listener {
 		doubleChestLocation.setY(doubleChestLocation.getY() + 11.0/8.0);
 
 		// TODO: Initialize with player's ultimates
-		weaponStack = weaponsChestWeapons.get(0).getGunStats().getDefaultVisual(0, null);
+		weaponStack = weaponsChestWeapons.get(0).gunStats.getDefaultVisual(0, null);
 
 		droppedWeapon = player.getWorld().dropItem(doubleChestLocation, weaponStack);
 	}
 
 	public void nextGun() {
 		counter++;
-		weaponsChestWeapons.get(counter % weaponsChestWeapons.size()).getGunStats().getDefaultVisual(0, weaponStack);
+		weaponsChestWeapons.get(counter % weaponsChestWeapons.size()).gunStats.getDefaultVisual(0, weaponStack);
 	}
 
 	public void endSwapping() {
