@@ -37,6 +37,7 @@ idea/artifacts
 *.iml
 *.ipr
 target/
+${dir}/
 
 # CMake
 cmake-build-*/
