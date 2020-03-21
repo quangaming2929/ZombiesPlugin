@@ -78,7 +78,6 @@ public class PlayerManager implements Listener {
         return false;
     }
 
-
     /*
      * Currently this event is invoked every time ANY player right-clicks, which is obviously not
      * ideal. Might be a way to have the event only apply to the players in the "players" array without
