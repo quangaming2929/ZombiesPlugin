@@ -2,7 +2,10 @@ package io.github.zap.zombiesplugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.manager.GameSettings;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -12,12 +15,12 @@ public final class ZombiesPlugin extends JavaPlugin {
     public static ZombiesPlugin instance;
 
     private ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-    private ArrayList<GameManager> games;
+    private ArrayList<GameManager> games = new ArrayList<>();
 
     @Override
     public void onEnable() {
-        getLogger().log(Level.ALL, "Hello Minecraft!");
         instance = this;
+        GameManager manager = new GameManager(new GameSettings());
     }
 
     @Override
