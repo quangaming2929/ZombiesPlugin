@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.guns.data;
 
-import io.github.zap.zombiesplugin.guns.data.gunattributes.GunAttribute;
+import io.github.zap.zombiesplugin.guns.data.leveling.IUltimateLeveling;
 import io.github.zap.zombiesplugin.utils.RomanNumber;
 import io.github.zap.zombiesplugin.utils.WeaponStatsLoreBuilder;
 import org.bukkit.ChatColor;
@@ -12,21 +12,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 public class  GunData {
+    public String id = "gun_default";
     public String name = "Default gun";
     public Material displayItem = Material.BARRIER;
-    public SoundFx gunFx;
-    public int rewardGold;
+    public SoundFx gunFx = new SoundFx();
     public String[] description = new String[] {
             "This is a default gun description",
             "This will be parsed from a config file" };
 
-    public GunAttribute feature;
 
-    // represent gun leveling
-    // index:
-    //  0 : base stats
-    //  1+ : ultimate levels
-    public List<BulletStats> stats;
+    public String gunBehaviour;
+    public IUltimateLeveling stats;
 
     public ItemStack getDefaultVisual(int level, ItemStack overrideStack) {
 
@@ -70,9 +66,9 @@ public class  GunData {
                 .withInstruction(WeaponStatsLoreBuilder.getGunInstructionLore());
 
 
-        BulletStats currentStats = stats.get(level);
+        BulletStats currentStats = stats.getLevel(level);
         if(level > 0) {
-            BulletStats previousStats = stats.get(level - 1);
+            BulletStats previousStats = stats.getLevel(level - 1);
 
             builder.addStats("Damage", previousStats.baseDamage, currentStats.baseDamage, "HP")
                     .addStats("Ammo", previousStats.baseAmmoSize, currentStats.baseAmmoSize, "")
