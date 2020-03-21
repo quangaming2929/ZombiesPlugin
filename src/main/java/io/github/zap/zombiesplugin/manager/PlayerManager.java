@@ -1,47 +1,48 @@
 package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.memes.AStar;
-import io.github.zap.zombiesplugin.memes.Path;
-import io.github.zap.zombiesplugin.memes.Direction;
-import io.github.zap.zombiesplugin.memes.Navmesh;
-import io.github.zap.zombiesplugin.memes.NavmeshGenerator;
+import io.github.zap.zombiesplugin.guns.Gun;
+import io.github.zap.zombiesplugin.player.GunUser;
+import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
-import java.util.List;
-
-import io.github.zap.zombiesplugin.utils.MathUtils;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerManager implements Listener {
-    public final int GAME_SIZE = 4;
+
 
     private GameManager gameManager;
 
-    private Player[] players = new Player[GAME_SIZE];
-    private List<Player> spectators;
-
-    //DEBUG
-    NavmeshGenerator generator;
-    Navmesh navmesh = null;
-    AStar astar = new AStar();
-
-    Vector startVector = null;
-    Vector goalVector = null;
-    //END DEBUG
+    private int gameSize = 4;
+    private List<User> players = new ArrayList<>();
+    private ArrayList<Player> spectators;
 
     public PlayerManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
-        System.out.println("PlayerManager instance created.");
+        //self-register
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
+    }
+
+    public int getGameSize() {
+        return gameSize;
+    }
+
+    public void setGameSize(int gameSize) {
+        this.gameSize = gameSize;
+    }
+
+    public List<User> getPlayers() {
+        return players;
     }
 
     /**
@@ -50,14 +51,17 @@ public class PlayerManager implements Listener {
      * @return Whether or not the player was added
      */
     public boolean addPlayer(Player player) {
-        for(int i = 0; i < players.length; i++) {
-            Player playerSample = players[i];
-            if(playerSample == null) {
-                players[i] = player;
-                return true;
+
+        if(players.size() - 1 < getGameSize())
+        {
+            for(User user : players) {
+                if(user.getPlayer() == player) // Check if the player already exist in this manager
+                    return false;
             }
         }
-        return false;
+
+        players.add(new User(player));
+        return  true;
     }
 
     /**
@@ -66,12 +70,10 @@ public class PlayerManager implements Listener {
      * @return Whether or not the player was removed
      */
     public boolean removePlayer(Player player) {
-        for(int i = 0; i < players.length; i++) {
-            Player playerSample = players[i];
-            if(playerSample == player) {
-                players[i] = null;
-                return true;
-            }
+        User associatedPlayer = getAssociatedUser(player);
+        if(associatedPlayer != null) {
+            this.players.remove(associatedPlayer);
+            return true;
         }
 
         return false;
@@ -84,67 +86,39 @@ public class PlayerManager implements Listener {
      */
     @EventHandler(priority= EventPriority.HIGH)
     public void onPlayerUse(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if(event.getHand() == EquipmentSlot.HAND) {
-            System.out.println("onPlayerUse: "+event.getAction().toString());
-
-            if(CollectionUtils.referenceContains(players, player)) {
-                //right click code here
+        User user = getAssociatedUser(event.getPlayer());
+        if(user != null) {
+            Gun gun = user.getGunUser().getGunByItemStack(user.getPlayer().getInventory().getItemInMainHand());
+            if(gun != null ) {
+                if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() ==  Action.RIGHT_CLICK_BLOCK)
+                    gun.shoot();
+                else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() ==  Action.LEFT_CLICK_BLOCK)
+                    gun.reload();
             }
 
-            ItemStack heldItem = player.getInventory().getItemInMainHand();
-
-            if(event.getClickedBlock() == null) {
-                System.out.println("No target block.");
-                return;
-            }
-
-            //TESTING CODE
-            if(heldItem.getType() == Material.STICK && navmesh == null) {
-                Vector origin = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
-                generator = new NavmeshGenerator(event.getPlayer().getWorld(), 3,
-                        new Vector(origin.getBlockX() - 200, origin.getBlockY() - 200, origin.getBlockZ() - 200),
-                        new Vector(origin.getBlockX() + 200, origin.getBlockY() + 200, origin.getBlockZ() + 200));
-
-                navmesh = generator.generateNavmesh(origin);
-            }
-            else if(heldItem.getType() == Material.CARROT_ON_A_STICK) {
-                if(navmesh != null && startVector == null) {
-                    startVector = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
-                }
-                else if(navmesh != null && goalVector == null) {
-                    goalVector = MathUtils.pushVectorAlong(event.getClickedBlock().getLocation().toVector(), Direction.UP, 1);
-                    Path result = astar.navigateTo(navmesh.getMeshBlocks().get(startVector).getNode(), navmesh.getMeshBlocks().get(goalVector).getNode(), 2);
-
-                    startVector = null;
-                    goalVector = null;
-
-                    if(result == null) {
-                        System.out.println("Path is impossible or an error occurred.");
-                        return;
-                    }
-
-                    Path.Segment segment = result.getFirst();
-                    do {
-                        player.getWorld().getBlockAt(segment.start.getBlockX(), segment.start.getBlockY(), segment.start.getBlockZ()).setType(Material.IRON_BLOCK);
-                        segment = segment.next;
-                    }
-                    while(segment != null);
-                }
-            }
+            // Pass the event to hotbar manager
+            user.getHotbar().processEvent(event);
         }
     }
 
-    /** Gets all players in the game
-     *
-     * @return The players
-     */
-    public Player[] getActivePlayers() {
-        // TODO: Implement
-        return null; // TODO: Placeholder
+    @EventHandler
+    public void onPlayerSwitchHeldItem(PlayerItemHeldEvent event) {
+        User user = getAssociatedUser(event.getPlayer());
+        if(user != null) {
+
+
+            // Pass the event to hotbar manager
+            user.getHotbar().processEvent(event);
+        }
     }
 
-    public Player[] getPlayers() {
-        return players;
+    public User getAssociatedUser(Player player) {
+        for (User p : players) {
+            if (p.getPlayer() == player) {
+                return p;
+            }
+        }
+
+        return null;
     }
 }

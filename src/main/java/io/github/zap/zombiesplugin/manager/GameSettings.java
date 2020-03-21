@@ -8,5 +8,5 @@ import io.github.zap.zombiesplugin.map.Map;
  */
 public class GameSettings {
     public GameDifficulty difficulty;
-    public Map map;
+    public Map gameMap;
 }

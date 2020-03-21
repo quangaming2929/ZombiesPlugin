@@ -2,7 +2,6 @@ package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.mob.Mob;
-import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Location;
 
@@ -33,8 +32,7 @@ public class RangedSpawnPointManager extends SpawnPointManager {
 	@Override
 	public List<SpawnPoint> getAvailableSpawnPoints() {
 		List<SpawnPoint> availableSpawnPoints = super.getAvailableSpawnPoints();
-
-		availableSpawnPoints.removeIf(spawnPoint -> Arrays.stream(gameManager.getPlayerManager().getActivePlayers()).anyMatch(player -> player.getLocation().distance(spawnPoint.getCoordinates()) <= spawnRange));
+		availableSpawnPoints.removeIf(spawnPoint -> gameManager.getPlayerManager().getPlayers().stream().anyMatch(user -> user.getPlayer().getLocation().distance(spawnPoint.getCoordinates()) <= spawnRange));
 
 		return availableSpawnPoints;
 	}

@@ -1,7 +1,8 @@
 package io.github.zap.zombiesplugin.map;
 
+import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPointManager;
-import io.github.zap.zombiesplugin.round.Round;
+import io.github.zap.zombiesplugin.shop.Shop;
 
 public class Map {
 	private SpawnPointManager[] spawnPointManagers;
@@ -11,9 +12,12 @@ public class Map {
 	 */
 	private final Round[] rounds;
 
-	public Map(SpawnPointManager[] spawnPointManagers, Round[] rounds) {
+	private final Shop[] shops;
+
+	public Map(SpawnPointManager[] spawnPointManagers, Round[] rounds, Shop[] shops) {
 		this.spawnPointManagers = spawnPointManagers;
 		this.rounds = rounds;
+		this.shops = shops;
 	}
 
 	/** Gets the rounds for the map
@@ -30,5 +34,9 @@ public class Map {
 	 */
 	public SpawnPointManager[] getSpawnPointManagers() {
 		return spawnPointManagers;
+	}
+
+	public Shop[] getShops() {
+		return shops;
 	}
 }
