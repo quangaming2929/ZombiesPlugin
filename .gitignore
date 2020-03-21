@@ -36,6 +36,7 @@ idea/artifacts
 .idea/modules
 *.iml
 *.ipr
+target/
 
 # CMake
 cmake-build-*/
