@@ -11,10 +11,11 @@ import io.github.zap.zombiesplugin.guns.data.leveling.UltimateLevelingList;
 import io.github.zap.zombiesplugin.player.GunUser;
 import org.bukkit.Material;
 
-import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class GunImporter extends Importer {
@@ -77,6 +78,10 @@ public class GunImporter extends Importer {
         }
 
         return null;
+    }
+
+    public Set<Map.Entry<String, GunData>> getGunDatas() {
+        return gunVault.entrySet();
     }
 
     private void generateDevelopmentGun() {

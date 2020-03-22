@@ -49,6 +49,10 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         return config;
     }
 
+    public ProtocolManager getProtocolManager() {
+        return protocolManager;
+    }
+
     public PlayerManager manager ;
 
     @EventHandler
