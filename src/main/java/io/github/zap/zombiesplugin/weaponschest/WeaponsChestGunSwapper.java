@@ -77,9 +77,9 @@ public class WeaponsChestGunSwapper implements Listener {
 			}
 
 			Player player = event.getPlayer();
-			Collection<Item> nearbyItems = player.getWorld().getNearbyEntitiesByType(Item.class, player.getEyeLocation(), 3);
+			//Collection<Item> nearbyItems = player.getWorld().getNearbyEntitiesByType(Item.class, player.getEyeLocation(), 3);
 
-			testRayTrace(event, nearbyItems);
+			//testRayTrace(event, nearbyItems);
 		}
 	}
 

@@ -29,7 +29,7 @@ public class Round {
 				@Override
 				public void run() {
 					for (SpawnPointManager spawnPointManager : gameManager.getMap().getSpawnPointManagers()) {
-						spawnPointManager.spawn(waves[0].getMobs());
+						spawnPointManager.spawn(wave.getMobs());
 					}
 				}
 

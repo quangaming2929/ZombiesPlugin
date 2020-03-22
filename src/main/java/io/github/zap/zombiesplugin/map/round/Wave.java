@@ -1,6 +1,8 @@
 package io.github.zap.zombiesplugin.map.round;
 
 import io.github.zap.zombiesplugin.mob.Mob;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Wave {
@@ -13,9 +15,9 @@ public class Wave {
 	/**
 	 * The mobs to spawn
 	 */
-	private final List<Mob> mobs;
+	private final ArrayList<Mob> mobs;
 
-	public Wave(long delay, List<Mob> mobs) {
+	public Wave(long delay, ArrayList<Mob> mobs) {
 		this.delay = delay;
 		this.mobs = mobs;
 	}
@@ -32,7 +34,7 @@ public class Wave {
 	 *
 	 * @return The mobs
 	 */
-	public List<Mob> getMobs() {
+	public ArrayList<Mob> getMobs() {
 		return mobs;
 	}
 }

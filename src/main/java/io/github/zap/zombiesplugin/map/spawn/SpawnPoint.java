@@ -16,12 +16,16 @@ public class SpawnPoint {
 	 */
 	private final Location coordinates;
 
+	private final GameManager manager;
+
 	/** Initializes the spawnpoint with the coordinates of the spawnpoint
 	 *
 	 * @param coordinates The spawnpoint coordinates
 	 */
-	public SpawnPoint(Location coordinates) {
+	public SpawnPoint(Location coordinates, GameManager manager)
+	{
 		this.coordinates = coordinates;
+		this.manager = manager;
 	}
 
 	/** Spawns mobs in the spawnpoint
@@ -40,8 +44,8 @@ public class SpawnPoint {
 		return available;
 	}
 
-	/** Makes the spawn point usable
-	 *
+	/**
+	 * Makes the spawn point usable
 	 */
 	public void makeAvailable() {
 		available = true;
