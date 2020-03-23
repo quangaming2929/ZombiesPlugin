@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.mob.Mob;
 import org.bukkit.Location;
 
@@ -22,10 +23,10 @@ public class SpawnPoint {
 	 *
 	 * @param coordinates The spawnpoint coordinates
 	 */
-	public SpawnPoint(Location coordinates, GameManager manager)
+	public SpawnPoint(GameManager manager, Location coordinates)
 	{
-		this.coordinates = coordinates;
 		this.manager = manager;
+		this.coordinates = coordinates;
 	}
 
 	/** Spawns mobs in the spawnpoint
@@ -40,8 +41,10 @@ public class SpawnPoint {
 	 *
 	 * @return The availability of the spawn point
 	 */
+
+	//always true for debugging purposes
 	public boolean isAvailable() {
-		return available;
+		return true;
 	}
 
 	/**

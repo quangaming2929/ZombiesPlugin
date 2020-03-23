@@ -39,5 +39,4 @@ public abstract class Shop implements Listener {
 	public abstract void onPurchaseAttempt(PlayerInteractEvent event);
 
 	protected abstract boolean purchase(User user);
-
 }

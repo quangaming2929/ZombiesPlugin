@@ -15,16 +15,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class PlayerManager implements Listener {
-
-
     private GameManager gameManager;
-
-    private int gameSize = 4;
-    private List<User> players = new ArrayList<>();
-    private ArrayList<Player> spectators;
+    private HashMap<Player,User> players = new HashMap<>();
+    private ArrayList<User> spectators;
 
     public PlayerManager(GameManager gameManager) {
         this.gameManager = gameManager;
@@ -33,16 +31,8 @@ public class PlayerManager implements Listener {
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
 
-    public int getGameSize() {
-        return gameSize;
-    }
-
-    public void setGameSize(int gameSize) {
-        this.gameSize = gameSize;
-    }
-
-    public List<User> getPlayers() {
-        return players;
+    public ArrayList<User> getPlayers() {
+        return new ArrayList<>(players.values());
     }
 
     /**
@@ -51,15 +41,12 @@ public class PlayerManager implements Listener {
      * @return Whether or not the player was added
      */
     public boolean addPlayer(Player player) {
-        if(players.size() - 1 < getGameSize())
+        if(players.size() - 1 < gameManager.getGameSize())
         {
-            for(User user : players) {
-                if(user.getPlayer() == player) // Check if the player already exist in this manager
-                    return false;
-            }
+            if(players.containsKey(player)) return false;
         }
 
-        players.add(new User(player));
+        players.put(player, new User(player));
         return  true;
     }
 
@@ -69,12 +56,8 @@ public class PlayerManager implements Listener {
      * @return Whether or not the player was removed
      */
     public boolean removePlayer(Player player) {
-        User associatedPlayer = getAssociatedUser(player);
-        if(associatedPlayer != null) {
-            this.players.remove(associatedPlayer);
-            return true;
-        }
-
+        User user = players.remove(player);
+        if(user != null) return true;
         return false;
     }
 
@@ -112,12 +95,10 @@ public class PlayerManager implements Listener {
     }
 
     public User getAssociatedUser(Player player) {
-        for (User p : players) {
-            if (p.getPlayer() == player) {
-                return p;
-            }
-        }
+        return players.get(player);
+    }
 
-        return null;
+    public boolean hasUser(User user) {
+        return players.containsValue(user);
     }
 }

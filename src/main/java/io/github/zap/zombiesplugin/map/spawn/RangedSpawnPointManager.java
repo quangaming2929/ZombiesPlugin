@@ -1,21 +1,17 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.mob.Mob;
-
-import java.util.*;
 
 import io.github.zap.zombiesplugin.mob.MobInfo;
 import io.github.zap.zombiesplugin.utils.RandomIterator;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 public class RangedSpawnPointManager extends SpawnPointManager {
-
-	/**
-	 * The Game manager
-	 */
-	private final GameManager gameManager;
-
 	/**
 	 * The maximum range from a player the spawn point manager spawns mobs from
 	 */
@@ -25,11 +21,9 @@ public class RangedSpawnPointManager extends SpawnPointManager {
 	 * Creates the spawn point manager
 	 *
 	 * @param acceptedMobTypes The list of possible mob types the spawn points can spawn
-	 * @param coordinates      The list of spawn points the manager should manage
 	 */
-	public RangedSpawnPointManager(GameManager gameManager, HashSet<MobInfo> acceptedMobTypes, Location[] coordinates, int spawnRange) {
-		super(gameManager, acceptedMobTypes, coordinates);
-		this.gameManager = gameManager;
+	public RangedSpawnPointManager(GameManager manager, HashSet<MobInfo> acceptedMobTypes, int spawnRange) {
+		super(manager, acceptedMobTypes);
 		this.spawnRange = spawnRange;
 	}
 
@@ -47,15 +41,17 @@ public class RangedSpawnPointManager extends SpawnPointManager {
 			for(SpawnPoint spawnPoint : spawnPoints) {
 				if(spawnPoint.isAvailable()) {
 					int i = 0;
+					boolean added = false;
 					for(Mob mob : mobs) {
 						if(acceptedMobTypes.contains(mob.getMobInfo())) {
 							mobs.remove(i);
 							spawnPoint.spawn(mob);
+							added = true;
 							break;
 						}
 						i++;
 					}
-					return;
+					if(!added || mobs.size() == 0) return;
 				}
 			}
 		}

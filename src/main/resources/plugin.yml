@@ -7,3 +7,12 @@ description: An improved version of the Hypixel minigame Zombies.
 commands:
   gunDebug:
     description: Test command related to guns
+  gamemanager:
+    description: Create game managers on demand, for testing purposes.
+    usage: /manager add <id> or /manager list
+  spawnmanager:
+    description: Adds or removes a spawnpoint from the specified manager.
+    usage: /spawnpoint add
+  spawn:
+    description: Test command, spawns zombies at a spawn manager.
+    usage: /spawnpoint <manager> <spawn>

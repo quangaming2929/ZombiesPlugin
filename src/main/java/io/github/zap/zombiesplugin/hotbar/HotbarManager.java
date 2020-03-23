@@ -170,7 +170,6 @@ public class HotbarManager {
                 return o;
             }
         }
-
         return null;
     }
 }

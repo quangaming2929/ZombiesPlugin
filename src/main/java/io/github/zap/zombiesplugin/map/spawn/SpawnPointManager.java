@@ -1,15 +1,16 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.mob.Mob;
-
-import java.util.*;
 
 import io.github.zap.zombiesplugin.mob.MobInfo;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 public abstract class SpawnPointManager {
-	protected final GameManager manager;
 	/**
 	 * The list of possible mob types the spawn points can spawn
 	 */
@@ -18,21 +19,18 @@ public abstract class SpawnPointManager {
 	/**
 	 * The list of spawnpoints the manager manages
 	 */
-	protected final SpawnPoint[] spawnPoints;
+	protected final ArrayList<SpawnPoint> spawnPoints;
+
+	protected final GameManager manager;
 
 	/** Creates the spawn point manager
 	 *
 	 * @param acceptedMobTypes The list of possible mob types the spawn points can spawn
-	 * @param coordinates The list of spawn points the manager should manage
 	 */
-	public SpawnPointManager(GameManager gameManager, HashSet<MobInfo> acceptedMobTypes, Location[] coordinates) {
+	public SpawnPointManager(GameManager manager, HashSet<MobInfo> acceptedMobTypes) {
 		this.acceptedMobTypes = acceptedMobTypes;
-		this.manager = gameManager;
-		spawnPoints = new SpawnPoint[coordinates.length];
-
-		for (int i = 0; i < spawnPoints.length; i++) {
-			spawnPoints[i] = new SpawnPoint(coordinates[i], gameManager);
-		}
+		spawnPoints = new ArrayList<>();
+		this.manager = manager;
 	}
 
 	/**
@@ -41,4 +39,12 @@ public abstract class SpawnPointManager {
 	public abstract void spawn(ArrayList<Mob> mobs);
 
 	public abstract boolean isValid();
+
+	public void add(SpawnPoint spawnPoint) {
+		spawnPoints.add(spawnPoint);
+	}
+
+	public void add(Mob mob) {
+		acceptedMobTypes.add(mob.getMobInfo());
+	}
 }

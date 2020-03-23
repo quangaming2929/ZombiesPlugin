@@ -2,19 +2,21 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.map.round.Round;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.entity.Player;
 
 public class GameManager {
+    public final String id;
+
     private GameSettings settings;
     private PlayerManager playerManager;
 
     /**
      * The map of the game
      */
-    private final Map map;
-
-    private List<Player> players;
+    private Map map;
 
     /**
      * The last round the game was on
@@ -25,7 +27,18 @@ public class GameManager {
      * A GameManager instance is created for every game.
      * @param settings The settings to start the game with.
      */
-    public GameManager(GameSettings settings, Map map) {
+    public GameManager(GameSettings settings, Map map, String id) {
+        this.settings = settings;
+        this.map = map;
+        this.id = id;
+        playerManager = new PlayerManager(this);
+    }
+
+    public GameManager(String id) {
+        this.id = id;
+    }
+
+    public void build(GameSettings settings, Map map) {
         this.settings = settings;
         this.map = map;
         playerManager = new PlayerManager(this);
@@ -35,12 +48,12 @@ public class GameManager {
      * Starts the next round
      */
     public void startNextRound() {
-        Round[] rounds = map.getRounds();
+        ArrayList<Round> rounds = map.getRounds();
 
-        if (lastRound == rounds.length) {
+        if (lastRound == rounds.size()) {
             // TODO: Endgame sequence
         } else {
-            rounds[lastRound].startRound();
+            rounds.get(lastRound).startRound();
             lastRound++;
         }
     }
@@ -59,5 +72,11 @@ public class GameManager {
      */
     public Map getMap() {
         return map;
+    }
+
+    public int getGameSize() {return settings.gameSize; }
+
+    public boolean hasPlayer(Player player) {
+        return playerManager.hasUser(playerManager.getAssociatedUser(player));
     }
 }

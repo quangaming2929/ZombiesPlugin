@@ -4,7 +4,6 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.GunImporter;
-import io.github.zap.zombiesplugin.provider.Importer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,7 +25,7 @@ public class GunDebugCommands implements CommandExecutor {
             Player playerSender = (Player)commandSender;
 
             if (strings.length > 0) {
-                User user = ZombiesPlugin.instance.manager.getAssociatedUser(playerSender);
+                User user = ZombiesPlugin.instance.playerManager.getAssociatedUser(playerSender);
                 if (user != null) {
                     if (strings[0].equals("ult")) {
                         ItemStack mainHandItem = playerSender.getInventory().getItemInMainHand();
