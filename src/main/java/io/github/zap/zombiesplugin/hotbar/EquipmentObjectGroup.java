@@ -16,8 +16,12 @@ public class EquipmentObjectGroup extends ObjectGroup {
                 obj = getByItemSlotId(slotId);
             }
 
-            object.init(slotId, player);
-            obj.object = object;
+            if (obj.object != null) {
+                object.init(obj.slotId, player);
+                obj.object = object;
+            } else {
+                throw new IllegalArgumentException("This slot isn't unlock yet");
+            }
         } else {
             throw new IllegalArgumentException("slotId is not preserved in this group " + name);
         }
@@ -33,6 +37,15 @@ public class EquipmentObjectGroup extends ObjectGroup {
             throw new IllegalArgumentException("object not present in this group " + name);
         }
 
+    }
+
+    @Override
+    public void init(Player player, String name, Integer... preservedSlots) {
+        super.init(player, name, preservedSlots);
+
+        for (HotbarGroupObject go : objects) {
+            addPlaceHolder(go);
+        }
     }
 
     /**
@@ -52,5 +65,14 @@ public class EquipmentObjectGroup extends ObjectGroup {
         }
 
         return null;
+    }
+
+    public boolean isEquipableAt(int slotId) {
+        if (firstEmpty() != null) {
+            return true;
+        } else {
+            HotbarGroupObject go = getByItemSlotId(slotId);
+            return go != null && go.object != null;
+        }
     }
 }

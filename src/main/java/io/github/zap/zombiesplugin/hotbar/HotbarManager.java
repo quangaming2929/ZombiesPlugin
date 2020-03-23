@@ -79,7 +79,10 @@ public class HotbarManager {
      * @return The read-only collection contains all objects in the current hotbar
      */
     public List<HotbarObject> getObjects() {
-        List<HotbarObject> objs = Collections.unmodifiableList(currentProfile.objects);
+        List<HotbarObject> objs = new ArrayList<>();
+        for (HotbarObject obj : currentProfile.objects) {
+            objs.add(obj);
+        }
 
         for (ObjectGroup gr : currentProfile.groups.values()) {
             for (HotbarGroupObject hgo : gr.objects) {
@@ -211,21 +214,23 @@ public class HotbarManager {
     }
 
     /**
-     * Not recommended. This method is used internally to add a group or allow adding custom ObjectGroup
-     * @param name
-     * @param group
+     * Please don't modify anything about ObjectGroup before using this method. This method checks some condition before
+     * adding the group into hotbar
+     * Example usage:
+     * GunObjectGroup gunGroup = new GunObjectGroup();
+     * HotbarManager.addGroup("GunGroup", gunGroup, 2,3,4);
+     * then you can start modify your instance
+     * @param name the group name
      */
     public void addGroup(String name, ObjectGroup group, Integer... preservedSlots) {
-        if(group.player == player) {
-            for (ObjectGroup gr : currentProfile.groups.values()) {
-                if (gr.isOverlap(group.getPreservedSlots())) {
-                    throw new UnsupportedOperationException("This group overlap with other ObjectGroup(s) in the current profile");
-                }
-
-                group.init(player, name, preservedSlots);
-                currentProfile.groups.put(name, group);
+        for (ObjectGroup gr : currentProfile.groups.values()) {
+            if (gr.isOverlap(group.getPreservedSlots())) {
+                throw new UnsupportedOperationException("This group overlap with other ObjectGroup(s) in the current profile");
             }
         }
+
+        group.init(player, name, preservedSlots);
+        currentProfile.groups.put(name, group);
     }
 
     public void removeGroup(String name) {
@@ -235,6 +240,14 @@ public class HotbarManager {
         } else {
             throw new IllegalArgumentException("Can't find the provided group");
         }
+    }
+
+    public ObjectGroup getGroup(String name) {
+        if(currentProfile.groups.containsKey(name)) {
+            return currentProfile.groups.get(name);
+        }
+
+        return null;
     }
 
     public boolean isOverlap(Integer... slotId) {

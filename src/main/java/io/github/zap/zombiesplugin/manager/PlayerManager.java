@@ -2,7 +2,6 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.Gun;
-import io.github.zap.zombiesplugin.player.GunUser;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import org.bukkit.entity.Player;

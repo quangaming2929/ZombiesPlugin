@@ -8,7 +8,6 @@ import io.github.zap.zombiesplugin.guns.data.BulletStats;
 import io.github.zap.zombiesplugin.guns.data.CustomValue;
 import io.github.zap.zombiesplugin.guns.data.GunData;
 import io.github.zap.zombiesplugin.guns.data.leveling.UltimateLevelingList;
-import io.github.zap.zombiesplugin.player.GunUser;
 import org.bukkit.Material;
 
 import java.nio.file.Path;
@@ -64,12 +63,12 @@ public class GunImporter extends Importer {
         return "gunData";
     }
 
-    public Gun createGun(String id, GunUser user) throws Exception {
+    public Gun createGun(String id) throws Exception {
         if (gunVault.containsKey(id)) {
             GunData currentData = gunVault.get(id);
             if(behaviours.containsKey(currentData.gunBehaviour)) {
                 Class<? extends Gun> bClazz = behaviours.get(currentData.gunBehaviour);
-                Gun gun = bClazz.getConstructor(GunData.class, GunUser.class).newInstance(currentData, user);
+                Gun gun = bClazz.getConstructor(GunData.class).newInstance(currentData);
                 return gun;
             } else {
                 ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't find gun behaviour for this GunData: " + currentData);

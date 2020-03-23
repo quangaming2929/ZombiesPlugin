@@ -2,7 +2,8 @@ package io.github.zap.zombiesplugin.commands;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.Gun;
-import io.github.zap.zombiesplugin.player.GunUser;
+import io.github.zap.zombiesplugin.guns.GunObjectGroup;
+import io.github.zap.zombiesplugin.hotbar.ObjectGroup;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.github.zap.zombiesplugin.provider.Importer;
@@ -28,8 +29,8 @@ public class GunDebugCommands implements CommandExecutor {
 
             if (strings.length > 0) {
                 User user = ZombiesPlugin.instance.manager.getAssociatedUser(playerSender);
-                GunUser gunUser = user.getGunUser();
-                int pSlot = user.getGunUser().getPreservedSlot(playerSender.getInventory().getHeldItemSlot());
+                GunObjectGroup gunUser = user.getGunGroup();
+                int pSlot = playerSender.getInventory().getHeldItemSlot();
                 if (user != null) {
                     if (strings[0].equals("ult")) {
                         Gun targetedGun = (Gun) user.getHotbar().getSelectedObject();
@@ -42,9 +43,12 @@ public class GunDebugCommands implements CommandExecutor {
                         try {
 
                             if(pSlot != -1) {
-                                Gun gun = gunImporter.createGun(strings[1], gunUser);
+                                Gun gun = gunImporter.createGun(strings[1]);
                                 if(gun != null) {
-                                    gunUser.replaceGunSlot(pSlot, gun);
+                                    if(gunUser.isEquipableAt(pSlot))
+                                        gunUser.addObject(gun, pSlot);
+                                    else
+                                        playerSender.sendMessage(ChatColor.RED + "Place select a gun slot to equip");
                                 } else {
                                     playerSender.sendMessage(ChatColor.RED + "Get the the current gun id: " + strings[1]);
                                 }

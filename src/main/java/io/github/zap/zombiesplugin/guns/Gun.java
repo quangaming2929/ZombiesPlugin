@@ -4,7 +4,6 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.data.GunData;
 import io.github.zap.zombiesplugin.guns.data.ModifiableBulletStats;
 import io.github.zap.zombiesplugin.hotbar.HotbarObject;
-import io.github.zap.zombiesplugin.player.GunUser;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -13,20 +12,19 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Random;
+
 public abstract class Gun extends HotbarObject {
     public final GunData gunData;
     private ModifiableBulletStats stats;
-
-    protected GunUser gunOwner;
 
     private int ammo;
     private int clipAmmo;
 
 
-    public Gun(GunData gunData, GunUser user) {
+    public Gun(GunData gunData) {
         this.gunData = gunData;
         setStats(attachStats(gunData));
-        this.gunOwner = user;
     }
 
 
@@ -99,8 +97,14 @@ public abstract class Gun extends HotbarObject {
     }
 
     public void refill () {
-        setClipAmmo(getStats().getClipAmmoSize());
-        setAmmo(getStats().getAmmoSize());
+        // To prevent the game not updating the visual, we will schedule it
+        Bukkit.getScheduler().scheduleSyncDelayedTask(ZombiesPlugin.instance, new Runnable() {
+            @Override
+            public void run() {
+                setClipAmmo(getStats().getClipAmmoSize());
+                setAmmo(getStats().getAmmoSize());
+            }
+        }, 1);
     }
 
     /**
@@ -244,9 +248,12 @@ public abstract class Gun extends HotbarObject {
             setItemDamage(0);
             getSlot().setAmount(clipAmmo);
         } else {
-            setItemDamage(gunData.displayItem.getMaxDurability());
+            setItemDamage(gunData.displayItem.getMaxDurability() );
             getSlot().setAmount(1);
         }
+
+        // TODO: work around for item not updating meta twice in 1 server thread iteration
+        getPlayer().updateInventory();
     }
 
     public int getUltimateLevel() {

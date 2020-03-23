@@ -4,7 +4,6 @@ import io.github.zap.zombiesplugin.guns.data.GunData;
 import io.github.zap.zombiesplugin.guns.data.IModifiedValueResolver;
 import io.github.zap.zombiesplugin.guns.data.ModifiableBulletStats;
 import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
-import io.github.zap.zombiesplugin.player.GunUser;
 import io.github.zap.zombiesplugin.utils.Factory;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -18,8 +17,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class LinearGun extends Gun implements IModifiedValueResolver {
-    public LinearGun(GunData data, GunUser user) {
-        super(data, user);
+    public LinearGun(GunData data) {
+        super(data);
     }
 
     @Override
@@ -27,7 +26,7 @@ public class LinearGun extends Gun implements IModifiedValueResolver {
         if(!canShoot())
             return;
 
-        Player player = this.gunOwner.user.getPlayer();
+        Player player = getPlayer();
         World world = player.getWorld();
         Vector eyeLocation = player.getEyeLocation().toVector().clone();
         Vector eyeDirection = player.getEyeLocation().getDirection().clone();
@@ -60,7 +59,7 @@ public class LinearGun extends Gun implements IModifiedValueResolver {
         int range = (int) Math.ceil(getStats().getRange());
         BoundingBox targetedBlockBoundingBox = player.getTargetBlock(materials, range).getBoundingBox();
 
-        return targetedBlockBoundingBox.rayTrace(eyeLocation, eyeDirection, range).getHitPosition();
+        return targetedBlockBoundingBox.rayTrace(eyeLocation, eyeDirection, range + 1.74).getHitPosition();
     }
 
 

@@ -9,4 +9,8 @@ public class HotbarGroupObject {
         this.itemGroupId = itemGroupId;
         this.slotId = slotId;
     }
+
+    public HotbarObject getObject() {
+        return object;
+    }
 }

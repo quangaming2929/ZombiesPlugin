@@ -108,7 +108,7 @@ public abstract class HotbarObject {
      */
     public void onRemoved() {
         if(!isRemoved) {
-            getSlot().setAmount(0);
+            setSlot(null);
         }
     }
 
