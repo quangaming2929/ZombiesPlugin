@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ConfigFileManager {
@@ -108,12 +109,14 @@ public class ConfigFileManager {
     }
 
     public void reload(String name){
-        try (Stream<Path> paths = Files.walk(Paths.get(this.rootDir.getPath()))) {
+        try (Stream<Path> paths = Files.walk(Paths.get(this.rootDir.getAbsolutePath()))) {
             Importer importer = getImporter(name);
             String ext = importer.getConfigExtension();
+            String finalExt = ext.startsWith(".") ? ext : "." + ext;
 
-            paths.filter(path -> path.endsWith(ext))
+            paths.filter(path -> path.toString().endsWith(finalExt))
                     .forEach(path -> importer.processConfigFile(path, IOHelper.readFile(path)));
+
         }
         catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to reload importer" + name);

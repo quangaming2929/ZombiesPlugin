@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.commands;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.Gun;
+import io.github.zap.zombiesplugin.player.GunUser;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.github.zap.zombiesplugin.provider.Importer;
@@ -27,10 +28,11 @@ public class GunDebugCommands implements CommandExecutor {
 
             if (strings.length > 0) {
                 User user = ZombiesPlugin.instance.manager.getAssociatedUser(playerSender);
+                GunUser gunUser = user.getGunUser();
+                int pSlot = user.getGunUser().getPreservedSlot(playerSender.getInventory().getHeldItemSlot());
                 if (user != null) {
                     if (strings[0].equals("ult")) {
-                        ItemStack mainHandItem = playerSender.getInventory().getItemInMainHand();
-                        Gun targetedGun = user.getGunUser().getGunByItemStack(mainHandItem);
+                        Gun targetedGun = (Gun) user.getHotbar().getSelectedObject();
                         if(targetedGun != null) {
                             targetedGun.ultimate();
                         } else {
@@ -38,11 +40,11 @@ public class GunDebugCommands implements CommandExecutor {
                         }
                     } else if (strings[0].equals("getGun") && strings.length > 1) {
                         try {
-                            int pSlot = user.getGunUser().getPreservedSlot(playerSender.getInventory().getHeldItemSlot());
+
                             if(pSlot != -1) {
-                                Gun gun = gunImporter.createGun(strings[1], user.getGunUser());
+                                Gun gun = gunImporter.createGun(strings[1], gunUser);
                                 if(gun != null) {
-                                    user.getGunUser().replaceGunSlot(pSlot, gun);
+                                    gunUser.replaceGunSlot(pSlot, gun);
                                 } else {
                                     playerSender.sendMessage(ChatColor.RED + "Get the the current gun id: " + strings[1]);
                                 }

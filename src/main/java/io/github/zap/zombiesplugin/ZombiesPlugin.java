@@ -57,7 +57,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        // manager.addPlayer(e.getPlayer());
+         manager.addPlayer(e.getPlayer());
     }
 
 }

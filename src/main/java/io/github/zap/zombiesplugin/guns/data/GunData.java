@@ -30,6 +30,7 @@ public class  GunData {
         ItemMeta meta = item.getItemMeta();
 
         setDisplayName(level, meta);
+
         meta.setLore(getLore(level).build());
         if(level > 0) {
             if(meta.getEnchants().size() == 0) {

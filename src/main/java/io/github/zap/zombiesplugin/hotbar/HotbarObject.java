@@ -108,8 +108,7 @@ public abstract class HotbarObject {
      */
     public void onRemoved() {
         if(!isRemoved) {
-            player.getInventory().getItem(slotID).setAmount(0);
-
+            getSlot().setAmount(0);
         }
     }
 

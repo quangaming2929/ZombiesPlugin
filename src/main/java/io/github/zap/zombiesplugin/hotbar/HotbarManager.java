@@ -6,24 +6,28 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 /**
  * A helper class to manage hotbar
  */
 public class HotbarManager {
     protected String currentProfileName;
-    protected List<HotbarObject> currentProfile;
-    protected final Hashtable<String, List<HotbarObject>> profiles;
-    protected final Player player;
+    protected HotbarProfile currentProfile;
+    protected final Hashtable<String, HotbarProfile> profiles;
+    public final Player player;
 
     public HotbarManager(Player player) {
         this.player = player;
         this.profiles = new Hashtable<>();
         this.switchProfile("Default");
+    }
+
+    /**
+     * Get the HotbarObject the player is holding on their main hand
+     */
+    public HotbarObject getSelectedObject() {
+        return getHotbarObject(player.getInventory().getHeldItemSlot());
     }
 
     /**
@@ -43,15 +47,17 @@ public class HotbarManager {
      * @param slot the slotID to add
      */
     public void addObject(HotbarObject object, int slot) {
-        for (HotbarObject obj : currentProfile) {
-            if(obj.getSlotID() == slot){
+        if (isOverlap(slot)) {
+            HotbarObject obj = getHotbarObject(slot);
+            if (obj != null) {
                 removeObject(obj);
-                break;
             }
-        }
 
-        object.init(slot, player);
-        currentProfile.add(object);
+            object.init(slot, player);
+            currentProfile.objects.add(object);
+        } else {
+            throw new IllegalArgumentException("This slot is overlap with a group");
+        }
     }
 
     /**
@@ -59,16 +65,31 @@ public class HotbarManager {
      * @param object the object to remove
      */
     public void removeObject(HotbarObject object) {
-        object.onRemoved();
-        currentProfile.remove(object);
+        if(currentProfile.objects.contains(object)) {
+            object.onRemoved();
+            currentProfile.objects.remove(object);
+        } else {
+            throw new IllegalArgumentException("object could not be found in this hotbar profile");
+        }
+
     }
 
     /**
-     * Get current objects in the hotbar. Note: the collection can't be modified
+     * Get current objects in the hotbar includes all groups. Note: the collection can't be modified
      * @return The read-only collection contains all objects in the current hotbar
      */
     public List<HotbarObject> getObjects() {
-        return Collections.unmodifiableList(currentProfile);
+        List<HotbarObject> objs = Collections.unmodifiableList(currentProfile.objects);
+
+        for (ObjectGroup gr : currentProfile.groups.values()) {
+            for (HotbarGroupObject hgo : gr.objects) {
+                if (hgo.object != null) {
+                   objs.add(hgo.object);
+                }
+            }
+        }
+
+        return objs;
     }
 
     /**
@@ -92,11 +113,25 @@ public class HotbarManager {
      * @param profileName the profile to search objects
      */
     public HotbarObject getHotbarObject(int slotId, String profileName) {
-        List<HotbarObject> obj = profiles.get(profileName);
-        if(obj != null && slotId < obj.size()) {
+        // Objects
+        List<HotbarObject> obj = profiles.get(profileName).objects;
+        if(obj != null) {
             for (HotbarObject o : obj) {
                 if (o.getSlotID() == slotId) {
                     return  o;
+                }
+            }
+        }
+
+        // Groups
+        Hashtable<String, ObjectGroup> groups = profiles.get(profileName).groups;
+        if(groups != null) {
+            for (Map.Entry<String, ObjectGroup> gr : groups.entrySet()) {
+                for (HotbarGroupObject groupObj : gr.getValue().objects) {
+                    HotbarObject hotbarObj = groupObj.object;
+                    if(hotbarObj != null && hotbarObj.getSlotID() == slotId) {
+                        return hotbarObj;
+                    }
                 }
             }
         }
@@ -111,20 +146,32 @@ public class HotbarManager {
     public void switchProfile(String name) {
         // Create new profile if it not exist
         if(!profiles.containsKey(name)) {
-            profiles.put(name, new ArrayList<>());
+            profiles.put(name, new HotbarProfile());
         }
 
         if(currentProfile != null) {
-            for (HotbarObject obj : currentProfile) {
+            // Objects
+            for (HotbarObject obj : currentProfile.objects) {
                 obj.setVisibility(false);
+            }
+
+            // Groups
+            for (ObjectGroup gr : currentProfile.groups.values()) {
+                gr.setVisibility(false);
             }
         }
 
         currentProfile = profiles.get(name);
         currentProfileName = name;
 
-        for (HotbarObject obj : currentProfile) {
+        // Objects
+        for (HotbarObject obj : currentProfile.objects) {
             obj.setVisibility(true);
+        }
+
+        // Groups
+        for (ObjectGroup gr : currentProfile.groups.values()) {
+            gr.setVisibility(true);
         }
     }
 
@@ -133,8 +180,7 @@ public class HotbarManager {
      */
     public void processEvent(PlayerInteractEvent event) {
         Action act = event.getAction();
-        ItemStack selectedItem = event.getPlayer().getInventory().getItemInMainHand();
-        HotbarObject associatedObject = getAssociatedObject(selectedItem);
+        HotbarObject associatedObject = getSelectedObject();
 
         if(associatedObject != null) {
             if(act == Action.LEFT_CLICK_AIR || act == Action.LEFT_CLICK_BLOCK) {
@@ -164,13 +210,41 @@ public class HotbarManager {
         }
     }
 
-    private HotbarObject getAssociatedObject(ItemStack item) {
-        for (HotbarObject o : currentProfile) {
-            if (o.getSlot() == item) {
-                return o;
+    /**
+     * Not recommended. This method is used internally to add a group or allow adding custom ObjectGroup
+     * @param name
+     * @param group
+     */
+    public void addGroup(String name, ObjectGroup group, Integer... preservedSlots) {
+        if(group.player == player) {
+            for (ObjectGroup gr : currentProfile.groups.values()) {
+                if (gr.isOverlap(group.getPreservedSlots())) {
+                    throw new UnsupportedOperationException("This group overlap with other ObjectGroup(s) in the current profile");
+                }
+
+                group.init(player, name, preservedSlots);
+                currentProfile.groups.put(name, group);
+            }
+        }
+    }
+
+    public void removeGroup(String name) {
+        if (currentProfile.groups.containsKey(name)) {
+            currentProfile.groups.get(name).onRemoved();
+            currentProfile.groups.remove(name);
+        } else {
+            throw new IllegalArgumentException("Can't find the provided group");
+        }
+    }
+
+    public boolean isOverlap(Integer... slotId) {
+        for (ObjectGroup gr : currentProfile.groups.values()) {
+            if(gr.isOverlap(slotId)) {
+                return  true;
             }
         }
 
-        return null;
+        return false;
     }
+
 }

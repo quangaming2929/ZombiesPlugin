@@ -1,10 +1,13 @@
 package io.github.zap.zombiesplugin.player;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunPlaceHolder;
+import org.apache.logging.log4j.core.appender.rolling.action.IfAll;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Add slot parameter in this class refer to the slotCount like the first slot is the 2nd actual slot in the hotbar
@@ -12,20 +15,20 @@ import java.util.*;
 public class GunUser {
     public final  User user;
 
-    private final List<Gun> guns;
     private final Hashtable<String, Integer> usedGun;
-
+    private final GunUserSlot[] gunContainer;
     // slot for gun
-    private final List<Integer> preservedSlots;
     private int slotCount;
 
     public GunUser(User parent, int initialSlotCount, Integer... preservedSlots) {
         this.user = parent;
         this.slotCount = initialSlotCount;
         this.usedGun = new Hashtable<String, Integer>();
-        this.preservedSlots = new ArrayList<Integer>();
-        Collections.addAll(this.preservedSlots, preservedSlots);
-        guns = new ArrayList<Gun>();
+
+        this.gunContainer = new GunUserSlot[preservedSlots.length];
+        for (int i = 0; i < preservedSlots.length; i++) {
+            this.gunContainer[i] = new GunUserSlot(preservedSlots[i]);
+        }
 
         setSlotCount(2);
     }
@@ -35,7 +38,7 @@ public class GunUser {
     }
 
     public int getActualSlot(int preservedSlot) {
-        return preservedSlots.get(preservedSlot);
+        return gunContainer
     }
 
     public Gun getGunBySlot(int id) {
@@ -50,15 +53,6 @@ public class GunUser {
         return guns.indexOf(gun);
     }
 
-    public Gun getGunByItemStack(ItemStack item) {
-        for (Gun gun : guns) {
-            if(item.getType().equals(gun.gunData.displayItem))
-                return gun;
-        }
-
-        return null;
-    }
-
     public void equipGun(Gun gun) {
         if(guns.size() < getSlotCount()) {
             addGun(guns.size(), gun);
@@ -66,17 +60,18 @@ public class GunUser {
     }
 
     public void replaceGunSlot(int slot, Gun gun) {
-        if (guns.size() < getSlotCount() - 1) {
+        if (guns.size() < getSlotCount()) {
             equipGun(gun);
+        } else {
+            addGun(slot, gun);
         }
 
-        addGun(slot, gun);
     }
 
     private void addGun(int slot, Gun gun) {
         if(slot >= 0 && slot < getSlotCount()) {
             if (gun != null) {
-                removeGun(slot);
+                removeGun(slot, false);
 
                 // Get the slot for our new gun
                 user.getHotbar().addObject(gun, preservedSlots.get(slot));
@@ -90,15 +85,15 @@ public class GunUser {
 
                 guns.add(gun);
             } else {
-                // TODO: Log error message
+                ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't add the current gun, player name: ", user.getPlayer().getDisplayName());
             }
         }
     }
 
-    private void removeGun(int slot) {
+    public void removeGun(int slot, boolean usePlaceHolder) {
         // release old gun if any
-        if(slot < guns.size()) {
-            Gun oldGun =  guns.get(slot);
+        if(slot >= 0 && slot < guns.size()) {
+            Gun oldGun = getGunBySlot(slot);
             if(oldGun != null) {
                 if(usedGun.containsKey(oldGun.gunData.name)) {
                     usedGun.replace(oldGun.gunData.name, oldGun.getUltimateLevel());
@@ -107,6 +102,10 @@ public class GunUser {
                 }
 
                 guns.remove(oldGun);
+                user.getHotbar().removeObject(oldGun);
+                if(usePlaceHolder) {
+                    user.getHotbar().addObject(new GunPlaceHolder(slot), slot);
+                }
             }
         }
     }
@@ -122,7 +121,7 @@ public class GunUser {
             // remove gun to fit the player slot count
             for(int i = guns.size() - 1; i >= getSlotCount(); i--) {
                 user.getHotbar().removeObject(guns.get(i));
-                removeGun(getSlotIDByGun(guns.get(i)));
+                removeGun(getSlotIDByGun(guns.get(i)), false);
             }
 
             // add gun place holder

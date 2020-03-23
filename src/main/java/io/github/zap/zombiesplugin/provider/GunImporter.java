@@ -51,10 +51,11 @@ public class GunImporter extends Importer {
     @Override
     public void processConfigFile(Path file, String contents) {
         GunData data = fileParser.fromJson(contents, GunData.class);
-        if(!gunVault.containsKey(data.name)) {
+        if(!gunVault.containsKey(data.id)) {
             gunVault.put(data.id, data);
         } else {
-            ZombiesPlugin.instance.getLogger().log(Level.WARNING, String.format("Error duplicate gun id or the gun already imported. Gun name: %s (%s)" + data.name + file));
+            String errorMessage = "Error: duplicate gun id or the gun already imported. Gun name: " + data.name + " at " + file.toString();
+            ZombiesPlugin.instance.getLogger().log(Level.WARNING, errorMessage);
         }
     }
 
