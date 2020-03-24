@@ -1,11 +1,9 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.map.Map;
-import io.github.zap.zombiesplugin.mob.Mob;
+import io.github.zap.zombiesplugin.mob.CustomMob;
 
 import io.github.zap.zombiesplugin.mob.MobInfo;
-import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +34,7 @@ public abstract class SpawnPointManager {
 	/**
 	 * Spawns mobs according to the allowed type
 	 */
-	public abstract void spawn(ArrayList<Mob> mobs);
+	public abstract void spawn(ArrayList<CustomMob> mobs);
 
 	public abstract boolean isValid();
 
@@ -44,7 +42,7 @@ public abstract class SpawnPointManager {
 		spawnPoints.add(spawnPoint);
 	}
 
-	public void add(Mob mob) {
+	public void add(CustomMob mob) {
 		acceptedMobTypes.add(mob.getMobInfo());
 	}
 }

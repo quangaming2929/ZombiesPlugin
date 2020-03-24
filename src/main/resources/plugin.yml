@@ -13,6 +13,6 @@ commands:
   spawnmanager:
     description: Adds or removes a spawnpoint from the specified manager.
     usage: /spawnpoint add
-  spawn:
-    description: Test command, spawns zombies at a spawn manager.
-    usage: /spawnpoint <manager> <spawn>
+  testentity:
+    description: Spawns a testing zombie.
+    usage: /testentity

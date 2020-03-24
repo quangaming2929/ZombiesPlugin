@@ -1,8 +1,7 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.map.Map;
-import io.github.zap.zombiesplugin.mob.Mob;
+import io.github.zap.zombiesplugin.mob.CustomMob;
 import org.bukkit.Location;
 
 public class SpawnPoint {
@@ -33,7 +32,7 @@ public class SpawnPoint {
 	 *
 	 * @param mob The mobs to spawn
 	 */
-	public void spawn(Mob mob) {
+	public void spawn(CustomMob mob) {
 		// TODO: Actually spawning the mob
 	}
 

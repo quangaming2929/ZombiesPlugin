@@ -1,14 +1,11 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.map.Map;
-import io.github.zap.zombiesplugin.mob.Mob;
+import io.github.zap.zombiesplugin.mob.CustomMob;
 import io.github.zap.zombiesplugin.mob.MobInfo;
 import io.github.zap.zombiesplugin.utils.RandomIterator;
-import org.bukkit.Location;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class RandomizedSpawnPointManager extends SpawnPointManager {
@@ -17,7 +14,7 @@ public class RandomizedSpawnPointManager extends SpawnPointManager {
     }
 
     @Override
-    public void spawn(ArrayList<Mob> mobs) {
+    public void spawn(ArrayList<CustomMob> mobs) {
         if(!isValid()) return;
 
         RandomIterator<SpawnPoint> iterator = new RandomIterator<>(spawnPoints);
@@ -27,7 +24,7 @@ public class RandomizedSpawnPointManager extends SpawnPointManager {
                 if(spawnPoint.isAvailable()) {
                     int i = 0;
                     boolean added = false;
-                    for(Mob mob : mobs) {
+                    for(CustomMob mob : mobs) {
                         if(acceptedMobTypes.contains(mob.getMobInfo())) {
                             mobs.remove(i);
                             spawnPoint.spawn(mob);

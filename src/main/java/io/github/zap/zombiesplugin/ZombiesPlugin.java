@@ -6,7 +6,6 @@ import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
-import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import org.bukkit.Bukkit;
@@ -43,9 +42,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         getCommand("gunDebug").setExecutor(new GunDebugCommands());
 
         SpawnpointCommands spawnpointCommands = new SpawnpointCommands();
-        getCommand("gamemanager").setExecutor(spawnpointCommands);
-        getCommand("spawnmanager").setExecutor(spawnpointCommands);
-        getCommand("spawn").setExecutor(spawnpointCommands);
+        getCommand("testentity").setExecutor(spawnpointCommands);
     }
 
     @Override
