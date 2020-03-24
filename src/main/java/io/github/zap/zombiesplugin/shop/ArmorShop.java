@@ -4,12 +4,14 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.guns.data.SoundFx;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -18,17 +20,15 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
-public class ArmorShop extends WallShop {
+public class ArmorShop extends ArmorStandShop {
 
 	private final ItemStack[] armor;
 
 	private boolean active = true;
 
-	public ArmorShop(GameManager gameManager, String rewardName, int cost, Location hologramLocation, ItemStack[] armor) {
-		super(gameManager, rewardName, cost, hologramLocation.getWorld().spawnEntity(hologramLocation, EntityType.ARMOR_STAND));
+	public ArmorShop(GameManager gameManager, boolean requiresPower, int cost, SoundFx purchaseSuccessSound, Location hologramLocation, Location armorStandLocation, String armorName, ItemStack[] armor) {
+		super(gameManager, requiresPower, cost, purchaseSuccessSound, hologramLocation, armorStandLocation, ChatColor.GREEN + armorName);
 		this.armor = armor;
-
-		ArmorStand armorStand = (ArmorStand) entity;
 		EntityEquipment equipment = Objects.requireNonNull(armorStand.getEquipment());
 		equipment.setArmorContents(armor);
 		armorStand.setSmall(true);
@@ -72,7 +72,7 @@ public class ArmorShop extends WallShop {
 
 		for (int i = 0; i < 4; i++) {
 			PacketContainer packetContainer = new PacketContainer(PacketType.Play.Server.ENTITY_EQUIPMENT);
-			packetContainer.getIntegers().write(0, entity.getEntityId());
+			packetContainer.getIntegers().write(0, armorStand.getEntityId());
 			packetContainer.getItemSlots().write(0, integerToItemSlotMap.get(i));
 			packetContainer.getItemModifier().write(0, newArmorStandArmor[i]);
 
@@ -100,13 +100,6 @@ public class ArmorShop extends WallShop {
 			}
 
 			return true;
-		}
-	}
-
-	@EventHandler
-	public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-		if (event.getRightClicked().equals(entity)) {
-			event.setCancelled(true);
 		}
 	}
 }

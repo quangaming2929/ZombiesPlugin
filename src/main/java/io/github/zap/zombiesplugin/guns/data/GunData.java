@@ -5,6 +5,7 @@ import io.github.zap.zombiesplugin.utils.RomanNumber;
 import io.github.zap.zombiesplugin.utils.WeaponStatsLoreBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,7 +16,7 @@ public class  GunData {
     public String id = "gun_default";
     public String name = "Default gun";
     public Material displayItem = Material.BARRIER;
-    public SoundFx gunFx = new SoundFx();
+    public SoundFx gunFx = new SoundFx(Sound.ENTITY_IRON_GOLEM_HURT, 0.5F, 2.0F);
     public String[] description = new String[] {
             "This is a default gun description",
             "This will be parsed from a config file" };

@@ -6,9 +6,11 @@ import io.github.zap.zombiesplugin.guns.data.ModifiableBulletStats;
 import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
 import io.github.zap.zombiesplugin.player.GunUser;
 import io.github.zap.zombiesplugin.utils.Factory;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -31,7 +33,7 @@ public class LinearGun extends Gun implements IModifiedValueResolver {
         World world = player.getWorld();
         Vector eyeLocation = player.getEyeLocation().toVector().clone();
         Vector eyeDirection = player.getEyeLocation().getDirection().clone();
-        Vector targetBlockVector = getTargetBlockVector(player, eyeLocation, eyeDirection);
+        Vector targetBlockVector = getTargetBlockVector(player);
 
         sendShot(world, eyeLocation, eyeDirection, targetBlockVector);
 
@@ -50,17 +52,26 @@ public class LinearGun extends Gun implements IModifiedValueResolver {
         beam.send();
     }
 
-    private Vector getTargetBlockVector(Player player, Vector eyeLocation, Vector eyeDirection) {
+    public Vector getTargetBlockVector(Player player) {
         Set<Material> materials = new HashSet<>();
 
         materials.add(Material.AIR);
         materials.add(Material.CAVE_AIR);
+        materials.add(Material.VOID_AIR);
 
         // TODO: Add slab blocks
-        int range = (int) Math.ceil(getStats().getRange());
-        BoundingBox targetedBlockBoundingBox = player.getTargetBlock(materials, range).getBoundingBox();
+        int range = 100; // (int) Math.ceil(this.getCurrentStats().baseRange);;
+        Block targetBlock = player.getTargetBlock(materials, range);
+        BoundingBox boundingBox;
 
-        return targetedBlockBoundingBox.rayTrace(eyeLocation, eyeDirection, range).getHitPosition();
+        if (targetBlock.getType().equals(Material.AIR) || targetBlock.getType().equals(Material.CAVE_AIR) || targetBlock.getType().equals(Material.VOID_AIR)) {
+            Location location = targetBlock.getLocation();
+            boundingBox = new BoundingBox(location.getX(), targetBlock.getY(), targetBlock.getZ(), location.getX() + 1, location.getY() + 1, targetBlock.getZ() + 1);
+        } else {
+            boundingBox = targetBlock.getBoundingBox();
+        }
+
+        return boundingBox.rayTrace(player.getEyeLocation().toVector(), player.getEyeLocation().getDirection(), range + 1.74).getHitPosition();
     }
 
 

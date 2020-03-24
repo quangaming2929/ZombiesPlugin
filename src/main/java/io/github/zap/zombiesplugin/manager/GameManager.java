@@ -2,6 +2,8 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.map.round.Round;
+import io.github.zap.zombiesplugin.shop.Shop;
+import java.util.Arrays;
 import java.util.List;
 import org.bukkit.entity.Player;
 
@@ -43,6 +45,11 @@ public class GameManager {
             rounds[lastRound].startRound();
             lastRound++;
         }
+    }
+
+    public void turnOnPower() {
+        Arrays.stream(getMap().getShops()).filter(Shop::doesRequirePower).forEach(Shop::turnOn);
+        // getPlayerManager().getPlayers().forEach(user -> user.getPlayer().sendTitle(new Title));
     }
 
     /** Gets the player manager

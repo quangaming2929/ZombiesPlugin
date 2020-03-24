@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.shop;
 
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunPlaceHolder;
+import io.github.zap.zombiesplugin.guns.data.SoundFx;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.ChatColor;
@@ -13,11 +14,18 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class GunShop extends WallShop {
+public class GunShop extends ArmorStandShop {
 
-	public GunShop(GameManager gameManager, String rewardName, int cost, Location location) {
-		super(gameManager, rewardName, cost, location.getWorld().dropItem(location, new ItemStack(Material.WOODEN_HOE))); // TODO: Actually get gun
-		Item item = (Item) entity;
+	private final Item item;
+
+	private final String gunName;
+
+	public GunShop(GameManager gameManager, boolean requiresPower, int cost, SoundFx purchaseSuccessSound, Location hologramLocation, Location armorStandLocation, String gunName, Location itemLocation) {
+		super(gameManager, requiresPower, cost, purchaseSuccessSound, hologramLocation, armorStandLocation, ChatColor.GREEN + gunName);
+
+		this.gunName = gunName;
+
+		item = itemLocation.getWorld().dropItem(itemLocation, new ItemStack(Material.WOODEN_HOE)); // TODO: Actually get gun
 
 		item.setVelocity(item.getVelocity().zero());
 		item.setGravity(false);
@@ -34,26 +42,25 @@ public class GunShop extends WallShop {
 				// TODO: Refill the gun
 			} else {
 				// TODO: Purchase the gun
+				return false;
 			}
-
-			return true;
 		} catch (Exception e) {
 			user.getPlayer().sendMessage(ChatColor.RED + "It looks like the server owner didn't set up this gun correctly!");
 		}
 
-		return false;
+		return true;
 	}
 
 	@EventHandler
 	public void onItemPickup(EntityPickupItemEvent event) {
-		if (event.getItem().equals(entity)) {
+		if (event.getItem().equals(item)) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler
 	public void onItemDespawn(ItemDespawnEvent event) {
-		if (event.getEntity().equals(entity)) {
+		if (event.getEntity().equals(item)) {
 			event.setCancelled(true);
 		}
 	}
