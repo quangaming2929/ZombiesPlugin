@@ -1,8 +1,7 @@
-package io.github.zap.zombiesplugin.guns.data.leveling;
+package io.github.zap.zombiesplugin.leveling;
 
 import io.github.zap.zombiesplugin.guns.data.BulletStats;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

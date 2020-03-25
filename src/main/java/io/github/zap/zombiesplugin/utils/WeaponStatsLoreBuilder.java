@@ -17,14 +17,6 @@ public class WeaponStatsLoreBuilder {
         this.instructions = new ArrayList<String>();
     }
 
-    public static String[] getGunInstructionLore() {
-        // TODO: Fix the chat color
-        return new String[] {
-                ChatColor.YELLOW.toString() + "LEFT-CLICK " + ChatColor.GRAY + "to reload.",
-                ChatColor.YELLOW.toString() + "RIGHT-CLICK" + ChatColor.GRAY + "to shoot."
-        };
-    }
-
     public static String[] getGunPlaceHolderLore() {
         return new String[] {
                 ChatColor.GRAY.toString() + "Purchase guns at " + ChatColor.GOLD + "Shops " + ChatColor.GRAY + "or at",
@@ -62,9 +54,8 @@ public class WeaponStatsLoreBuilder {
      * @param newValue the current level stats
      * @return current builder
      */
-    public WeaponStatsLoreBuilder addStats(String name, Object oldValue, Object newValue, String unit) {
-        //stats.add(String.format("%s%c %s%s: %s%s %s ➔ %s%s %s", ChatColor.GRAY,'·', name, ChatColor.GRAY, oldValue, unit, ChatColor.GREEN, newValue, unit));
-        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.DARK_GRAY + oldValue +  " " + unit + " ➔ " + ChatColor.GREEN + newValue + " " + unit );
+    public WeaponStatsLoreBuilder addStats(String name, Object oldValue, Object newValue) {
+        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.DARK_GRAY + oldValue +  " " + " ➔ " + ChatColor.GREEN + newValue + " " );
         return this;
     }
 
@@ -74,8 +65,8 @@ public class WeaponStatsLoreBuilder {
      * @param value the previous level stats
      * @return current builder
      */
-    public WeaponStatsLoreBuilder addStats(String name, Object value, String unit) {
-        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.GREEN + value + " " + unit);
+    public WeaponStatsLoreBuilder addStats(String name, Object value) {
+        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.GREEN + value + " ");
 
         return this;
     }
@@ -88,7 +79,17 @@ public class WeaponStatsLoreBuilder {
     public WeaponStatsLoreBuilder withInstruction (String... instructions) {
         this.instructions.clear();
         Collections.addAll(this.instructions, instructions);
+        return this;
+    }
 
+    /**
+     * Set the instruction lore of the weapon
+     * @param instructions the weapon instruction
+     * @return current builder
+     */
+    public WeaponStatsLoreBuilder withInstruction (List<String> instructions) {
+        this.instructions.clear();
+        this.instructions.addAll(instructions);
         return this;
     }
 
@@ -114,12 +115,18 @@ public class WeaponStatsLoreBuilder {
             lore.add(ChatColor.GRAY + item);
         }
 
-        lore.add("");
+        if (stats.size() > 0) {
+            lore.add("");
+        }
+
         for (String item : stats) {
             lore.add(item);
         }
 
-        lore.add("");
+        if (instructions.size() > 0) {
+            lore.add("");
+        }
+
         for (String item : instructions) {
             lore.add(item);
         }

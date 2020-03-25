@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.guns.data.leveling;
+package io.github.zap.zombiesplugin.leveling;
 
 import io.github.zap.zombiesplugin.guns.data.*;
 import io.github.zap.zombiesplugin.provider.*;

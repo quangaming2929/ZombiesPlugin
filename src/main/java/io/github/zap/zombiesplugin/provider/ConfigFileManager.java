@@ -1,7 +1,9 @@
 package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.GsonBuilder;
-import io.github.zap.zombiesplugin.guns.data.leveling.UltimateLevelingList;
+import io.github.zap.zombiesplugin.guns.data.BulletStats;
+import io.github.zap.zombiesplugin.leveling.LevelData;
+import io.github.zap.zombiesplugin.leveling.UltimateLevelingList;
 import io.github.zap.zombiesplugin.utils.IOHelper;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ConfigFileManager {
@@ -35,6 +36,8 @@ public class ConfigFileManager {
 
     private void registerCustomClasses() {
         registerCustomClass("LevelList", UltimateLevelingList.class);
+        registerCustomClass("LevelData", LevelData.class);
+        registerCustomClass("BulletStats", BulletStats.class);
     }
 
     /**

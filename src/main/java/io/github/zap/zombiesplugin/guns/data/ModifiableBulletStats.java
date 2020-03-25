@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.guns.data;
 
-import io.github.zap.zombiesplugin.guns.data.leveling.IUltimateLeveling;
+import io.github.zap.zombiesplugin.leveling.IUltimateLeveling;
 
 import java.util.Hashtable;
 

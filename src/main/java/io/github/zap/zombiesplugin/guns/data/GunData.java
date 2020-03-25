@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.guns.data;
 
-import io.github.zap.zombiesplugin.guns.data.leveling.IUltimateLeveling;
+import io.github.zap.zombiesplugin.leveling.IUltimateLeveling;
 import io.github.zap.zombiesplugin.utils.RomanNumber;
 import io.github.zap.zombiesplugin.utils.WeaponStatsLoreBuilder;
 import org.bukkit.ChatColor;
@@ -8,8 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.List;
 
 public class  GunData {
     public String id = "gun_default";
