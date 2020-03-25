@@ -97,5 +97,12 @@
             <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.lumine.xikage</groupId>
+            <artifactId>mythicmobs</artifactId>
+            <version>4.9.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
