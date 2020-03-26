@@ -19,7 +19,6 @@ public class SpawnManagerImporter extends Importer {
     private Gson fileParser;
     private SpawnManagerContainer container;
     private HashMap<String,SpawnManager> managers;
-    private HashMap<String, IReflectionConverter> converters;
 
     @Override
     public void init(ConfigFileManager manager) {
@@ -27,7 +26,6 @@ public class SpawnManagerImporter extends Importer {
         fileParser = manager.getGsonBuilder().create();
         container = new SpawnManagerContainer();
         managers = new HashMap<>();
-        converters = new HashMap<>();
 
         converters.put("ordered", (Object input, Class target) -> {
             SpawnManagerData data = (SpawnManagerData)input;
@@ -48,11 +46,6 @@ public class SpawnManagerImporter extends Importer {
 
             return new RandomizedSpawnManager(data.name, ZombiesPlugin.instance.getMap(data.mapName), mobs);
         });
-    }
-
-    @Override
-    public void registerValue(String name, Object value) {
-        //nothing needed here for now
     }
 
     @Override
@@ -92,33 +85,6 @@ public class SpawnManagerImporter extends Importer {
     @Override
     public String getConfigExtension() {
         return "spawnManagers";
-    }
-
-    /**
-     * Register a custom converter. This can be used to implement custom spawning logic beyond what the default
-     * SpawnManagers do.
-     *
-     * The converter is given an object which is always a subclass of SpawnManagerData and a Class, which is always
-     * the Class object of a subclass of SpawnpointManager. The function should return a subclass of SpawnpointManager.
-     *
-     * The reason this exists is to convert between a GSON-serializable "data holder" object and the actual
-     * SpawnpointManager that is directly used by the plugin. The SpawnpointManager itself cannot be serialized.
-     *
-     * The validity of the SpawnPointData is checked before being passed to the converter. The converter will never
-     * be called with SpawnPointData that contains an invalid map.
-     *
-     * @param converter The converter function
-     * @param name The unique identifier used by this converter
-     * @return True if the converter was registered successfully, false if one with the same name already exists.
-     */
-    public boolean registerConverter(IReflectionConverter converter, String name)
-    {
-        if(!converters.containsKey(name)) {
-            converters.put(name, converter);
-            return true;
-        }
-
-        return false;
     }
 
     public ArrayList<SpawnManager> getSpawnManagers() {

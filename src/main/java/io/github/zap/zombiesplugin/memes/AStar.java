@@ -9,8 +9,6 @@ public class AStar {
         public ConnectionWrapper previous;
         public Connection connection;
 
-        public boolean closed;
-
         public double g = 0;
         public double h = 0;
         public double f = 0;

@@ -27,11 +27,6 @@ public class GameMapImporter extends Importer {
     }
 
     @Override
-    public void registerValue(String name, Object value) {
-
-    }
-
-    @Override
     public void processConfigFile(Path file, String contents) {
         GameMapData data = fileParser.fromJson(contents, GameMapData.class);
         GameMap map = new GameMap(data.mapName);

@@ -23,8 +23,7 @@ public class GunImporter extends Importer {
     private Gson fileParser;
     private Hashtable<String, Class<? extends Gun>> behaviours = new Hashtable<>();
 
-    @Override
-    public void registerValue(String name, Object value) {
+    public void registerBehavior(String name, Object value) {
         Class<? extends Gun> typeCheck = (Class<? extends Gun>)value;
         if (typeCheck != null) {
             if (behaviours.containsKey(name)) {
@@ -45,7 +44,7 @@ public class GunImporter extends Importer {
 
     // add gun behaviour here
     private void registerBehaviours() {
-        registerValue("LinearGun", LinearGun.class);
+        registerBehavior("LinearGun", LinearGun.class);
     }
 
     @Override
