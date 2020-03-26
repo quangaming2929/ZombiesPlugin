@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.equipments;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.IEquipmentValue;
 import io.github.zap.zombiesplugin.data.SoundFx;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.logging.Level;
 
 public abstract class UpgradeableEquipment extends Equipment {
     protected String exceedUltMessage = "This equipment is already maxed out";
@@ -63,6 +65,20 @@ public abstract class UpgradeableEquipment extends Equipment {
 
     public Hashtable<String, IEquipmentValue> getCurrentStat() {
         return equipmentData.levels.getLevel(getLevel());
+    }
+
+    public float tryGetValue (String value) {
+        if (getCurrentStat().containsKey(value)) {
+            return getCurrentStat().get(value).provideValue();
+        } else {
+            // Log this error to the console and the player
+            String msg = ChatColor.RED + "The requested value: " + value + " is not existed! If you are a server operator," +
+                    "please make sure that the config file is configured correctly. Value defaulted to 0";
+            getPlayer().sendMessage(msg);
+            ZombiesPlugin.instance.getLogger().log(Level.SEVERE, msg + " Sender: " + getPlayer().getDisplayName());
+
+            return 0;
+        }
     }
 
     @Override

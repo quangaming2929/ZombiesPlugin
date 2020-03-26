@@ -1,5 +1,7 @@
 package io.github.zap.zombiesplugin.data;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Hashtable;
@@ -59,5 +61,17 @@ public class EquipmentData {
      */
     public String getId() {
         return id;
+    }
+
+    public Material getDisplayItem() {
+        return defaultVisual.getDisplayItem();
+    }
+
+    public ChatColor getDisplayColor() {
+        return defaultVisual.getDisplayColor();
+    }
+
+    public String[] getInstruction() {
+        return defaultVisual.getInstruction();
     }
 }
