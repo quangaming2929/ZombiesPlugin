@@ -5,8 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public interface IDefaultVisual {
-    ItemStack getDefaultVisual(int level, ILeveling levels);
-    String getDisplayName();
+    ItemStack getDefaultVisual(String displayName, int level, ILeveling levels);
     Material getDisplayItem();
     ChatColor getDisplayColor();
     String[] getInstruction();

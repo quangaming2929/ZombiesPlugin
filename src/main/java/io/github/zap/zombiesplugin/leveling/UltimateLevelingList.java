@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Represent gun levels in a list form
  */
-public class UltimateLevelingList implements IUltimateLeveling{
+public class UltimateLevelingList implements IUltimateLeveling {
 
     public List<BulletStats> levels;
 

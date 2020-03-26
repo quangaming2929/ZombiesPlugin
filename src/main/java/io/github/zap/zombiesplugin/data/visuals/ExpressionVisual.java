@@ -27,23 +27,22 @@ import java.util.Hashtable;
  * syntax is "Some string {$expr} blah blah"
  */
 public class ExpressionVisual implements IDefaultVisual {
-    public String displayName;
     public Material displayItem;
     public ChatColor displayColor;
     public String[] instruction;
 
     public String[] description;
 
-    public String exprStart = "{$";
+    public String exprStart = "${";
     public String exprEnd = "}";
 
     @Override
-    public ItemStack getDefaultVisual(int level, ILeveling levels) {
+    public ItemStack getDefaultVisual(String name, int level, ILeveling levels) {
         Hashtable<String, IEquipmentValue> currentValue = levels.getLevel(level);
         ItemStack item = new ItemStack(getDisplayItem(), 1);
         ItemMeta meta = item.getItemMeta();
 
-        String displayName = getDisplayItem() + getDisplayName();
+        String displayName = getDisplayItem() + name;
         if (level > 0) {
             displayName = ChatColor.BOLD + displayName + RomanNumber.toRoman(level);
         }
@@ -80,11 +79,6 @@ public class ExpressionVisual implements IDefaultVisual {
         meta.setLore(builder.build());
         item.setItemMeta(meta);
         return item;
-    }
-
-    @Override
-    public String getDisplayName() {
-        return displayName;
     }
 
     @Override

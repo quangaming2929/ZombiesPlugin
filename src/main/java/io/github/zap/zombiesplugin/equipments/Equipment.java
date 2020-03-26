@@ -5,7 +5,7 @@ import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class Equipment extends HotbarObject {
+public abstract class Equipment extends HotbarObject {
     protected EquipmentData equipmentData;
 
     public Equipment(EquipmentData equipmentData) {

@@ -29,7 +29,6 @@ import java.util.Map;
  * description, a stats list and an instruction
  */
 public class DefaultWeaponVisual implements IDefaultVisual {
-    public String displayName;
     public Material displayItem;
     public ChatColor displayColor;
     public String[] instruction;
@@ -38,7 +37,7 @@ public class DefaultWeaponVisual implements IDefaultVisual {
 
 
     @Override
-    public ItemStack getDefaultVisual(int level, ILeveling levels) {
+    public ItemStack getDefaultVisual(String name, int level, ILeveling levels) {
         Hashtable<String, IEquipmentValue> currentLevel = levels.getLevel(level);
         ItemStack item = new ItemStack(getDisplayItem(), 1);
         ItemMeta meta = item.getItemMeta();
@@ -50,7 +49,7 @@ public class DefaultWeaponVisual implements IDefaultVisual {
             Hashtable<String, IEquipmentValue> previousLevel = levels.getLevel(level - 1);
 
             // Visual for ultimate
-            String displayName = "" + ChatColor.BOLD + getDisplayColor() + getDisplayName() + "Ultimate ";
+            String displayName = "" + ChatColor.BOLD + getDisplayColor() + name + "Ultimate ";
             if (levels.size() > 1) {
                 // Has multiple ultimate level?
                 displayName += RomanNumber.toRoman(level);
@@ -62,7 +61,7 @@ public class DefaultWeaponVisual implements IDefaultVisual {
             AddWeaponStats(builder, currentLevel, previousLevel);
         } else {
             // Visual for normal
-            meta.setDisplayName("" + getDisplayColor() + getDisplayName());
+            meta.setDisplayName("" + getDisplayColor() + name);
 
             // We use an empty hash table so that the method will never show previous value
             AddWeaponStats(builder, currentLevel, new Hashtable<>());
@@ -101,11 +100,6 @@ public class DefaultWeaponVisual implements IDefaultVisual {
                 builder.addStats(statName, currentVal);
             }
         }
-    }
-
-    @Override
-    public String getDisplayName() {
-        return displayName;
     }
 
     @Override

@@ -12,8 +12,8 @@ import java.util.List;
 
 public class SingleNoteSoundFx extends SoundFx {
     public Sound sound;
-    public float pitch;
-    public float volume;
+    public float pitch = 1;
+    public float volume = 1;
 
     @Override
     public void play(List<Player> players, float masterVolume, SoundCategory category, Vector offset) {

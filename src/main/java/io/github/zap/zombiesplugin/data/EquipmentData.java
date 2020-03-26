@@ -7,6 +7,7 @@ import java.util.Hashtable;
 public class EquipmentData {
     public IDefaultVisual defaultVisual;
     public String id;
+    public String name;
     public ILeveling levels;
     public Hashtable<String, String> customData;
     public String behaviour;
@@ -22,7 +23,7 @@ public class EquipmentData {
      * Get default visual state for ultimate-able equipment
      */
     public ItemStack getDefaultVisual(int level) {
-        return defaultVisual.getDefaultVisual(level, levels);
+        return defaultVisual.getDefaultVisual(name, level, levels);
     }
 
 
