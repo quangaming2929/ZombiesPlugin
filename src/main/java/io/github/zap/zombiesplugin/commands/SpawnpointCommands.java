@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.commands;
 
-import io.github.zap.zombiesplugin.mob.MobBasicZombie;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,8 +14,8 @@ public class SpawnpointCommands implements CommandExecutor {
         if(commandSender instanceof Player) {
             Player player = (Player)commandSender;
             if(command.getName().equals("testentity")) {
-                MobBasicZombie superZombie = new MobBasicZombie(player.getLocation());
-                ((CraftWorld)player.getWorld()).getHandle().addEntity(superZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                //MobBasicZombie superZombie = new MobBasicZombie(player.getLocation());
+                //((CraftWorld)player.getWorld()).getHandle().addEntity(superZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
             }
         }
         return false;

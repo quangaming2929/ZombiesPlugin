@@ -1,9 +1,9 @@
 package io.github.zap.zombiesplugin.manager;
 
-import io.github.zap.zombiesplugin.map.Map;
+import io.github.zap.zombiesplugin.map.GameMap;
 
 public class GameSettings {
     public GameDifficulty difficulty;
-    public Map gameMap;
+    public GameMap gameMap;
     public int gameSize;
 }

@@ -6,7 +6,7 @@ import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.utils.PacketUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import org.bukkit.Location;
+
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -75,7 +75,7 @@ public class WeaponsChest implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				gunSwapper.endSwapping();;
+				gunSwapper.endSwapping();
 			}
 		}.runTaskLater(ZombiesPlugin.instance, accumulatedDelay);
 	}

@@ -1,63 +1,37 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.mob.CustomMob;
+import io.github.zap.zombiesplugin.map.Room;
+import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
+import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitWorld;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
 
 public class SpawnPoint {
+	private final Location spawn;
+	private final Location target;
+	private final Room room;
 
-	/**
-	 * Whether or not the spawn point can be used
-	 */
-	private boolean available = false;
-
-	/**
-	 * The location of the actual spawn point
-	 */
-	private final Location coordinates;
-
-	private final GameManager manager;
-
-	/** Initializes the spawnpoint with the coordinates of the spawnpoint
-	 *
-	 * @param coordinates The spawnpoint coordinates
-	 */
-	public SpawnPoint(GameManager manager, Location coordinates)
+	public SpawnPoint(Room room, Location spawnCoordinates, Location target)
 	{
-		this.manager = manager;
-		this.coordinates = coordinates;
+		this.room = room;
+		this.spawn = spawnCoordinates;
+		this.target = target;
 	}
 
-	/** Spawns mobs in the spawnpoint
-	 *
-	 * @param mob The mobs to spawn
-	 */
-	public void spawn(CustomMob mob) {
-		// TODO: Actually spawning the mob
+	public void spawn(GameManager game, MythicMob mob) {
+		mob.spawn(new AbstractLocation(new BukkitWorld(spawn.getWorld()), spawn.getX(), spawn.getY(), spawn.getZ()), 0);
 	}
 
-	/** Tests whether or not the spawn point can be used
-	 *
-	 * @return The availability of the spawn point
-	 */
-
-	//always true for debugging purposes
-	public boolean isAvailable() {
-		return true;
+	public boolean canSpawn() {
+		return room.isOpen();
 	}
 
-	/**
-	 * Makes the spawn point usable
-	 */
-	public void makeAvailable() {
-		available = true;
+	public Location getSpawn() {
+		return spawn;
 	}
 
-	/** Gets the coordinates of the spawnpoint
-	 *
-	 * @return The coordinates
-	 */
-	public Location getCoordinates() {
-		return coordinates;
-	}
+	public Location getTarget() { return target; }
+
+	public Room getRoom() { return room; }
 }

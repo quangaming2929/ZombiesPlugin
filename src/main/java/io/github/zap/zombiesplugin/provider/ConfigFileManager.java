@@ -60,7 +60,7 @@ public class ConfigFileManager {
      * This method is used by Gson Type Adapter to resolve custom types
      * @param cc The custom class
      */
-    public String getCustomClassFriendlyName (Class<? extends  ICustomSerializerIdentity> cc) {
+    public String getCustomClassFriendlyName (Class<? extends ICustomSerializerIdentity> cc) {
         for (Map.Entry<String, Class<? extends ICustomSerializerIdentity>> item : customClasses.entrySet()) {
             if (cc == item.getValue()) {
                 return item.getKey();

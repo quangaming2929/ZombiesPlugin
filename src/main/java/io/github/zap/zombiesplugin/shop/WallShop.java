@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.shop;
 
-import io.github.zap.zombiesplugin.hologram.Hologram;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.ChatColor;

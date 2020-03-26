@@ -1,76 +1,54 @@
 package io.github.zap.zombiesplugin.manager;
 
-import io.github.zap.zombiesplugin.map.Map;
+import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.round.Round;
 
 import java.util.ArrayList;
-import java.util.List;
+
 import org.bukkit.entity.Player;
 
 public class GameManager {
-    public final String id;
+    public final String name;
 
     private GameSettings settings;
     private PlayerManager playerManager;
-
-    /**
-     * The map of the game
-     */
-    private Map map;
-
-    /**
-     * The last round the game was on
-     */
+    private GameMap map;
     private int lastRound = 0;
 
-    /**
-     * A GameManager instance is created for every game.
-     * @param settings The settings to start the game with.
-     */
-    public GameManager(GameSettings settings, Map map, String id) {
+    public GameManager(GameSettings settings, GameMap map, String name) {
         this.settings = settings;
         this.map = map;
-        this.id = id;
+        this.name = name;
         playerManager = new PlayerManager(this);
     }
 
-    public GameManager(String id) {
-        this.id = id;
+    //TODO: remove this eventually as it is used for testing purposes
+    public GameManager(String name) {
+        this.name = name;
     }
 
-    public void build(GameSettings settings, Map map) {
+    public void build(GameSettings settings, GameMap map) {
         this.settings = settings;
         this.map = map;
         playerManager = new PlayerManager(this);
     }
 
-    /**
-     * Starts the next round
-     */
     public void startNextRound() {
         ArrayList<Round> rounds = map.getRounds();
 
         if (lastRound == rounds.size()) {
             // TODO: Endgame sequence
         } else {
-            rounds.get(lastRound).startRound();
+            rounds.get(lastRound).startRound(this);
             lastRound++;
         }
     }
 
-    /** Gets the player manager
-     *
-     * @return The player manager
-     */
     public PlayerManager getPlayerManager() {
         return playerManager;
     }
 
-    /** Gets the game map
-     *
-     * @return The map
-     */
-    public Map getMap() {
+    public GameMap getMap() {
         return map;
     }
 

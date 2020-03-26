@@ -21,6 +21,7 @@ public class GunDebugCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        /*
         if(command.getName().equals("gunDebug") && commandSender instanceof Player) {
             Player playerSender = (Player)commandSender;
 
@@ -55,6 +56,7 @@ public class GunDebugCommands implements CommandExecutor {
                 }
             }
         }
+        */
 
         return false;
     }
