@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.shop;
 
-import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunPlaceHolder;
 import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.manager.GameManager;

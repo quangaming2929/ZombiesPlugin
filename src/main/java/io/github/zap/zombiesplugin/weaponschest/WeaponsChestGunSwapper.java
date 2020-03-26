@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.weaponschest;
 
-import io.github.zap.zombiesplugin.guns.Gun;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

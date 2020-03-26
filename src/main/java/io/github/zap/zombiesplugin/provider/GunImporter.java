@@ -2,7 +2,6 @@ package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.*;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.LinearGun;
 import io.github.zap.zombiesplugin.guns.data.BulletStats;
 import io.github.zap.zombiesplugin.guns.data.CustomValue;

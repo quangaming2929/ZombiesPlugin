@@ -1,18 +1,14 @@
 package io.github.zap.zombiesplugin.commands;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunObjectGroup;
-import io.github.zap.zombiesplugin.hotbar.ObjectGroup;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.GunImporter;
-import io.github.zap.zombiesplugin.provider.Importer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class GunDebugCommands implements CommandExecutor {
