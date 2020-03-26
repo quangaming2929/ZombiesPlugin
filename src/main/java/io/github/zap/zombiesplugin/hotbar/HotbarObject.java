@@ -14,6 +14,8 @@ public abstract class HotbarObject {
     private boolean isRemoved;
     private boolean isSelected;
 
+
+
     /**
      * Get the associated player
      */
@@ -47,15 +49,6 @@ public abstract class HotbarObject {
      */
     public boolean isSelected() {
         return isSelected;
-    }
-
-    //TODO: We might switch the actual main hand here
-    /**
-     * Set the selection state of this object
-     * @param selected
-     */
-    public void setSelectionState(boolean selected) {
-        isSelected = selected;
     }
 
     /**
@@ -117,6 +110,7 @@ public abstract class HotbarObject {
      */
     public void setVisibility(boolean isVisible){
         this.isVisible = isVisible;
+
     }
 
     public boolean isVisible() {
@@ -128,10 +122,13 @@ public abstract class HotbarObject {
      * @param  slot the object reserved slot
      * @param  player the player owns this hotbar
      */
-    public void init(int slot, Player player) {
+    public void init(int slot, Player player, boolean isSelected, boolean isVisible) {
         this.player = player;
         this.slotID = slot;
-        this.setVisibility(true);
+        this.setVisibility(isVisible);
+        if(isSelected) {
+            onSlotSelected();
+        }
     }
 
     /**

@@ -17,7 +17,7 @@ public class EquipmentObjectGroup extends ObjectGroup {
             }
 
             if (obj.object != null) {
-                object.init(obj.slotId, player);
+                object.init(obj.slotId, player, player.getInventory().getHeldItemSlot() == slotId, true);
                 obj.object = object;
             } else {
                 throw new IllegalArgumentException("This slot isn't unlock yet");

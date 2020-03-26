@@ -53,7 +53,7 @@ public class HotbarManager {
                 removeObject(obj);
             }
 
-            object.init(slot, player);
+            object.init(slot, player, player.getInventory().getHeldItemSlot() == slot, true);
             currentProfile.objects.add(object);
         } else {
             throw new IllegalArgumentException("This slot is overlap with a group");
