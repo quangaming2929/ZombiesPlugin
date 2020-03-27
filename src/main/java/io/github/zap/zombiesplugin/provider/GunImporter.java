@@ -2,8 +2,17 @@ package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.*;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.data.GunData;
+import io.github.zap.zombiesplugin.data.IEquipmentValue;
+import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
+import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
+import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
+import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
+import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.LinearGun;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -61,8 +70,8 @@ public class GunImporter extends Importer {
     public Gun createGun(String id) throws Exception {
         if (gunVault.containsKey(id)) {
             GunData currentData = gunVault.get(id);
-            if(behaviours.containsKey(currentData.gunBehaviour)) {
-                Class<? extends Gun> bClazz = behaviours.get(currentData.gunBehaviour);
+            if(behaviours.containsKey(currentData.behaviour)) {
+                Class<? extends Gun> bClazz = behaviours.get(currentData.behaviour);
                 Gun gun = bClazz.getConstructor(GunData.class).newInstance(currentData);
                 return gun;
             } else {
@@ -81,32 +90,47 @@ public class GunImporter extends Importer {
 
     private void generateDevelopmentGun() {
         GunData data = new GunData();
-        data.description = new String[] { "TestGun" , "Test object will be remove later" };
-        data.displayItem = Material.IRON_HOE;
-        data.name = "Development gun";
+        data.name = "Development Gun";
         data.id = "gun_dev";
-        data.gunBehaviour = "LinearGun";
+        data.behaviour = "LinearGun";
+        // Custom data
+        data.customData = new Hashtable<>();
+        data.customData.put("particle", Particle.CRIT.toString());
 
-        // stats
-        ArrayList<BulletStats> stats = new ArrayList<BulletStats>();
-        for (int i = 0; i < 4; i++) {
-            BulletStats s = new BulletStats();
-            s.baseAmmoSize = (int)(20 + 20 * (float)i / 2);
-            s.baseClipAmmoSize = (int)(10 + 20 * (float) i / 2);
-            s.baseDamage = 10 + 20 * (float)i / 2;
-            s.baseRange = 100 + 20 * (float)i / 2;
-            s.baseFireRate = 0.25;
-            s.baseReloadRate = 1;
-            s.baseRewardGold = 10;
-            s.setCustomValue("maxHitEntities", new CustomValue("2"));
-            s.setCustomValue("particle", new CustomValue("CRIT"));
-            stats.add(s);
+        DefaultWeaponVisual dv = new DefaultWeaponVisual();
+        dv.displayItem = Material.IRON_HOE;
+        dv.description = new String[] {
+                "This gun is used for development. Please",
+                "remove this before production lifecycle"
+        };
+        data.defaultVisual = dv;
+
+        ListLeveling levels = new ListLeveling();
+        levels.levels = new ArrayList<>();
+        for (int i = 1; i < 4; i++) {
+            Hashtable<String, IEquipmentValue> val = new Hashtable<>();
+            val.put("damage", new LoreEquipmentValue(10 * i / 2, "HP"));
+            val.put("ammo", new LoreEquipmentValue(30 * i, ""));
+            val.put("clipAmmo", new LoreEquipmentValue(10 * i, ""));
+            val.put("fireRate", new LoreEquipmentValue(1 / i, "s", 1));
+            val.put("reloadRate", new LoreEquipmentValue(5 / i, "s", 1));
+            val.put("rewardGold", new LoreEquipmentValue(10, ""));
+            val.put("range", new EquipmentValue(100));
+            val.put("maxHitEntities", new LoreEquipmentValue(1 + i, ""));
+
+            levels.levels.add(val);
         }
+        data.levels = levels;
 
-        UltimateLevelingList ultVal = new UltimateLevelingList();
-        ultVal.levels = stats;
-        data.stats = ultVal;
+        finalize(data);
+        gunVault.put(data.id, data);
+    }
 
-        gunVault.put("gun_dev", data);
+    private void finalize (GunData data) {
+        data.defaultVisual.setDisplayColor(ChatColor.GOLD);
+        data.defaultVisual.setInstruction(new String[] {
+                ChatColor.YELLOW.toString() + "LEFT-CLICK " + ChatColor.GRAY + "to reload.",
+                ChatColor.YELLOW.toString() + "RIGHT-CLICK" + ChatColor.GRAY + "to shoot."
+        });
     }
 }

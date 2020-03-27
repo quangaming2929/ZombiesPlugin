@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.commands;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunObjectGroup;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.GunImporter;
@@ -31,7 +32,7 @@ public class GunDebugCommands implements CommandExecutor {
                     if (strings[0].equals("ult")) {
                         Gun targetedGun = (Gun) user.getHotbar().getSelectedObject();
                         if(targetedGun != null) {
-                            targetedGun.ultimate();
+                            targetedGun.upgrade();
                         } else {
                             playerSender.sendMessage(ChatColor.RED + "Error: please hold your gun to ultimate");
                         }

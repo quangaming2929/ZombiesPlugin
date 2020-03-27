@@ -12,4 +12,11 @@ public class EquipmentValue implements IEquipmentValue {
     public float provideValue() {
         return value;
     }
+
+    public EquipmentValue(float value) {
+        this.value = value;
+    }
+
+    public EquipmentValue() {
+    }
 }

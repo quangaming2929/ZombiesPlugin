@@ -9,4 +9,8 @@ public interface IDefaultVisual {
     Material getDisplayItem();
     ChatColor getDisplayColor();
     String[] getInstruction();
+
+    void setDisplayItem(Material item);
+    void setDisplayColor(ChatColor color);
+    void setInstruction(String[] instruction);
 }

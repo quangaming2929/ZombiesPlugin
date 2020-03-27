@@ -2,7 +2,6 @@ package io.github.zap.zombiesplugin.guns;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
-import io.github.zap.zombiesplugin.utils.Factory;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -10,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
-import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
 

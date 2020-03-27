@@ -224,7 +224,7 @@ public class HotbarManager {
      */
     public void addGroup(String name, ObjectGroup group, Integer... preservedSlots) {
         for (ObjectGroup gr : currentProfile.groups.values()) {
-            if (gr.isOverlap(group.getPreservedSlots())) {
+            if (gr.isOverlap(preservedSlots)) {
                 throw new UnsupportedOperationException("This group overlap with other ObjectGroup(s) in the current profile");
             }
         }

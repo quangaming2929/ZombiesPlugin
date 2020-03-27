@@ -34,7 +34,7 @@ public class EquipmentPlaceHolder extends HotbarObject {
                 "" + ChatColor.GRAY + "Buy perks at " + ChatColor.DARK_BLUE + "Perk Machines" + ChatColor.GRAY + ".",
                 "" + ChatColor.GRAY + "Perk Machines require the ",
                 "" + ChatColor.GOLD + "Power" + ChatColor.GRAY + "to be on. Find and",
-                "" + ChatColor.GRAY + "activate the " + ChatColor.GOLD + "Power Switch" + ChatColor.GRAY + "in",
+                "" + ChatColor.GRAY + "activate the " + ChatColor.GOLD + "Power Switch " + ChatColor.GRAY + "in",
                 "" + ChatColor.GRAY + "the " + ChatColor.GREEN + "Power Station " + ChatColor.GRAY + "in order",
                 "" + ChatColor.GRAY + "to buy perks!"
 
@@ -75,6 +75,7 @@ public class EquipmentPlaceHolder extends HotbarObject {
         super.init(slot, player, isSelected, isVisible);
         ItemStack item = new ItemStack(displayItem, 1);
         ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(displayName);
         meta.setLore(Arrays.asList(getLore()));
         item.setItemMeta(meta);
         setSlot(item);

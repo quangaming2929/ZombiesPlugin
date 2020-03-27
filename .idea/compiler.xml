@@ -13,4 +13,10 @@
       <module name="ZombiesPlugin" target="1.8" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-XDignore.symbol.file=true" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ZombiesPlugin" options="-XDignore.symbol.file" />
+    </option>
+  </component>
 </project>

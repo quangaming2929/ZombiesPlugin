@@ -95,4 +95,19 @@ public class ExpressionVisual implements IDefaultVisual {
     public String[] getInstruction() {
         return instruction;
     }
+
+    @Override
+    public void setDisplayItem(Material item) {
+        displayItem = item;
+    }
+
+    @Override
+    public void setDisplayColor(ChatColor color) {
+        displayColor = color;
+    }
+
+    @Override
+    public void setInstruction(String[] instruction) {
+        this.instruction = instruction;
+    }
 }
