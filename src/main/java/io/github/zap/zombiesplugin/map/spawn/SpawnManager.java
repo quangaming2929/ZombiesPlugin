@@ -42,6 +42,7 @@ public abstract class SpawnManager {
 					if(!spawned || mobs.size() == 0) return;
 				}
 				else spawnPoints.remove();
+				if(mobs.size() == 0) return;
 			}
 		}
 	}

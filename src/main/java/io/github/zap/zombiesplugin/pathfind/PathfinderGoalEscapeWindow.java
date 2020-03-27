@@ -24,8 +24,9 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     public PathfinderGoalEscapeWindow(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
 
-        SpawnPoint associatedPoint = ZombiesPlugin.globalMobManager.getSpawnPoint(activeMob);
+        SpawnPoint associatedPoint = ZombiesPlugin.instance.globalMobManager.getSpawnPoint(entity);
         if(associatedPoint != null) {
+            System.out.println("associatedPoint is not null. Zombie will have behavior.");
             Location location = associatedPoint.getTarget();
             target = new AbstractLocation(new BukkitWorld(location.getWorld()), location.getBlockX(), location.getBlockY(), location.getBlockZ());
             hasWindow = true;
@@ -45,6 +46,8 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     public void tick() {
         ai().navigateToLocation(this.entity, target, 1F);
         reachedGoal = entity.getLocation().getBlockX() == target.getBlockX() && entity.getLocation().getBlockY() == target.getBlockY() && entity.getLocation().getBlockZ() == target.getBlockZ();
+
+        //TODO: break nearby windows
     }
 
     @Override

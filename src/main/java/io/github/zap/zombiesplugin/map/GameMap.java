@@ -23,7 +23,7 @@ public class GameMap {
 		this.shops = new ArrayList<>();
 		this.doors = new ArrayList<>();
 
-		//TODO: load from config file instead
+		//TODO: load from config file
 	}
 
 	public ArrayList<Round> getRounds() {

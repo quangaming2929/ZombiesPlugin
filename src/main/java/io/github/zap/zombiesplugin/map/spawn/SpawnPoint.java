@@ -24,12 +24,15 @@ public class SpawnPoint {
 	}
 
 	public void spawn(MythicMob mob) {
-		ZombiesPlugin.globalMobManager.spawn(this, mob);
+		ZombiesPlugin.instance.globalMobManager.spawn(this, mob);
 	}
 
 	public GameManager getManager() { return manager; }
+
 	public boolean canSpawn() {
-		return room.isOpen();
+		//return room.isOpen();
+		//TODO: rooms
+		return true;
 	}
 
 	public Location getSpawn() {

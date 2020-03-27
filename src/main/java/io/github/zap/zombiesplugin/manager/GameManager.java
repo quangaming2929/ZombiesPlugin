@@ -15,23 +15,12 @@ public class GameManager {
     private GameMap map;
     private int lastRound = 0;
 
-    public GameManager(GameSettings settings, GameMap map, String name) {
+    public GameManager(String name, GameSettings settings, GameMap map) {
         this.name = name;
 
         this.settings = settings;
         playerManager = new PlayerManager(this);
         this.map = map;
-    }
-
-    //TODO: remove this eventually as it is used for testing purposes
-    public GameManager(String name) {
-        this.name = name;
-    }
-
-    public void build(GameSettings settings, GameMap map) {
-        this.settings = settings;
-        this.map = map;
-        playerManager = new PlayerManager(this);
     }
 
     public void startNextRound() {

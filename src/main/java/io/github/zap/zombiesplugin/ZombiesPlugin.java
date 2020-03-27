@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.manager.GameSettings;
 import io.github.zap.zombiesplugin.manager.GlobalMobManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.GameMapImporter;
@@ -31,7 +32,7 @@ import java.util.Hashtable;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
     public static ZombiesPlugin instance;
-    public static GlobalMobManager globalMobManager;
+    public GlobalMobManager globalMobManager;
 
     private ConfigFileManager config;
     private ProtocolManager protocolManager;
@@ -42,6 +43,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         instance = this;
+        globalMobManager = new GlobalMobManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         gameManagers = new Hashtable<>();
         maps = new Hashtable<>();
@@ -50,7 +52,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         registerCommands();
 
         //test game for testing purposes that can be used for testing
-        gameManagers.put("test_game", new GameManager("test_game"));
+        gameManagers.put("test_game", new GameManager( "test_game", new GameSettings(), new GameMap("test_map")));
 
         try {
             HashSet<Class<?>> payloads = new HashSet<>();
