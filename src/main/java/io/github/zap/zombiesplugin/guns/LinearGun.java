@@ -1,8 +1,6 @@
 package io.github.zap.zombiesplugin.guns;
 
-import io.github.zap.zombiesplugin.guns.data.GunData;
-import io.github.zap.zombiesplugin.guns.data.IModifiedValueResolver;
-import io.github.zap.zombiesplugin.guns.data.ModifiableBulletStats;
+import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
 import io.github.zap.zombiesplugin.utils.Factory;
 import org.bukkit.Material;
@@ -16,9 +14,13 @@ import javax.swing.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LinearGun extends Gun implements IModifiedValueResolver {
-    public LinearGun(GunData data) {
-        super(data);
+public class LinearGun extends Gun {
+    public final String GUN_RANGE = "gunRange";
+    public final String GUN_MAX_HIT_ENTITIES = "maxHitEntities";
+    public final String GUN_PARTICLE = "particle";
+
+    public LinearGun(EquipmentData equipmentData) {
+        super(equipmentData);
     }
 
     @Override
@@ -37,12 +39,6 @@ public class LinearGun extends Gun implements IModifiedValueResolver {
         updateVisualAfterShoot();
     }
 
-    @Override
-    protected ModifiableBulletStats attachStats(GunData gunStats) {
-        return Factory.GetModifableBulletStats(this, gunStats);
-    }
-
-
 
     private void sendShot(World world, Vector particleLocation, Vector particleDirection, Vector targetBlockVector) {
         LinearBeam beam = new LinearBeam(world, getParticle(), particleLocation, particleDirection, targetBlockVector, getMaxHitEntities());
@@ -56,29 +52,18 @@ public class LinearGun extends Gun implements IModifiedValueResolver {
         materials.add(Material.CAVE_AIR);
 
         // TODO: Add slab blocks
-        int range = (int) Math.ceil(getStats().getRange());
+        int range = (int) Math.ceil(tryGetValue(GUN_RANGE));
         BoundingBox targetedBlockBoundingBox = player.getTargetBlock(materials, range).getBoundingBox();
 
         return targetedBlockBoundingBox.rayTrace(eyeLocation, eyeDirection, range + 1.74).getHitPosition();
     }
 
 
-    @Override
-    public String addModifier(String name, String baseValue, float modifier) {
-        if(name.equals("maxHitEntities")) {
-            return String.valueOf(Float.parseFloat(baseValue) * modifier);
-        } else {
-            // These value can't be modified return their base value
-            return baseValue;
-        }
-    }
-
-
     public int getMaxHitEntities() {
-        return (int)Float.parseFloat(getStats().getCustomValue("maxHitEntities"));
+        return (int)tryGetValue(GUN_MAX_HIT_ENTITIES);
     }
 
     public Particle getParticle() {
-        return Particle.valueOf(getStats().getCustomValue("particle"));
+        return Particle.valueOf(tryGetCustomValue(GUN_PARTICLE));
     }
 }

@@ -3,10 +3,6 @@ package io.github.zap.zombiesplugin.provider;
 import com.google.gson.*;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.LinearGun;
-import io.github.zap.zombiesplugin.guns.data.BulletStats;
-import io.github.zap.zombiesplugin.guns.data.CustomValue;
-import io.github.zap.zombiesplugin.guns.data.GunData;
-import io.github.zap.zombiesplugin.leveling.UltimateLevelingList;
 import org.bukkit.Material;
 
 import java.nio.file.Path;

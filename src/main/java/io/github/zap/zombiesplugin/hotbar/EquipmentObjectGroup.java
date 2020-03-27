@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.hotbar;
 
-import io.github.zap.zombiesplugin.guns.GunPlaceHolder;
+import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
 import org.bukkit.entity.Player;
 
 /**
@@ -59,7 +59,7 @@ public class EquipmentObjectGroup extends ObjectGroup {
     @Override
     protected HotbarGroupObject firstEmpty() {
         for (HotbarGroupObject go : objects) {
-            if (go.object instanceof GunPlaceHolder) {
+            if (go.object instanceof EquipmentPlaceHolder) {
                 return go;
             }
         }

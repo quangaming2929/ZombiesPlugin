@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.utils.event;
+package io.github.zap.zombiesplugin.events;
 
 import java.util.ArrayList;
 import java.util.List;

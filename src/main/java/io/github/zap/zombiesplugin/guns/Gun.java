@@ -13,10 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public abstract class Gun extends UpgradeableEquipment {
     // Define value names
-    private static final String GUN_AMMO = "ammo";
-    private static final String GUN_CLIP_AMMO = "clipAmmo";
-    private static final String GUN_FIRE_RATE = "fireRate";
-    private static final String GUN_RELOAD_RATE = "reloadRate";
+    public static final String GUN_AMMO = "ammo";
+    public static final String GUN_CLIP_AMMO = "clipAmmo";
+    public static final String GUN_FIRE_RATE = "fireRate";
+    public static final String GUN_RELOAD_RATE = "reloadRate";
 
     private int ammo;
     private int clipAmmo;

@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.utils.event;
+package io.github.zap.zombiesplugin.events;
 
 /**
  * Represent a event lambda invokes by event handler

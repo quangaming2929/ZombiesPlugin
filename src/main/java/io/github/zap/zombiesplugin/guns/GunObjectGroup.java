@@ -1,14 +1,22 @@
 package io.github.zap.zombiesplugin.guns;
 
-import io.github.zap.zombiesplugin.hotbar.EquipmentObjectGroup;
+import io.github.zap.zombiesplugin.events.GunEquippedEventArgs;
+import io.github.zap.zombiesplugin.events.GunUnEquippedEventArgs;
 import io.github.zap.zombiesplugin.hotbar.HotbarGroupObject;
-import io.github.zap.zombiesplugin.hotbar.HotbarObject;
+import io.github.zap.zombiesplugin.hotbar.UpgradeableEquipmentGroup;
+import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.events.EventHandler;
+
 
 import java.util.Hashtable;
 
-public class GunObjectGroup extends EquipmentObjectGroup {
+public class GunObjectGroup extends UpgradeableEquipmentGroup {
     private int slotCount = 2;
     protected Hashtable<String, Integer> oldUltimateValues = new Hashtable<>();
+
+    public GunObjectGroup(boolean ignoreLevel) {
+        super(ignoreLevel);
+    }
 
     public int getSlotCount() {
         return slotCount;
@@ -21,8 +29,8 @@ public class GunObjectGroup extends EquipmentObjectGroup {
                     o.object.onRemoved();
                 }
 
-                o.object = new GunPlaceHolder(o.itemGroupId + 1);
-                o.object.init(o.slotId, player);
+                o.object = EquipmentPlaceHolder.createGunPlaceHolder(o.itemGroupId + 1);
+                o.object.init(o.slotId, player, player.getInventory().getHeldItemSlot() == o.slotId, true);
             }
         }
 
@@ -32,26 +40,21 @@ public class GunObjectGroup extends EquipmentObjectGroup {
     @Override
     public void addPlaceHolder(HotbarGroupObject target) {
         if(target.itemGroupId < getSlotCount()) {
-            target.object = new GunPlaceHolder(target.itemGroupId + 1);
-            target.object.init(target.slotId, player);
+            target.object = EquipmentPlaceHolder.createGunPlaceHolder(target.itemGroupId + 1);
+            target.object.init(target.slotId, player, player.getInventory().getHeldItemSlot() == target.slotId, true);
         }
     }
 
-    @Override
-    public void addObject(HotbarObject object, int slotId) {
-        if ( (object instanceof Gun || object instanceof GunPlaceHolder)) {
-            super.addObject(object, slotId);
 
-            if (object instanceof Gun) {
-                Gun gun = (Gun) object;
-                if(oldUltimateValues.containsKey(gun.gunData.id)) {
-                    gun.setLevel(oldUltimateValues.get(gun.gunData.id));
-                } else {
-                    gun.setLevel(0);
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("This group only accept Gun and GunPlaceHolder");
-        }
+
+    public final EventHandler<GunEquippedEventArgs> gunEquipped = new EventHandler<>();
+    public final EventHandler<GunUnEquippedEventArgs> gunUnEquipped = new EventHandler<>();
+
+    protected void onGunEquipped (Gun gun) {
+        gunEquipped.invoke(this, new GunEquippedEventArgs(gun));
+    }
+
+    protected void onGunUnEquipped (Gun gun) {
+        gunUnEquipped.invoke(this, new GunUnEquippedEventArgs(gun));
     }
 }
