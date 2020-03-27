@@ -50,11 +50,11 @@ public class MathUtils {
         return Math.pow(first.getX() - second.getX(), 2) + Math.pow(first.getY() - second.getY(), 2) + Math.pow(first.getZ() - second.getZ(), 2);
     }
 
-    public static int tryParseInt(String value, int defaultVal) {
+    public static Tuple<Boolean,Integer> tryParseInt(String value, int defaultVal) {
         try {
-            return Integer.parseInt(value);
+            return new Tuple<>(true, Integer.parseInt(value));
         } catch (NumberFormatException e) {
-            return defaultVal;
+            return new Tuple<>(false, defaultVal);
         }
     }
 }

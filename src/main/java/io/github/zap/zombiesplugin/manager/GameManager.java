@@ -16,10 +16,11 @@ public class GameManager {
     private int lastRound = 0;
 
     public GameManager(GameSettings settings, GameMap map, String name) {
-        this.settings = settings;
-        this.map = map;
         this.name = name;
+
+        this.settings = settings;
         playerManager = new PlayerManager(this);
+        this.map = map;
     }
 
     //TODO: remove this eventually as it is used for testing purposes

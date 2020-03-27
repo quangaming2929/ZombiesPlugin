@@ -3,7 +3,8 @@ package io.github.zap.zombiesplugin.map.spawn;
 import com.google.gson.Gson;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.map.GameMap;
-import io.github.zap.zombiesplugin.map.data.IReflectionConverter;
+import io.github.zap.zombiesplugin.map.IConverterRegister;
+import io.github.zap.zombiesplugin.map.IReflectionConverter;
 import io.github.zap.zombiesplugin.map.data.SpawnManagerData;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.Importer;
@@ -15,10 +16,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class SpawnManagerImporter extends Importer {
+public class SpawnManagerImporter extends Importer implements IConverterRegister {
     private Gson fileParser;
     private SpawnManagerContainer container;
     private HashMap<String,SpawnManager> managers;
+
+    @Override
+    public boolean registerValue(String name, IReflectionConverter converter) {
+        if(!converters.containsKey(name)) {
+            converters.put(name, converter);
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public void init(ConfigFileManager manager) {

@@ -14,6 +14,6 @@ public class OrderedSpawnManager extends SpawnManager {
 
 	@Override
 	public void spawn(GameManager game, ArrayList<MythicMob> mobs) {
-		super.spawn(game, spawnPoints.iterator(), mobs);
+		super.spawn(spawnPoints.iterator(), mobs);
 	}
 }

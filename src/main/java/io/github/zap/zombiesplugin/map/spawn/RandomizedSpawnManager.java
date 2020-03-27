@@ -15,6 +15,6 @@ public class RandomizedSpawnManager extends SpawnManager {
 
     @Override
     public void spawn(GameManager game, ArrayList<MythicMob> mobs) {
-        super.spawn(game, new RandomIterator<>(spawnPoints), mobs);
+        super.spawn(new RandomIterator<>(spawnPoints), mobs);
     }
 }

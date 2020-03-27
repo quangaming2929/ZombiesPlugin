@@ -2,7 +2,7 @@ package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.GsonBuilder;
 import io.github.zap.zombiesplugin.guns.data.leveling.UltimateLevelingList;
-import io.github.zap.zombiesplugin.map.data.IReflectionConverter;
+import io.github.zap.zombiesplugin.map.IReflectionConverter;
 import io.github.zap.zombiesplugin.utils.IOHelper;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -74,18 +74,12 @@ public class ConfigFileManager {
     /**
      * Get the GsonBuilder for this provider, it contains the type adapter for resolve
      * registered custom type of this provider
-     * @return
+     * @return The gson builder
      */
     public GsonBuilder getGsonBuilder() {
         return new GsonBuilder()
                 .serializeNulls()
                 .registerTypeHierarchyAdapter( ICustomSerializerIdentity.class, new CustomClassGsonAdapter(this));
-    }
-
-    public void registerValue(String importerName, String valueName, IReflectionConverter converter) {
-        if (importers.containsKey(importerName)) {
-            importers.get(importerName).registerValue(valueName, converter);
-        }
     }
 
     public boolean addImporter (String name, Importer importer) {

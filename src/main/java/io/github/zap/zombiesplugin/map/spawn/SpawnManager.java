@@ -23,7 +23,7 @@ public abstract class SpawnManager {
 		this.map = map;
 	}
 
-	protected void spawn(GameManager game, Iterator<SpawnPoint> spawnPoints, ArrayList<MythicMob> mobs) {
+	protected void spawn(Iterator<SpawnPoint> spawnPoints, ArrayList<MythicMob> mobs) {
 		while(true) {
 			while(spawnPoints.hasNext()) {
 				SpawnPoint spawnPoint = spawnPoints.next();
@@ -33,7 +33,7 @@ public abstract class SpawnManager {
 					for(MythicMob mob : mobs) {
 						if(acceptedMobTypes.contains(mob)) {
 							mobs.remove(i);
-							spawnPoint.spawn(game, mob);
+							spawnPoint.spawn(mob);
 							spawned = true;
 							break;
 						}
