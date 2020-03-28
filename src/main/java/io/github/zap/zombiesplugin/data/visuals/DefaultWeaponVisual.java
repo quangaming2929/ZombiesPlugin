@@ -41,7 +41,7 @@ public class DefaultWeaponVisual implements IDefaultVisual {
             Hashtable<String, IEquipmentValue> previousLevel = levels.getLevel(level - 1);
 
             // Visual for ultimate
-            String displayName = "" + ChatColor.BOLD + getDisplayColor() + name + "Ultimate ";
+            String displayName = "" + getDisplayColor() + ChatColor.BOLD  + name + "Ultimate ";
             if (levels.size() > 1) {
                 // Has multiple ultimate level?
                 displayName += RomanNumber.toRoman(level);

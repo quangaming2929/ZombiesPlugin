@@ -2,7 +2,7 @@ package io.github.zap.zombiesplugin.weaponschest;
 
 import java.util.List;
 
-import io.github.zap.zombiesplugin.guns.Gun;
+import io.github.zap.zombiesplugin.equipments.guns.Gun;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;

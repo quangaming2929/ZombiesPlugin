@@ -1,8 +1,8 @@
-package io.github.zap.zombiesplugin.skills;
+package io.github.zap.zombiesplugin.equipments.skills;
 
 import io.github.zap.zombiesplugin.hotbar.HotbarGroupObject;
 import io.github.zap.zombiesplugin.hotbar.UpgradeableEquipmentGroup;
-import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.equipments.EquipmentPlaceHolder;
 
 public class SkillObjectGroup extends UpgradeableEquipmentGroup {
     public SkillObjectGroup(boolean ignoreLevel) {

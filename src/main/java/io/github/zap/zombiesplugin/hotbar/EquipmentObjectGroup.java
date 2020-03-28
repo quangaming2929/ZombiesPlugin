@@ -1,6 +1,6 @@
 package io.github.zap.zombiesplugin.hotbar;
 
-import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.equipments.EquipmentPlaceHolder;
 import org.bukkit.entity.Player;
 
 /**

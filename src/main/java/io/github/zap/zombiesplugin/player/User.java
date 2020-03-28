@@ -1,14 +1,11 @@
 package io.github.zap.zombiesplugin.player;
 
-import io.github.zap.zombiesplugin.guns.GunObjectGroup;
+import io.github.zap.zombiesplugin.equipments.guns.GunObjectGroup;
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
-import io.github.zap.zombiesplugin.hotbar.HotbarObject;
-import io.github.zap.zombiesplugin.meele.MeeleObjectGroup;
-import io.github.zap.zombiesplugin.perks.PerkObjectGroup;
-import io.github.zap.zombiesplugin.skills.SkillObjectGroup;
+import io.github.zap.zombiesplugin.equipments.meele.MeeleObjectGroup;
+import io.github.zap.zombiesplugin.equipments.perks.PerkObjectGroup;
+import io.github.zap.zombiesplugin.equipments.skills.SkillObjectGroup;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public class User {
     private Player player;

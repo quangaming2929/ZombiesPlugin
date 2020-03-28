@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import io.github.zap.zombiesplugin.guns.Gun;
+import io.github.zap.zombiesplugin.equipments.guns.Gun;
 import org.bukkit.Location;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;

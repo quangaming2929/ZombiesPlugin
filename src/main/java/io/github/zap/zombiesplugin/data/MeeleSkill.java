@@ -1,18 +1,18 @@
 package io.github.zap.zombiesplugin.data;
 
-import io.github.zap.zombiesplugin.meele.MeeleWeapon;
+import io.github.zap.zombiesplugin.equipments.meele.MeleeWeapon;
 
 public abstract class MeeleSkill {
-    protected final MeeleWeapon weapon;
+    protected final MeleeWeapon weapon;
 
-    protected MeeleSkill(MeeleWeapon weapon) {
+    protected MeeleSkill(MeleeWeapon weapon) {
         this.weapon = weapon;
     }
 
     public abstract boolean canPerform();
     public abstract void perform();
 
-    public MeeleWeapon getWeapon() {
+    public MeleeWeapon getWeapon() {
         return weapon;
     }
 }

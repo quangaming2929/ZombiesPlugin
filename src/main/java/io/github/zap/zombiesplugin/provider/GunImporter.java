@@ -7,7 +7,7 @@ import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
 import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
-import io.github.zap.zombiesplugin.guns.LinearGun;
+import io.github.zap.zombiesplugin.equipments.guns.LinearGun;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;

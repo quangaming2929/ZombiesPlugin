@@ -3,9 +3,7 @@ package io.github.zap.zombiesplugin.provider;
 import com.google.gson.Gson;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
-import io.github.zap.zombiesplugin.data.GunData;
 import io.github.zap.zombiesplugin.equipments.Equipment;
-import io.github.zap.zombiesplugin.guns.Gun;
 
 import java.nio.file.Path;
 import java.util.Hashtable;

@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.perks;
+package io.github.zap.zombiesplugin.equipments.perks;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;

@@ -1,8 +1,8 @@
-package io.github.zap.zombiesplugin.meele;
+package io.github.zap.zombiesplugin.equipments.meele;
 
 import io.github.zap.zombiesplugin.hotbar.HotbarGroupObject;
 import io.github.zap.zombiesplugin.hotbar.UpgradeableEquipmentGroup;
-import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.equipments.EquipmentPlaceHolder;
 
 public class MeeleObjectGroup extends UpgradeableEquipmentGroup {
     public MeeleObjectGroup(boolean ignoreLevel) {

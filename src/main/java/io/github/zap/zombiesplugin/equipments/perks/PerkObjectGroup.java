@@ -1,9 +1,8 @@
-package io.github.zap.zombiesplugin.perks;
+package io.github.zap.zombiesplugin.equipments.perks;
 
-import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.hotbar.HotbarGroupObject;
 import io.github.zap.zombiesplugin.hotbar.UpgradeableEquipmentGroup;
-import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.equipments.EquipmentPlaceHolder;
 
 public class PerkObjectGroup extends UpgradeableEquipmentGroup {
     public PerkObjectGroup(boolean ignoreLevel) {

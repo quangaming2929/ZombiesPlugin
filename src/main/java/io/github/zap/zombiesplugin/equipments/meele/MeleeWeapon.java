@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.meele;
+package io.github.zap.zombiesplugin.equipments.meele;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.MeeleSkill;
@@ -6,10 +6,10 @@ import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-public class MeeleWeapon extends UpgradeableEquipment {
+public class MeleeWeapon extends UpgradeableEquipment {
     protected MeeleSkill skill;
 
-    public MeeleWeapon(EquipmentData equipmentData) {
+    public MeleeWeapon(EquipmentData equipmentData) {
         super(equipmentData);
     }
 

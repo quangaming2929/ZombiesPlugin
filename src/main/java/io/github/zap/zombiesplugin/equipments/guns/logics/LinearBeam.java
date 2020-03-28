@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.guns.logics;
+package io.github.zap.zombiesplugin.equipments.guns.logics;
 
 import org.bukkit.Particle;
 import org.bukkit.World;

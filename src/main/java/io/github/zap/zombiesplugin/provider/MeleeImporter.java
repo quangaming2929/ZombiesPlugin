@@ -7,7 +7,7 @@ import io.github.zap.zombiesplugin.data.MeeleSkill;
 import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.equipments.Equipment;
-import io.github.zap.zombiesplugin.meele.MeeleWeapon;
+import io.github.zap.zombiesplugin.equipments.meele.MeleeWeapon;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
@@ -43,10 +43,10 @@ public class MeleeImporter extends EquipmentImporter {
     public Equipment createEquipment(String id) throws Exception {
         if (dataVault.containsKey(id)) {
             EquipmentData currentData = dataVault.get(id);
-            MeeleWeapon meele = new MeeleWeapon(currentData);
+            MeleeWeapon meele = new MeleeWeapon(currentData);
             if(currentData.behaviour != null && values.containsKey(currentData.behaviour)) {
                 Class skillClazz = values.get(currentData.behaviour);
-                MeeleSkill skill = (MeeleSkill) skillClazz.getConstructor(MeeleWeapon.class).newInstance(meele);
+                MeeleSkill skill = (MeeleSkill) skillClazz.getConstructor(MeleeWeapon.class).newInstance(meele);
                 meele.setSkill(skill);
             }
 

@@ -1,10 +1,10 @@
-package io.github.zap.zombiesplugin.guns;
+package io.github.zap.zombiesplugin.equipments.guns;
 
 import io.github.zap.zombiesplugin.events.GunEquippedEventArgs;
 import io.github.zap.zombiesplugin.events.GunUnEquippedEventArgs;
 import io.github.zap.zombiesplugin.hotbar.HotbarGroupObject;
 import io.github.zap.zombiesplugin.hotbar.UpgradeableEquipmentGroup;
-import io.github.zap.zombiesplugin.placeholder.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.equipments.EquipmentPlaceHolder;
 import io.github.zap.zombiesplugin.events.EventHandler;
 
 

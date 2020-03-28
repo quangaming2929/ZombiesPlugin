@@ -1,7 +1,7 @@
-package io.github.zap.zombiesplugin.guns;
+package io.github.zap.zombiesplugin.equipments.guns;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
-import io.github.zap.zombiesplugin.guns.logics.LinearBeam;
+import io.github.zap.zombiesplugin.equipments.guns.logics.LinearBeam;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -22,10 +22,7 @@ public class LinearGun extends Gun {
     }
 
     @Override
-    public void shoot(){
-        if(!canShoot())
-            return;
-
+    public boolean shoot(){
         Player player = getPlayer();
         World world = player.getWorld();
         Vector eyeLocation = player.getEyeLocation().toVector().clone();
@@ -34,7 +31,7 @@ public class LinearGun extends Gun {
 
         sendShot(world, eyeLocation, eyeDirection, targetBlockVector);
 
-        updateVisualAfterShoot();
+        return true;
     }
 
 

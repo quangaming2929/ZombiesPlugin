@@ -5,7 +5,7 @@ import io.github.zap.zombiesplugin.data.IEquipmentValue;
 import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.ExpressionVisual;
-import io.github.zap.zombiesplugin.perks.SpeedPerk;
+import io.github.zap.zombiesplugin.equipments.perks.SpeedPerk;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 

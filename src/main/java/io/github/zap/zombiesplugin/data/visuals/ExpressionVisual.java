@@ -42,11 +42,11 @@ public class ExpressionVisual implements IDefaultVisual {
         ItemStack item = new ItemStack(getDisplayItem(), 1);
         ItemMeta meta = item.getItemMeta();
 
-        String displayName = getDisplayColor() + name;
+        String displayName =  name;
         if (level > 0) {
             displayName = ChatColor.BOLD + displayName + RomanNumber.toRoman(level);
         }
-        meta.setDisplayName(displayName);
+        meta.setDisplayName(getDisplayColor() + displayName);
         InterpolationString exprResolver = new InterpolationString() {
             @Override
             public String evalExpr(String expr) {

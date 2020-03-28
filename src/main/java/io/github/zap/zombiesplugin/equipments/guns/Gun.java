@@ -1,15 +1,15 @@
-package io.github.zap.zombiesplugin.guns;
+package io.github.zap.zombiesplugin.equipments.guns;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class Gun extends UpgradeableEquipment {
     // Define value names
@@ -36,45 +36,42 @@ public abstract class Gun extends UpgradeableEquipment {
         setAmmo((int)tryGetValue(GUN_AMMO));
     }
 
-    private long lastReloadTime = 0;
+    private long canReloadUntil = 0;
     public void reload() {
-        // If we have enough ammo to refill
-        if(getClipAmmo() >= Math.min(tryGetValue(GUN_CLIP_AMMO), getAmmo()))
+
+
+        // If we have enough ammo to reload
+        final float clipAmmo = tryGetValue(GUN_CLIP_AMMO);
+
+        if(getClipAmmo() >= Math.min(clipAmmo, getAmmo()))
             return;
 
         // if we are reloading
-        if(System.currentTimeMillis() - tryGetValue(GUN_RELOAD_RATE) * 1000 < lastReloadTime) {
+        if(System.currentTimeMillis() < canReloadUntil) {
             return;
         }
 
-        lastReloadTime = System.currentTimeMillis();
-
+        final float reloadRate = tryGetValue(GUN_RELOAD_RATE);
+        canReloadUntil = System.currentTimeMillis() + (int)(reloadRate * 1000);
         getPlayer().playSound(getPlayer().getLocation(), Sound.ENTITY_HORSE_GALLOP, 1 ,0.5f);
 
-        int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ZombiesPlugin.instance, new Runnable() {
+        new BukkitRunnable() {
             private  int step = 0;
             private  int maxVal = getEquipmentData().getDisplayItem().getMaxDurability();
-            private  float stepVal = 1 / (float)tryGetValue(GUN_RELOAD_RATE) / 20 * maxVal;
+            private  float stepVal = 1 / reloadRate / 20 * maxVal;
 
             @Override
             public void run() {
-                if(step < (int)(tryGetValue(GUN_RELOAD_RATE) * 20)) {
+                if(step < (int)(reloadRate * 20)) {
                     setItemDamage((int)(maxVal - (step + 1) * stepVal));
                     step++;
+                } else {
+                    setItemDamage(0);
+                    setClipAmmo(Math.min((int) clipAmmo, getAmmo()));
+                    cancel();
                 }
             }
-        }, 0, 1);
-
-        Bukkit.getScheduler().scheduleSyncDelayedTask(ZombiesPlugin.instance, new Runnable() {
-            @Override
-            public void run() {
-                Bukkit.getScheduler().cancelTask(taskID);
-
-                // Make sure we don't have weird durability value
-                setItemDamage(0);
-                setClipAmmo(Math.min((int)tryGetValue(GUN_CLIP_AMMO), getAmmo()));
-            }
-        }, (int)(tryGetValue(GUN_RELOAD_RATE) * 20));
+        }.runTaskTimer(ZombiesPlugin.instance, 0, 1);
     }
 
     /**
@@ -82,48 +79,50 @@ public abstract class Gun extends UpgradeableEquipment {
      * of this class should call this before actual shoot
      */
     protected boolean canShoot() {
-        return System.currentTimeMillis() - (int)(tryGetValue(GUN_FIRE_RATE) * 1000) > lastShotTime &&
-                System.currentTimeMillis() - (int)(tryGetValue(GUN_RELOAD_RATE) * 1000) > lastReloadTime &&
+        return System.currentTimeMillis() > canShootUntil &&
+                System.currentTimeMillis() > canReloadUntil &&
                 getAmmo() > 0 && getClipAmmo() > 0;
 
     }
 
     // Subclass can call this method to update gun visual and animate gun cooldown
-    long lastShotTime = 0;
+    long canShootUntil = 0;
 
     /**
      * Update the guns visual such as animating the xp bar
-     * and set the gun item amount, every subclass of this
-     * class should call to this method after a successful
-     * shot
+     * and set the gun item amount
      */
     protected void updateVisualAfterShoot() {
-        lastShotTime = System.currentTimeMillis();
+        canShootUntil = System.currentTimeMillis() + (int)(tryGetValue(GUN_FIRE_RATE) * 1000);
 
         setAmmo(getAmmo() - 1);
         setClipAmmo(getClipAmmo() - 1);
 
         if (getClipAmmo() > 0) {
             // Animate xp bar
-            int task = Bukkit.getScheduler().scheduleSyncRepeatingTask(ZombiesPlugin.instance, new Runnable() {
+            new BukkitRunnable() {
                 private int step = 0;
-                private float stepVal = 1 / tryGetValue(GUN_FIRE_RATE) / 20;
+                private final float fireRate = tryGetValue(GUN_FIRE_RATE);
+                private final float stepVal = 1 / fireRate / 20;
+                private final float goal = (int)(fireRate * 20);
+
 
                 @Override
                 public void run() {
-                    if(step < (int)(tryGetValue(GUN_FIRE_RATE) * 20) && isSelected()) {
+
+
+                    if(step < goal && isSelected()) {
                         getPlayer().setExp((step + 1) * stepVal);
                         step++;
+                    } else {
+                        if(isSelected()) {
+                            getPlayer().setExp(1);
+                        }
+
+                        cancel();
                     }
                 }
-            }, 0, 1);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(ZombiesPlugin.instance, () -> {
-                if(isSelected()) {
-                    getPlayer().setExp(1);
-                }
-
-                Bukkit.getScheduler().cancelTask(task);
-            }, (int)(tryGetValue(GUN_FIRE_RATE) * 20));
+            }.runTaskTimer(ZombiesPlugin.instance, 0, 1);
         } else {
             if (getAmmo() > 0) {
                 reload();
@@ -134,7 +133,7 @@ public abstract class Gun extends UpgradeableEquipment {
         }
     }
 
-    public abstract void shoot();
+    public abstract boolean shoot();
 
     public int getClipAmmo() {
         return clipAmmo;
@@ -195,9 +194,14 @@ public abstract class Gun extends UpgradeableEquipment {
 
     @Override
     public boolean onRightClick(Block clickedBlock, BlockFace clickedFace) {
-        super.onRightClick(clickedBlock, clickedFace);
-        shoot();
-        return true;
+        if(canShoot()) {
+            if (shoot()) {
+                updateVisualAfterShoot();
+            }
+
+        }
+
+        return super.onRightClick(clickedBlock, clickedFace);
     }
 
     @Override
