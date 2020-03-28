@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.placeholder;
 
+import io.github.zap.zombiesplugin.equipments.Equipment;
 import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.utils.WeaponStatsLoreBuilder;
 import org.bukkit.ChatColor;
@@ -57,8 +58,31 @@ public class EquipmentPlaceHolder extends HotbarObject {
     }
 
 
+    public static EquipmentPlaceHolder createMeelePlaceHolder(int slotNo) {
+        String displayName = ChatColor.GREEN + "Meele Weapon #" + slotNo;
+        Material displayItem = Material.BLACK_DYE;
+        String[] lore = new String[] {
+                "" + ChatColor.GRAY + "Secondary weapon to help you",
+                "" + ChatColor.GRAY + " defend yourself. Buy Meele"  ,
+                "" + ChatColor.GRAY + "weapon at the " + ChatColor.GOLD + "Lucky Chest" + ChatColor.GRAY + "!"
+        };
 
+        EquipmentPlaceHolder e = new EquipmentPlaceHolder(displayItem, displayName, lore);
+        return e;
+    }
 
+    public static EquipmentPlaceHolder createSkillPlaceHolder(int slotNo) {
+        String displayName = ChatColor.AQUA + "Skill #" + slotNo;
+        Material displayItem = Material.GRAY_DYE;
+        String[] lore = new String[] {
+                "" + ChatColor.AQUA + "Skills " + ChatColor.GRAY + "are special reusable",
+                "" + ChatColor.GRAY + "abilities. Find Skills in the",
+                "" + ChatColor.DARK_PURPLE + "Lucky Chest" + ChatColor.GRAY + "!"
+        };
+
+        EquipmentPlaceHolder e = new EquipmentPlaceHolder(displayItem, displayName, lore);
+        return e;
+    }
 
     private String displayName;
     private String[] lore;
