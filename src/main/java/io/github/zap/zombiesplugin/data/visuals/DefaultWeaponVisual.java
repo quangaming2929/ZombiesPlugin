@@ -43,7 +43,7 @@ public class DefaultWeaponVisual implements IDefaultVisual {
         ItemMeta meta = item.getItemMeta();
 
         WeaponStatsLoreBuilder builder = new WeaponStatsLoreBuilder();
-        builder.withInstruction(description);
+        builder.withDescriptions(description);
 
         if (level > 0) {
             Hashtable<String, IEquipmentValue> previousLevel = levels.getLevel(level - 1);
@@ -91,13 +91,13 @@ public class DefaultWeaponVisual implements IDefaultVisual {
                         String previousVal = previousIL.getDisplayValue();
 
                         // Add stats for both old and new val
-                        builder.addStats(statName, previousVal, currentVal);
+                        builder.addStats(currentIL.getStatsName(), previousVal, currentVal);
                         continue;
                     }
                 }
 
                 // Add stats for only new val
-                builder.addStats(statName, currentVal);
+                builder.addStats(currentIL.getStatsName(), currentVal);
             }
         }
     }

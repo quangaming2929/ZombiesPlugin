@@ -42,7 +42,7 @@ public class ExpressionVisual implements IDefaultVisual {
         ItemStack item = new ItemStack(getDisplayItem(), 1);
         ItemMeta meta = item.getItemMeta();
 
-        String displayName = getDisplayItem() + name;
+        String displayName = getDisplayColor() + name;
         if (level > 0) {
             displayName = ChatColor.BOLD + displayName + RomanNumber.toRoman(level);
         }

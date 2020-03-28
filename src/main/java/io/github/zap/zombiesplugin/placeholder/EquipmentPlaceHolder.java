@@ -33,7 +33,7 @@ public class EquipmentPlaceHolder extends HotbarObject {
         String[] lore = new String[] {
                 "" + ChatColor.GRAY + "Buy perks at " + ChatColor.DARK_BLUE + "Perk Machines" + ChatColor.GRAY + ".",
                 "" + ChatColor.GRAY + "Perk Machines require the ",
-                "" + ChatColor.GOLD + "Power" + ChatColor.GRAY + "to be on. Find and",
+                "" + ChatColor.GOLD + "Power " + ChatColor.GRAY + "to be on. Find and",
                 "" + ChatColor.GRAY + "activate the " + ChatColor.GOLD + "Power Switch " + ChatColor.GRAY + "in",
                 "" + ChatColor.GRAY + "the " + ChatColor.GREEN + "Power Station " + ChatColor.GRAY + "in order",
                 "" + ChatColor.GRAY + "to buy perks!"

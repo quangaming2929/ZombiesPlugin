@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.*;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.GunData;
 import io.github.zap.zombiesplugin.data.IEquipmentValue;
 import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
@@ -28,13 +29,13 @@ public class GunImporter extends Importer {
 
     @Override
     public void registerValue(String name, Object value) {
+
         Class<? extends Gun> typeCheck = (Class<? extends Gun>)value;
-        if (typeCheck != null) {
-            if (behaviours.containsKey(name)) {
-                behaviours.replace(name, typeCheck);
-            } else {
-                behaviours.put(name, typeCheck);
-            }
+
+        if (behaviours.containsKey(name)) {
+            behaviours.replace(name, typeCheck);
+        } else {
+            behaviours.put(name, typeCheck);
         }
     }
 
@@ -72,7 +73,7 @@ public class GunImporter extends Importer {
             GunData currentData = gunVault.get(id);
             if(behaviours.containsKey(currentData.behaviour)) {
                 Class<? extends Gun> bClazz = behaviours.get(currentData.behaviour);
-                Gun gun = bClazz.getConstructor(GunData.class).newInstance(currentData);
+                Gun gun = bClazz.getConstructor(EquipmentData.class).newInstance(currentData);
                 return gun;
             } else {
                 ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't find gun behaviour for this GunData: " + currentData);
@@ -109,14 +110,14 @@ public class GunImporter extends Importer {
         levels.levels = new ArrayList<>();
         for (int i = 1; i < 4; i++) {
             Hashtable<String, IEquipmentValue> val = new Hashtable<>();
-            val.put("damage", new LoreEquipmentValue(10 * i / 2, "HP"));
-            val.put("ammo", new LoreEquipmentValue(30 * i, ""));
-            val.put("clipAmmo", new LoreEquipmentValue(10 * i, ""));
-            val.put("fireRate", new LoreEquipmentValue(1 / i, "s", 1));
-            val.put("reloadRate", new LoreEquipmentValue(5 / i, "s", 1));
-            val.put("rewardGold", new LoreEquipmentValue(10, ""));
-            val.put("range", new EquipmentValue(100));
-            val.put("maxHitEntities", new LoreEquipmentValue(1 + i, ""));
+            val.put("damage", new LoreEquipmentValue(10 * i / 2, "Damage", "HP"));
+            val.put("ammo", new LoreEquipmentValue(30 * i, "Ammo",""));
+            val.put("clipAmmo", new LoreEquipmentValue(10 * i, "Clip Ammo", ""));
+            val.put("fireRate", new LoreEquipmentValue(1 / i, "Fire rate", "s", 1));
+            val.put("reloadRate", new LoreEquipmentValue(5 / i, "Reload Rate", "s", 1));
+            val.put("rewardGold", new EquipmentValue(10));
+            val.put("gunRange", new EquipmentValue(100));
+            val.put("maxHitEntities", new EquipmentValue(1 + i));
 
             levels.levels.add(val);
         }

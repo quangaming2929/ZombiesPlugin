@@ -28,7 +28,7 @@ public class SpeedPerk extends Perk {
             speedLevel += 1 + speedEf.getAmplifier();
         }
 
-        if (speedLevel > 0) {
+        if (speedLevel >= 0) {
             getPlayer().removePotionEffect(PotionEffectType.SPEED);
             speedEf = new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, speedLevel, false, false);
             getPlayer().addPotionEffect(speedEf);

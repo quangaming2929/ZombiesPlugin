@@ -17,6 +17,7 @@ public class EquipmentObjectGroup extends ObjectGroup {
             }
 
             if (obj.object != null) {
+                obj.object.onRemoved();
                 object.init(obj.slotId, player, player.getInventory().getHeldItemSlot() == slotId, true);
                 obj.object = object;
             } else {

@@ -82,8 +82,8 @@ public abstract class Gun extends UpgradeableEquipment {
      * of this class should call this before actual shoot
      */
     protected boolean canShoot() {
-        return System.currentTimeMillis() - tryGetValue(GUN_FIRE_RATE) * 1000 > lastShotTime &&
-                System.currentTimeMillis() - tryGetValue(GUN_RELOAD_RATE) * 1000 > lastReloadTime &&
+        return System.currentTimeMillis() - (int)(tryGetValue(GUN_FIRE_RATE) * 1000) > lastShotTime &&
+                System.currentTimeMillis() - (int)(tryGetValue(GUN_RELOAD_RATE) * 1000) > lastReloadTime &&
                 getAmmo() > 0 && getClipAmmo() > 0;
 
     }
