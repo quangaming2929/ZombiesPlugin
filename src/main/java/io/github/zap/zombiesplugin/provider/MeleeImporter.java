@@ -4,15 +4,18 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.MeeleData;
 import io.github.zap.zombiesplugin.data.MeeleSkill;
+import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.equipments.Equipment;
 import io.github.zap.zombiesplugin.meele.MeeleWeapon;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.logging.Level;
 
-public class MeeleImporter extends EquipmentImporter {
+public class MeleeImporter extends EquipmentImporter {
 
     @Override
     public void init(ConfigFileManager manager) {
@@ -41,7 +44,7 @@ public class MeeleImporter extends EquipmentImporter {
         if (dataVault.containsKey(id)) {
             EquipmentData currentData = dataVault.get(id);
             MeeleWeapon meele = new MeeleWeapon(currentData);
-            if(id != null && values.containsKey(currentData.behaviour)) {
+            if(currentData.behaviour != null && values.containsKey(currentData.behaviour)) {
                 Class skillClazz = values.get(currentData.behaviour);
                 MeeleSkill skill = (MeeleSkill) skillClazz.getConstructor(MeeleWeapon.class).newInstance(meele);
                 meele.setSkill(skill);
@@ -57,7 +60,7 @@ public class MeeleImporter extends EquipmentImporter {
 
     private void createTestMelee() {
         EquipmentData knifeTest = new EquipmentData();
-        knifeTest.id = "melee_knife_";
+        knifeTest.id = "melee_knife_test";
         knifeTest.name = "Knife (Testing Melee)";
 
         DefaultWeaponVisual visual = new DefaultWeaponVisual();
@@ -69,6 +72,12 @@ public class MeeleImporter extends EquipmentImporter {
         };
 
         knifeTest.defaultVisual = visual;
+
+        ListLeveling levels = new ListLeveling();
+        levels.levels = new ArrayList<>();
+        levels.levels.add(new Hashtable<>());
+
+        knifeTest.levels = levels;
         finalize(knifeTest);
 
         dataVault.put(knifeTest.id, knifeTest);

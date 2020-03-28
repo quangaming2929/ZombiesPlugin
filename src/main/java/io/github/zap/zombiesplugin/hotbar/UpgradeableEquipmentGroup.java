@@ -28,7 +28,7 @@ public class UpgradeableEquipmentGroup extends EquipmentObjectGroup {
                 }
             }
         } else {
-            throw new IllegalArgumentException("This group only accept Gun and GunPlaceHolder");
+            throw new IllegalArgumentException("This group only accept equipments can be upgraded");
         }
     }
 

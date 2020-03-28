@@ -78,7 +78,10 @@ public class WeaponStatsLoreBuilder {
      */
     public WeaponStatsLoreBuilder withInstruction (String... instructions) {
         this.instructions.clear();
-        Collections.addAll(this.instructions, instructions);
+        if(instructions != null) {
+            Collections.addAll(this.instructions, instructions);
+        }
+
         return this;
     }
 

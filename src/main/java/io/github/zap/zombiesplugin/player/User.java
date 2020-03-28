@@ -21,7 +21,7 @@ public class User {
         this.hotbar = new HotbarManager(player);
 
         // TODO: We might set up the hotbar layout by GameSettings
-        this.hotbar.addGroup("MeeleGroup", new MeeleObjectGroup(false), 0);
+        this.hotbar.addGroup("MeleeGroup", new MeeleObjectGroup(false), 0);
         this.hotbar.addGroup("GunGroup", new GunObjectGroup(false), 1,2,3);
         this.hotbar.addGroup("SkillGroup", new SkillObjectGroup(false), 4);
         this.hotbar.addGroup("PerkGroup", new PerkObjectGroup(true), 6,7,8 );
@@ -31,8 +31,8 @@ public class User {
         return player;
     }
 
-    public MeeleObjectGroup getMeeleGroup() {
-        return (MeeleObjectGroup) getHotbar().getGroup("MeeleGroup");
+    public MeeleObjectGroup getMeleeGroup() {
+        return (MeeleObjectGroup) getHotbar().getGroup("MeleeGroup");
     }
 
     public GunObjectGroup getGunGroup() {

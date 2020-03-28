@@ -47,7 +47,7 @@ public class HotbarManager {
      * @param slot the slotID to add
      */
     public void addObject(HotbarObject object, int slot) {
-        if (isOverlap(slot) == null) {
+        if (overlap(slot) == null) {
             HotbarObject obj = getHotbarObject(slot);
             if (obj != null) {
                 removeObject(obj);
@@ -250,7 +250,7 @@ public class HotbarManager {
         return null;
     }
 
-    public ObjectGroup isOverlap(Integer... slotId) {
+    public ObjectGroup overlap(Integer... slotId) {
         for (ObjectGroup gr : currentProfile.groups.values()) {
             if(gr.isOverlap(slotId)) {
                 return gr;
