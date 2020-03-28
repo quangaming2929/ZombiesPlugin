@@ -29,7 +29,7 @@ public class GameManager {
         if (lastRound == rounds.size()) {
             // TODO: Endgame sequence
         } else {
-            rounds.get(lastRound).startRound(this);
+            rounds.get(lastRound).startRound();
             lastRound++;
         }
     }

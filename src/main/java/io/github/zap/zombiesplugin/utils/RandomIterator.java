@@ -4,45 +4,50 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
-public class RandomIterator<T> implements Iterator<T> {
-    int i;
-    int n;
-    List<T> list;
-    HashMap<Integer, T> shuffled ;
-    Random rng;
+public class RandomIterator<T> implements ResettableIterator<T> {
+    private static final Random RNG = new Random();
+    private int[] order;
+    private final List<T> elements;
+    private int currentIndex = 0;
 
-    public RandomIterator(List<T> list) {
-        i = 0;
-        n = list.size();
-        this.list = list;
-        rng = new Random();
-        shuffled = new HashMap<>();
+    public RandomIterator(List<T> elements) {
+        this.elements = elements;
+        this.order = generateRandomOrder(elements.size());
     }
 
-    public boolean hasNext() { return i < n; }
+    private int[] generateRandomOrder(int size) {
+        int[] index = new int[size];
+        for (int i = 0; i < size; i++) {
+            index[i] = i;
+        }
 
-    public T next() {
-        int j = i + rng.nextInt(n-i);
-        T a = get(i), b = get(j);
+        int swap;
+        for (int i = 0; i < size; i++) {
+            int randomIndex = getRandomInt(0, size);
+            swap = index[i];
+            index[i] = index[randomIndex];
+            index[randomIndex] = swap;
+        }
 
-        shuffled.put(j, a);
-        shuffled.remove(i);
+        return index;
+    }
 
-        i++;
-        return b;
+
+    private int getRandomInt(int lowerBound, int upperBound) {
+        return RNG.nextInt(upperBound - lowerBound) + lowerBound;
     }
 
     @Override
-    public void remove() {
-        throw new NotImplementedException();
+    public boolean hasNext() {
+        return currentIndex != elements.size();
     }
 
-    private T get(int i) {
-        return shuffled.containsKey(i) ? shuffled.get(i) : list.get(i);
+    @Override
+    public T next() {
+        return elements.get(order[currentIndex++]);
     }
 
     public void reset() {
-        shuffled.clear();
-        i = 0;
+        order = generateRandomOrder(elements.size());
     }
 }

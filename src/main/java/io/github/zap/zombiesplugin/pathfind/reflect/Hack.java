@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class Hack {
-    //disgusting dirty code
+    //disgusting dirty code. be warned, all ye who may enter here, for this will get broken with every minor release, no exceptions.
     public static void injectCustomGoals(MythicMobs instance, Set<Class<?>> classes) throws NoSuchFieldException, IllegalAccessException {
         VolatileCodeEnabled_v1_15_R1 enabled = (VolatileCodeEnabled_v1_15_R1)instance.getVolatileCodeHandler();
         VolatileAIHandler_v1_15_R1 target = (VolatileAIHandler_v1_15_R1)enabled.getAIHandler();
 
-        //this is what happens when you don't have good API documentation.
+        //this is what happens when you don't have good API documentation but fortunately leave your code un-obfuscated :D
         Field field = VolatileAIHandler_v1_15_R1.class.getDeclaredField("AI_GOALS");
         field.setAccessible(true);
         Map<String, Class<? extends PathfinderAdapter>> AI_GOALS = (Map<String, Class<? extends PathfinderAdapter>>) field.get(target);

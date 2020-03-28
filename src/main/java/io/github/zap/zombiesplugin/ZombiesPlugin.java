@@ -6,23 +6,15 @@ import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.GameSettings;
-import io.github.zap.zombiesplugin.manager.GlobalMobManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.GameMapImporter;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
+import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicConditionLoadEvent;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicReloadedEvent;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicTargeterLoadEvent;
-import io.lumine.xikage.mythicmobs.skills.SkillCondition;
-import io.lumine.xikage.mythicmobs.skills.SkillTargeter;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,7 +24,6 @@ import java.util.Hashtable;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
     public static ZombiesPlugin instance;
-    public GlobalMobManager globalMobManager;
 
     private ConfigFileManager config;
     private ProtocolManager protocolManager;
@@ -40,10 +31,11 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     private Hashtable<String, GameManager> gameManagers;
     private Hashtable<String, GameMap> maps;
 
+    public SpawnPoint lastSpawnpoint;
+
     @Override
     public void onEnable() {
         instance = this;
-        globalMobManager = new GlobalMobManager();
         protocolManager = ProtocolLibrary.getProtocolManager();
         gameManagers = new Hashtable<>();
         maps = new Hashtable<>();
@@ -62,6 +54,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+
+        getServer().getPluginManager().registerEvents(this , this);
     }
 
     @Override

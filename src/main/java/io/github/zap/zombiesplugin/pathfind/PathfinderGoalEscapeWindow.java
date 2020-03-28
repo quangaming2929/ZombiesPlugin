@@ -4,7 +4,6 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitWorld;
 import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.mobs.ai.Pathfinder;
 import io.lumine.xikage.mythicmobs.mobs.ai.PathfindingGoal;
@@ -13,50 +12,62 @@ import org.bukkit.Location;
 
 @MythicAIGoal(
         name = "escapeWindow",
-        aliases = {"escapeWindow"},
+        aliases = {"escape"},
         description = "Used by zombies to navigate out of windows."
 )
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
-    private AbstractLocation target;
+    private AbstractLocation destination;
     private boolean reachedGoal = false;
     private boolean hasWindow = false;
+    private long tickCount = 0;
 
     public PathfinderGoalEscapeWindow(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
+        setGoalType(GoalType.MOVE);
 
-        SpawnPoint associatedPoint = ZombiesPlugin.instance.globalMobManager.getSpawnPoint(entity);
-        if(associatedPoint != null) {
-            System.out.println("associatedPoint is not null. Zombie will have behavior.");
-            Location location = associatedPoint.getTarget();
-            target = new AbstractLocation(new BukkitWorld(location.getWorld()), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-            hasWindow = true;
+        SpawnPoint spawnpoint = ZombiesPlugin.instance.lastSpawnpoint;
+        if(spawnpoint != null) {
+            Location testSpawnLocation = spawnpoint.getSpawn();
+            AbstractLocation location = entity.getLocation();
+            if(testSpawnLocation.getBlockX() == location.getBlockX() &&
+                    testSpawnLocation.getBlockY() == location.getBlockY() &&
+                    testSpawnLocation.getBlockZ() == location.getBlockZ()) {
+
+                Location target = spawnpoint.getTarget();
+                destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
+                hasWindow = true;
+            }
         }
     }
 
-    @Override
     public boolean shouldStart() {
-        return !reachedGoal && hasWindow;
+        return this.entity.getLocation().distanceSquared(destination) > (double)1 && !reachedGoal;
     }
 
-    @Override
     public void start() {
-        ai().navigateToLocation(this.entity, target, 1F);
+        ai().navigateToLocation(this.entity, destination, 15);
+    }
+
+    public boolean shouldNavigate() {
+        //returns true every 20 ticks (1 second)
+        return tickCount % 20 == 0;
     }
 
     public void tick() {
-        ai().navigateToLocation(this.entity, target, 1F);
-        reachedGoal = entity.getLocation().getBlockX() == target.getBlockX() && entity.getLocation().getBlockY() == target.getBlockY() && entity.getLocation().getBlockZ() == target.getBlockZ();
-
-        //TODO: break nearby windows
+        if(shouldNavigate()) {
+            ai().navigateToLocation(this.entity, destination, 15);
+        }
+        else tickCount++;
     }
 
-    @Override
     public boolean shouldEnd() {
-        return reachedGoal || !hasWindow;
+        if(this.entity.getLocation().distanceSquared(destination) <= (double)1 || !hasWindow) {
+            reachedGoal = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void end() {
-
-    }
+    public void end() { }
 }

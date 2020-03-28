@@ -3,7 +3,6 @@ package io.github.zap.zombiesplugin.map.spawn;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.Room;
-import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitWorld;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
@@ -18,20 +17,20 @@ public class SpawnPoint {
 	public SpawnPoint(GameManager manager, Room room, Location spawnCoordinates, Location target)
 	{
 		this.manager = manager;
-		this.room = room;
 		this.spawn = spawnCoordinates;
 		this.target = target;
+		this.room = room;
 	}
 
 	public void spawn(MythicMob mob) {
-		ZombiesPlugin.instance.globalMobManager.spawn(this, mob);
+		ZombiesPlugin.instance.lastSpawnpoint = this;
+		mob.spawn(new AbstractLocation(new BukkitWorld(spawn.getWorld()), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()), 0);
+		ZombiesPlugin.instance.lastSpawnpoint = null;
 	}
 
 	public GameManager getManager() { return manager; }
 
 	public boolean canSpawn() {
-		//return room.isOpen();
-		//TODO: rooms
 		return true;
 	}
 

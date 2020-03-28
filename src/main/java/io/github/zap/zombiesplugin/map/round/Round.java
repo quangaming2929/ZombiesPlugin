@@ -19,7 +19,7 @@ public class Round {
 		this.waves = waves;
 	}
 
-	public void startRound(GameManager manager) {
+	public void startRound() {
 		long accumulatedDelay = 0;
 
 		for (Wave wave : waves) {
@@ -30,7 +30,7 @@ public class Round {
 				@Override
 				public void run() {
 					for (SpawnManager spawnManager : gameMap.getSpawnManagers()) {
-						spawnManager.spawn(manager, mobs);
+						spawnManager.spawn(mobs);
 					}
 				}
 

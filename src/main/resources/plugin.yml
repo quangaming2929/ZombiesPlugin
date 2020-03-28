@@ -9,12 +9,9 @@ depend:
 commands:
   gunDebug:
     description: Test command related to guns
-  gamemanager:
-    description: Create game managers on demand, for testing purposes.
-    usage: /manager add <id> or /manager list
-  spawnmanager:
-    description: Adds or removes a spawnpoint from the specified manager.
-    usage: /spawnpoint add
+  newspawnpoint:
+    description: Adds or removes a spawnpoint to the testing spawnpoint.
+    usage: /newspawnpoint
   testentity:
     description: Spawns a testing zombie.
     usage: /testentity

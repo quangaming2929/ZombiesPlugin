@@ -5,6 +5,7 @@ import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.spawn.OrderedSpawnManager;
+import io.github.zap.zombiesplugin.map.spawn.RandomizedSpawnManager;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.MythicMobs;
@@ -38,7 +39,7 @@ public class SpawnpointCommands implements CommandExecutor {
 
                 SpawnManager manager;
                 if(map.getSpawnManagers().size() == 0) {
-                    testGame.getMap().add(new OrderedSpawnManager("test", testGame.getMap(), types));
+                    testGame.getMap().add(new RandomizedSpawnManager("test_spawner", testGame.getMap(), types));
                     map.getSpawnManagers().get(0).add(mob);
                 }
 
@@ -48,7 +49,23 @@ public class SpawnpointCommands implements CommandExecutor {
                 ArrayList<MythicMob> mobs = new ArrayList<>();
                 mobs.add(mob);
 
-                manager.spawn(testGame, mobs);
+                manager.spawn(mobs);
+            }
+            else if(command.getName().equals("newspawnpoint")){
+                MythicMob mob =  MythicMobs.inst().getAPIHelper().getMythicMob("TestZombie");
+                HashSet<MythicMob> types = new HashSet<>();
+                types.add(mob);
+
+                GameManager testGame = ZombiesPlugin.instance.getGameManager("test_game");
+                GameMap map = testGame.getMap();
+
+                SpawnManager manager;
+                if(map.getSpawnManagers().size() == 0) {
+                    testGame.getMap().add(new RandomizedSpawnManager("test_spawner", testGame.getMap(), types));
+                    map.getSpawnManagers().get(0).add(mob);
+                }
+                manager = map.getSpawnManagers().get(0);
+                manager.add(new SpawnPoint(testGame, new Room(map), player.getLocation(), player.getLocation().add(5, 0, 0)));
             }
         }
         return false;
