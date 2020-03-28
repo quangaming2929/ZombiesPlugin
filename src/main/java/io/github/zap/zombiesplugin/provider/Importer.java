@@ -7,7 +7,7 @@ import java.nio.file.Path;
 public abstract class Importer {
     protected ConfigFileManager manager;
 
-    public abstract void registerValue(String name, Object value);
+    public abstract boolean registerValue(String name, Object value);
 
     /**
      * This methods will be called when added to a manager. Override this method to init

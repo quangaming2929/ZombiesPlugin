@@ -1,7 +1,5 @@
 package io.github.zap.zombiesplugin.provider;
 
-import com.google.gson.*;
-import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.GunData;
 import io.github.zap.zombiesplugin.data.IEquipmentValue;
@@ -9,42 +7,26 @@ import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
 import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
-import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.LinearGun;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
 
-public class GunImporter extends Importer {
-    private Hashtable<String, GunData> gunVault = new Hashtable<>();
-    private Gson fileParser;
-    private Hashtable<String, Class<? extends Gun>> behaviours = new Hashtable<>();
-
-    @Override
-    public void registerValue(String name, Object value) {
-
-        Class<? extends Gun> typeCheck = (Class<? extends Gun>)value;
-
-        if (behaviours.containsKey(name)) {
-            behaviours.replace(name, typeCheck);
-        } else {
-            behaviours.put(name, typeCheck);
-        }
-    }
+public class GunImporter extends EquipmentImporter {
 
     @Override
     public void init(ConfigFileManager manager) {
         super.init(manager);
-        fileParser = manager.getGsonBuilder().create();
         registerBehaviours();
         generateDevelopmentGun();
+    }
+
+    @Override
+    protected Class<? extends EquipmentData> getConfigType() {
+        return GunData.class;
     }
 
     // add gun behaviour here
@@ -52,42 +34,12 @@ public class GunImporter extends Importer {
         registerValue("LinearGun", LinearGun.class);
     }
 
-    @Override
-    public void processConfigFile(Path file, String contents) {
-        GunData data = fileParser.fromJson(contents, GunData.class);
-        if(!gunVault.containsKey(data.id)) {
-            gunVault.put(data.id, data);
-        } else {
-            String errorMessage = "Error: duplicate gun id or the gun already imported. Gun name: " + data.name + " at " + file.toString();
-            ZombiesPlugin.instance.getLogger().log(Level.WARNING, errorMessage);
-        }
-    }
 
     @Override
     public String getConfigExtension() {
         return "gunData";
     }
 
-    public Gun createGun(String id) throws Exception {
-        if (gunVault.containsKey(id)) {
-            GunData currentData = gunVault.get(id);
-            if(behaviours.containsKey(currentData.behaviour)) {
-                Class<? extends Gun> bClazz = behaviours.get(currentData.behaviour);
-                Gun gun = bClazz.getConstructor(EquipmentData.class).newInstance(currentData);
-                return gun;
-            } else {
-                ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't find gun behaviour for this GunData: " + currentData);
-            }
-        } else {
-            ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't find the gun id: " + id);
-        }
-
-        return null;
-    }
-
-    public Set<Map.Entry<String, GunData>> getGunDatas() {
-        return gunVault.entrySet();
-    }
 
     private void generateDevelopmentGun() {
         GunData data = new GunData();
@@ -124,14 +76,19 @@ public class GunImporter extends Importer {
         data.levels = levels;
 
         finalize(data);
-        gunVault.put(data.id, data);
+        dataVault.put(data.id, data);
     }
 
-    private void finalize (GunData data) {
+    @Override
+    protected void finalize (EquipmentData data) {
         data.defaultVisual.setDisplayColor(ChatColor.GOLD);
-        data.defaultVisual.setInstruction(new String[] {
-                ChatColor.YELLOW.toString() + "LEFT-CLICK " + ChatColor.GRAY + "to reload.",
-                ChatColor.YELLOW.toString() + "RIGHT-CLICK" + ChatColor.GRAY + "to shoot."
-        });
+
+        // prevent config file want to instruct something different
+        if(data.defaultVisual.getInstruction() != null && data.defaultVisual.getInstruction().length == 0) {
+            data.defaultVisual.setInstruction(new String[] {
+                    ChatColor.YELLOW.toString() + "LEFT-CLICK " + ChatColor.GRAY + "to reload.",
+                    ChatColor.YELLOW.toString() + "RIGHT-CLICK" + ChatColor.GRAY + "to shoot."
+            });
+        }
     }
 }

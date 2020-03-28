@@ -21,4 +21,12 @@ public class MeeleWeapon extends UpgradeableEquipment {
 
         return super.onRightClick(clickedBlock, clickedFace);
     }
+
+    public MeeleSkill getSkill() {
+        return skill;
+    }
+
+    public void setSkill(MeeleSkill skill) {
+        this.skill = skill;
+    }
 }

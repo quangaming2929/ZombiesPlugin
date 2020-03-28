@@ -16,14 +16,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-/* TODO: To prevent class explosion, we will define color and instruction in Importers class
- *  - Gun:   ChatColor.GOLD;
- *           ChatColor.YELLOW.toString() + "LEFT-CLICK " + ChatColor.GRAY + "to reload.",
- *           ChatColor.YELLOW.toString() + "RIGHT-CLICK" + ChatColor.GRAY + "to shoot."
- *  - Meele: ChatColor.GREEN;
- *           ChatColor.YELLOW.toString() + "LEFT-CLICK " + ChatColor.GRAY + "to strike."
- */
-
 /**
  * A class define equipments default visual state include display item and name,
  * description, a stats list and an instruction

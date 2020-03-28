@@ -58,12 +58,12 @@ public class EquipmentPlaceHolder extends HotbarObject {
     }
 
 
-    public static EquipmentPlaceHolder createMeelePlaceHolder(int slotNo) {
-        String displayName = ChatColor.GREEN + "Meele Weapon #" + slotNo;
+    public static EquipmentPlaceHolder createMeleePlaceHolder(int slotNo) {
+        String displayName = ChatColor.GREEN + "Melee Weapon #" + slotNo;
         Material displayItem = Material.BLACK_DYE;
         String[] lore = new String[] {
                 "" + ChatColor.GRAY + "Secondary weapon to help you",
-                "" + ChatColor.GRAY + " defend yourself. Buy Meele"  ,
+                "" + ChatColor.GRAY + " defend yourself. Buy Melee"  ,
                 "" + ChatColor.GRAY + "weapon at the " + ChatColor.GOLD + "Lucky Chest" + ChatColor.GRAY + "!"
         };
 

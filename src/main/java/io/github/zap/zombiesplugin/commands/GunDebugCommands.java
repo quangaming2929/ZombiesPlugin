@@ -1,8 +1,10 @@
 package io.github.zap.zombiesplugin.commands;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.guns.GunObjectGroup;
+import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.perks.Perk;
 import io.github.zap.zombiesplugin.perks.PerkObjectGroup;
 import io.github.zap.zombiesplugin.player.User;
@@ -26,7 +28,22 @@ public class GunDebugCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if(command.getName().equals("gunDebug") && commandSender instanceof Player) {
+
+
+        if (commandSender instanceof Player) {
+            Player playerSender = (Player) commandSender;
+            User user = ZombiesPlugin.instance.manager.getAssociatedUser(playerSender);
+
+            if (user != null) {
+                if (strings[0].equals("ult")) {
+                    ultimateEquipment(user);
+                } else if (strings[0].equals("get") && strings.length > 1) {
+
+                }
+            }
+        }
+
+       /* if(command.getName().equals("gunDebug") && commandSender instanceof Player) {
             Player playerSender = (Player)commandSender;
 
             if (strings.length > 0) {
@@ -34,13 +51,7 @@ public class GunDebugCommands implements CommandExecutor {
                 GunObjectGroup gunUser = user.getGunGroup();
                 int pSlot = playerSender.getInventory().getHeldItemSlot();
                 if (user != null) {
-                    if (strings[0].equals("ult")) {
-                        Gun targetedGun = (Gun) user.getHotbar().getSelectedObject();
-                        if(targetedGun != null) {
-                            targetedGun.upgrade();
-                        } else {
-                            playerSender.sendMessage(ChatColor.RED + "Error: please hold your gun to ultimate");
-                        }
+
                     } else if (strings[0].equals("getGun") && strings.length > 1) {
                         try {
 
@@ -79,8 +90,15 @@ public class GunDebugCommands implements CommandExecutor {
                     }
                 }
             }
-        }
+        }*/
 
         return false;
+    }
+
+    private void ultimateEquipment(User sender) {
+        HotbarObject obj = sender.getHotbar().getSelectedObject();
+        if (obj instanceof UpgradeableEquipment) {
+            ((UpgradeableEquipment) obj).upgrade();
+        }
     }
 }
