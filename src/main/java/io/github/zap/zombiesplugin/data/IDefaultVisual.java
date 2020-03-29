@@ -13,4 +13,7 @@ public interface IDefaultVisual {
     void setDisplayItem(Material item);
     void setDisplayColor(ChatColor color);
     void setInstruction(String[] instruction);
+
+    // Util methods
+    String getDisplayNameWith(ChatColor color, String name, int level, ILeveling levels);
 }

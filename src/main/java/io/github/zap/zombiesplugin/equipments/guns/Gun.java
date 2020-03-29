@@ -3,6 +3,7 @@ package io.github.zap.zombiesplugin.equipments.guns;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -21,8 +22,8 @@ public abstract class Gun extends UpgradeableEquipment {
     private int ammo;
     private int clipAmmo;
 
-    public Gun(EquipmentData equipmentData) {
-        super(equipmentData);
+    public Gun(EquipmentData equipmentData, PlayerManager playerManager) {
+        super(equipmentData, playerManager);
     }
 
     @Override

@@ -6,9 +6,10 @@ import io.github.zap.zombiesplugin.commands.EquipmentDebugCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
-import io.github.zap.zombiesplugin.provider.GunImporter;
-import io.github.zap.zombiesplugin.provider.MeleeImporter;
-import io.github.zap.zombiesplugin.provider.PerkImporter;
+import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
+import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
+import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
+import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,9 +32,11 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
 
         config = new ConfigFileManager(this, this.getDataFolder());
-        config.addImporter("Gun", new GunImporter());
-        config.addImporter("Perk", new PerkImporter());
+
         config.addImporter("Melee", new MeleeImporter());
+        config.addImporter("Gun", new GunImporter());
+        config.addImporter("Skill", new SkillImporter());
+        config.addImporter("Perk", new PerkImporter());
         config.reload();
 
         manager = new PlayerManager(null);

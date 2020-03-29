@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.equipments.perks;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -9,8 +10,8 @@ public class SpeedPerk extends Perk {
 
     protected boolean isEquipped = false;
 
-    public SpeedPerk(EquipmentData equipmentData) {
-        super(equipmentData);
+    public SpeedPerk(EquipmentData equipmentData, PlayerManager playerManager) {
+        super(equipmentData, playerManager);
     }
 
     @Override

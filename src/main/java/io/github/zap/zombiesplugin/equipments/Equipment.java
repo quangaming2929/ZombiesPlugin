@@ -5,19 +5,35 @@ import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.events.ValueRequestedEventArgs;
 import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.events.EventHandler;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import org.bukkit.ChatColor;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.logging.Level;
 
 public abstract class Equipment extends HotbarObject {
-    protected EquipmentData equipmentData;
+    protected final EquipmentData equipmentData;
+    protected final PlayerManager playerManager;
 
-    public Equipment(EquipmentData equipmentData) {
+    public Equipment(EquipmentData equipmentData, PlayerManager playerManager) {
         this.equipmentData = equipmentData;
+        this.playerManager = playerManager;
     }
 
     public EquipmentData getEquipmentData() {
         return equipmentData;
+    }
+
+    public PlayerManager getPlayerManager() {
+        return playerManager;
+    }
+
+
+    protected void changeDisplayNameColor(ChatColor color) {
+        ItemMeta meta = getSlot().getItemMeta();
+        meta.setDisplayName(getEquipmentData().getDisplayNameWith(color, 0));
+
+        getSlot().setItemMeta(meta);
     }
 
     public final EventHandler<ValueRequestedEventArgs> valueRequested = new EventHandler<>();

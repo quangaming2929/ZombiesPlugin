@@ -3,14 +3,15 @@ package io.github.zap.zombiesplugin.equipments.meele;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.MeeleSkill;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 public class MeleeWeapon extends UpgradeableEquipment {
     protected MeeleSkill skill;
 
-    public MeleeWeapon(EquipmentData equipmentData) {
-        super(equipmentData);
+    public MeleeWeapon(EquipmentData equipmentData, PlayerManager playerManager) {
+        super(equipmentData, playerManager);
     }
 
     @Override

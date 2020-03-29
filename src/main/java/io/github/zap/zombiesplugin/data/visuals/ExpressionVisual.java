@@ -14,13 +14,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Hashtable;
 
-/* TODO: To prevent class explosion, we will define color and instruction in Importers class
- *  - Perks:  ChatColor.YELLOW;
- *            ChatColor.ITALIC.toString() + ChatColor.DARK_GRAY + "Active until death.";
- *  - Skills: ChatColor.CYAN;
- *            ChatColor.YELLOW.toString() + "RIGHT-CLICK " + ChatColor.GRAY + "to use!"
- */
-
 /**
  * A class define equipments default visual state include display item and name,
  * instruction, and resolve interpolated description string. The default expression
@@ -42,11 +35,7 @@ public class ExpressionVisual implements IDefaultVisual {
         ItemStack item = new ItemStack(getDisplayItem(), 1);
         ItemMeta meta = item.getItemMeta();
 
-        String displayName =  name;
-        if (level > 0) {
-            displayName = ChatColor.BOLD + displayName + RomanNumber.toRoman(level);
-        }
-        meta.setDisplayName(getDisplayColor() + displayName);
+        meta.setDisplayName(getDisplayNameWith(getDisplayColor(), name, level, levels));
         InterpolationString exprResolver = new InterpolationString() {
             @Override
             public String evalExpr(String expr) {
@@ -68,7 +57,7 @@ public class ExpressionVisual implements IDefaultVisual {
 
         String[] evaluatedDesc = new String[description.length];
         for (int i = 0; i < description.length; i++) {
-            evaluatedDesc[i] = exprResolver.evalString(description[i]);
+            evaluatedDesc[i] = ChatColor.GRAY + exprResolver.evalString(description[i]);
         }
 
         // We can use the weapon lore builder but don't add any stats
@@ -109,5 +98,14 @@ public class ExpressionVisual implements IDefaultVisual {
     @Override
     public void setInstruction(String[] instruction) {
         this.instruction = instruction;
+    }
+
+    @Override
+    public String getDisplayNameWith(ChatColor color, String name, int level, ILeveling levels) {
+        String displayName = name;
+        if (level > 0) {
+            displayName = ChatColor.BOLD + displayName + " " + RomanNumber.toRoman(level);
+        }
+        return color + displayName;
     }
 }

@@ -2,11 +2,12 @@ package io.github.zap.zombiesplugin.equipments.perks;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import org.bukkit.entity.Player;
 
 public abstract class Perk extends UpgradeableEquipment {
-    public Perk(EquipmentData equipmentData) {
-        super(equipmentData);
+    public Perk(EquipmentData equipmentData, PlayerManager playerManager) {
+        super(equipmentData, playerManager);
     }
 
     @Override

@@ -37,24 +37,14 @@ public class DefaultWeaponVisual implements IDefaultVisual {
         WeaponStatsLoreBuilder builder = new WeaponStatsLoreBuilder();
         builder.withDescriptions(description);
 
+        meta.setDisplayName(getDisplayNameWith(getDisplayColor(), name, level, levels));
+
         if (level > 0) {
             Hashtable<String, IEquipmentValue> previousLevel = levels.getLevel(level - 1);
-
-            // Visual for ultimate
-            String displayName = "" + getDisplayColor() + ChatColor.BOLD  + name + "Ultimate ";
-            if (levels.size() > 1) {
-                // Has multiple ultimate level?
-                displayName += RomanNumber.toRoman(level);
-            }
-
-            meta.setDisplayName(displayName);
             meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
 
             AddWeaponStats(builder, currentLevel, previousLevel);
         } else {
-            // Visual for normal
-            meta.setDisplayName("" + getDisplayColor() + name);
-
             // We use an empty hash table so that the method will never show previous value
             AddWeaponStats(builder, currentLevel, new Hashtable<>());
         }
@@ -122,5 +112,18 @@ public class DefaultWeaponVisual implements IDefaultVisual {
     @Override
     public void setInstruction(String[] instruction) {
         this.instruction = instruction;
+    }
+
+    @Override
+    public String getDisplayNameWith(ChatColor color, String name, int level, ILeveling levels) {
+        String displayName = name;
+        if (level > 0) {
+            displayName = ChatColor.BOLD + name + "Ultimate ";
+            if (levels.size() > 2) {
+                displayName += RomanNumber.toRoman(level);
+            }
+        }
+
+        return color + displayName;
     }
 }

@@ -49,4 +49,8 @@ public class MathUtils {
     public static double distanceSquared(Vector first, Vector second) {
         return Math.pow(first.getX() - second.getX(), 2) + Math.pow(first.getY() - second.getY(), 2) + Math.pow(first.getZ() - second.getZ(), 2);
     }
+
+    public static double clamp (double min, double max, double value) {
+        return Math.max(min, Math.min(max, value));
+    }
 }

@@ -7,8 +7,7 @@ import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
 import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.hotbar.ObjectGroup;
 import io.github.zap.zombiesplugin.player.User;
-import io.github.zap.zombiesplugin.provider.EquipmentImporter;
-import io.github.zap.zombiesplugin.provider.Importer;
+import io.github.zap.zombiesplugin.provider.equipments.EquipmentImporter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,14 +18,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class EquipmentDebugCommands implements CommandExecutor {
-    private final EquipmentImporter gunImporter;
-    private final EquipmentImporter perkImporter;
     private final EquipmentImporter meleeImporter;
+    private final EquipmentImporter gunImporter;
+    private final EquipmentImporter skillImporter;
+    private final EquipmentImporter perkImporter;
 
     public EquipmentDebugCommands() {
-        this.gunImporter = ZombiesPlugin.instance.getConfigManager().getImporter("Gun");
-        this.perkImporter = ZombiesPlugin.instance.getConfigManager().getImporter("Perk");
         this.meleeImporter = ZombiesPlugin.instance.getConfigManager().getImporter("Melee");
+        this.gunImporter = ZombiesPlugin.instance.getConfigManager().getImporter("Gun");
+        this.skillImporter = ZombiesPlugin.instance.getConfigManager().getImporter("Skill");
+        this.perkImporter = ZombiesPlugin.instance.getConfigManager().getImporter("Perk");
     }
 
     @Override
@@ -73,19 +74,25 @@ public class EquipmentDebugCommands implements CommandExecutor {
      * @param id
      */
     private Equipment createEquipment(String id) throws Exception {
-        for (Map.Entry<String, EquipmentData> item : gunImporter.getGunDatas()) {
-            if (item.getKey().equals(id)) {
-                return gunImporter.createEquipment(id);
-            }
+        Equipment res = getEquipmentFromImporter(id, gunImporter);
+        if (res != null) {
+            return res;
         }
-        for (Map.Entry<String, EquipmentData> item : perkImporter.getGunDatas()) {
-            if (item.getKey().equals(id)) {
-                return perkImporter.createEquipment(id);
-            }
+        res = getEquipmentFromImporter(id, meleeImporter);
+        if (res != null) {
+            return res;
         }
-        for (Map.Entry<String, EquipmentData> item : meleeImporter.getGunDatas()) {
+        res = getEquipmentFromImporter(id, skillImporter);
+        if (res != null) {
+            return res;
+        }
+        return getEquipmentFromImporter(id, perkImporter);
+    }
+
+    private Equipment getEquipmentFromImporter(String id, EquipmentImporter importer) throws Exception {
+        for (Map.Entry<String, EquipmentData> item : importer.getEquipmentDataSet()) {
             if (item.getKey().equals(id)) {
-                return meleeImporter.createEquipment(id);
+                return importer.createEquipment(id, ZombiesPlugin.instance.manager);
             }
         }
 

@@ -6,11 +6,13 @@ import io.github.zap.zombiesplugin.data.IEquipmentValue;
 import io.github.zap.zombiesplugin.data.SoundFx;
 import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.events.ValueRequestedEventArgs;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.utils.RomanNumber;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -22,12 +24,20 @@ public abstract class UpgradeableEquipment extends Equipment {
     protected SoundFx upgradeSound;
     private int level;
 
-    public UpgradeableEquipment(EquipmentData equipmentData) {
-        super(equipmentData);
+    public UpgradeableEquipment(EquipmentData equipmentData, PlayerManager playerManager) {
+        super(equipmentData, playerManager);
 
         SingleNoteSoundFx sound = new SingleNoteSoundFx();
         sound.sound = Sound.ENTITY_PLAYER_LEVELUP;
         upgradeSound = sound;
+    }
+
+    @Override
+    protected void changeDisplayNameColor(ChatColor color) {
+        ItemMeta meta = getSlot().getItemMeta();
+        meta.setDisplayName(getEquipmentData().getDisplayNameWith(color, getLevel()));
+
+        getSlot().setItemMeta(meta);
     }
 
     public boolean upgrade() {

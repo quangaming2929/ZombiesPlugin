@@ -63,6 +63,10 @@ public class EquipmentData {
         return id;
     }
 
+    public String getDisplayNameWith(ChatColor color, int level) {
+        return defaultVisual.getDisplayNameWith(color, name, level, levels);
+    }
+
     public Material getDisplayItem() {
         return defaultVisual.getDisplayItem();
     }

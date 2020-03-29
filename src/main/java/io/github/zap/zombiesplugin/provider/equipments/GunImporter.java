@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.provider;
+package io.github.zap.zombiesplugin.provider.equipments;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.GunData;
@@ -8,6 +8,7 @@ import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
 import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.equipments.guns.LinearGun;
+import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
