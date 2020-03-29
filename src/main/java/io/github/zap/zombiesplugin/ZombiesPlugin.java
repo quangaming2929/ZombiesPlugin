@@ -72,8 +72,10 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
+        SpawnpointCommands spCmd = new SpawnpointCommands();
         getCommand("gunDebug").setExecutor(new GunDebugCommands());
-        getCommand("testentity").setExecutor(new SpawnpointCommands());
+        getCommand("testentity").setExecutor(spCmd);
+        getCommand("newspawnpoint").setExecutor(spCmd);
     }
 
     public ConfigFileManager getConfigManager() {

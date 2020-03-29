@@ -13,6 +13,7 @@ public class GameManager {
     private GameSettings settings;
     private PlayerManager playerManager;
     private GameMap map;
+
     private int lastRound = 0;
 
     public GameManager(String name, GameSettings settings, GameMap map) {
@@ -47,4 +48,6 @@ public class GameManager {
     public boolean hasPlayer(Player player) {
         return playerManager.hasUser(playerManager.getAssociatedUser(player));
     }
+
+    public String toString() { return name; }
 }

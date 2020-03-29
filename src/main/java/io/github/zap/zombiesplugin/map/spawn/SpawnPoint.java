@@ -24,6 +24,7 @@ public class SpawnPoint {
 
 	public void spawn(MythicMob mob) {
 		ZombiesPlugin.instance.lastSpawnpoint = this;
+		System.out.println("spawn() called on SpawnPoint " + toString());
 		mob.spawn(new AbstractLocation(new BukkitWorld(spawn.getWorld()), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()), 0);
 		ZombiesPlugin.instance.lastSpawnpoint = null;
 	}
@@ -41,4 +42,9 @@ public class SpawnPoint {
 	public Location getTarget() { return target; }
 
 	public Room getRoom() { return room; }
+
+	@Override
+	public String toString() {
+		return "Manager: " + manager.toString() + " Spawn: " + spawn.toString() + " Target: " + target.toString();
+	}
 }

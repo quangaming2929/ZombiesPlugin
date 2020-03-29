@@ -27,6 +27,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
 
         SpawnPoint spawnpoint = ZombiesPlugin.instance.lastSpawnpoint;
         if(spawnpoint != null) {
+            System.out.println("Inside Pathfinder constructor. lastSpawnpoint: " + spawnpoint.toString());
             Location testSpawnLocation = spawnpoint.getSpawn();
             AbstractLocation location = entity.getLocation();
             if(testSpawnLocation.getBlockX() == location.getBlockX() &&
