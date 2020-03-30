@@ -7,3 +7,5 @@ description: An improved version of the Hypixel minigame Zombies.
 commands:
   gunDebug:
     description: Test command related to guns
+  testSB:
+    description: Tests ursb

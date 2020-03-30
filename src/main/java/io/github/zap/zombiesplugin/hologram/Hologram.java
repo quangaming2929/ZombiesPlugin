@@ -2,6 +2,8 @@ package io.github.zap.zombiesplugin.hologram;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -68,8 +70,10 @@ public class Hologram implements Listener {
 	}
 
 	public Hologram remove() {
-		for (int i = 0; i < hologramLines.size(); i++) {
-			hologramLines.get(i).remove();
+		int size = hologramLines.size();
+
+		for (int i = 0; i < size; i++) {
+			hologramLines.get(0).remove();
 			hologramLines.remove(0);
 		}
 

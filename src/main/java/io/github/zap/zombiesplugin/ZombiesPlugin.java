@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import io.github.zap.zombiesplugin.commands.GameCommands;
 import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
@@ -37,6 +38,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this,this);
 
         getCommand("gunDebug").setExecutor(new GunDebugCommands());
+        getCommand("testSB").setExecutor(new GameCommands());
     }
 
     @Override

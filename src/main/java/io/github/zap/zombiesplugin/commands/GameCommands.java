@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.bodies.DeadBody;
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.player.User;
 import java.lang.reflect.InvocationTargetException;
@@ -45,12 +46,8 @@ public class GameCommands implements CommandExecutor {
         }*/
 
         if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
-            ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-
-            ItemStack[] newArmorStandArmor = {new ItemStack(Material.DIAMOND_BOOTS), new ItemStack(Material.DIAMOND_LEGGINGS), new ItemStack(Material.DIAMOND_CHESTPLATE), new ItemStack(Material.DIAMOND_HELMET)};
-
-
+            DeadBody deadBody = new DeadBody((Player) commandSender);
+            deadBody.displayTo((Player) commandSender);
         }
 
         return false;
