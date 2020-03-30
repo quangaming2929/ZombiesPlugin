@@ -39,7 +39,8 @@ public abstract class EquipmentImporter extends Importer {
     @Override
     public void init(ConfigFileManager manager) {
         super.init(manager);
-        fileParser = manager.getGsonBuilder().create();
+        fileParser = manager.getGsonBuilder()
+                .create();
     }
 
     @Override

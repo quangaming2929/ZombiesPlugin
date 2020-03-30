@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.data;
 
+import io.github.zap.zombiesplugin.provider.ICustomSerializerIdentity;
 import org.bukkit.Location;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
@@ -8,7 +9,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
-public abstract class SoundFx {
+public abstract class SoundFx implements ICustomSerializerIdentity {
     /**
      * Play the soundfx to player
      * @param players the players you want to play

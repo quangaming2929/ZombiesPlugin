@@ -1,11 +1,12 @@
 package io.github.zap.zombiesplugin.data;
 
 import io.github.zap.zombiesplugin.equipments.meele.MeleeWeapon;
+import io.github.zap.zombiesplugin.provider.ICustomSerializerIdentity;
 
-public abstract class MeeleSkill {
+public abstract class MeleeSkill implements ICustomSerializerIdentity {
     protected final MeleeWeapon weapon;
 
-    protected MeeleSkill(MeleeWeapon weapon) {
+    protected MeleeSkill(MeleeWeapon weapon) {
         this.weapon = weapon;
     }
 

@@ -1,12 +1,13 @@
 package io.github.zap.zombiesplugin.data;
 
+import io.github.zap.zombiesplugin.provider.ICustomSerializerIdentity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Hashtable;
 
-public class EquipmentData {
+public class EquipmentData implements ICustomSerializerIdentity {
     public IDefaultVisual defaultVisual;
     public String id;
     public String name;

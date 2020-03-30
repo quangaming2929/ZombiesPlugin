@@ -26,7 +26,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <compilerArgument>-XDignore.symbol.file</compilerArgument>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
@@ -97,6 +96,12 @@
             <artifactId>spigot</artifactId>
             <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.gsonfire</groupId>
+            <artifactId>gson-fire</artifactId>
+            <version>1.8.4</version>
         </dependency>
     </dependencies>
 </project>

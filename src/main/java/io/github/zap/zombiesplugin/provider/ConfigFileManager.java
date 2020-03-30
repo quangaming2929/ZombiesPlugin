@@ -1,7 +1,16 @@
 package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.GsonBuilder;
+import io.github.zap.zombiesplugin.data.EquipmentData;
+import io.github.zap.zombiesplugin.data.GunData;
+import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
+import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
+import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
+import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
+import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
+import io.github.zap.zombiesplugin.data.visuals.ExpressionVisual;
 import io.github.zap.zombiesplugin.utils.IOHelper;
+import io.gsonfire.GsonFireBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -32,6 +41,24 @@ public class ConfigFileManager {
     }
 
     private void registerCustomClasses() {
+        // Equipment custom class section
+        // Data files
+        registerCustomClass("EquipmentData", EquipmentData.class);
+        registerCustomClass("GunData", GunData.class);
+
+        // IDefaultVisual
+        registerCustomClass("DefaultWeaponVisual", DefaultWeaponVisual.class);
+        registerCustomClass("ExpressionVisual", ExpressionVisual.class);
+
+        // Levels
+        registerCustomClass("ListLeveling", ListLeveling.class);
+        registerCustomClass("EquipmentValue", EquipmentValue.class);
+        registerCustomClass("LoreEquipmentValue", LoreEquipmentValue.class);
+
+        // Melee skill <Their is no subclass of MeleeSkill at the moment
+
+        // SoundFx
+        registerCustomClass("SingleNoteSoundFx", SingleNoteSoundFx.class);
     }
 
     /**
@@ -74,9 +101,11 @@ public class ConfigFileManager {
      * @return
      */
     public GsonBuilder getGsonBuilder() {
-        return new GsonBuilder()
-                .serializeNulls()
-                .registerTypeHierarchyAdapter( ICustomSerializerIdentity.class, new CustomClassGsonAdapter(this));
+        return new GsonFireBuilder()
+                .registerTypeSelector(ICustomSerializerIdentity.class, new CustomClassSelector(this))
+                .registerPostProcessor(ICustomSerializerIdentity.class, new CustomClassPostProcessor(this))
+                .createGsonBuilder()
+                .serializeNulls();
     }
 
     public void registerValue(String importerName, String valueName, Object value) {

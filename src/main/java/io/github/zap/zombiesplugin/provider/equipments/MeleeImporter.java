@@ -2,17 +2,19 @@ package io.github.zap.zombiesplugin.provider.equipments;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
-import io.github.zap.zombiesplugin.data.MeeleData;
-import io.github.zap.zombiesplugin.data.MeeleSkill;
+import io.github.zap.zombiesplugin.data.GunData;
+import io.github.zap.zombiesplugin.data.MeleeSkill;
 import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.equipments.Equipment;
 import io.github.zap.zombiesplugin.equipments.meele.MeleeWeapon;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
+import io.github.zap.zombiesplugin.utils.IOHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
@@ -33,12 +35,12 @@ public class MeleeImporter extends EquipmentImporter {
 
     @Override
     public String getConfigExtension() {
-        return "meeleData";
+        return "meleeData";
     }
 
     @Override
     protected Class<? extends EquipmentData> getConfigType() {
-        return MeeleData.class;
+        return EquipmentData.class;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class MeleeImporter extends EquipmentImporter {
             MeleeWeapon meele = new MeleeWeapon(currentData, manager);
             if(currentData.behaviour != null && values.containsKey(currentData.behaviour)) {
                 Class skillClazz = values.get(currentData.behaviour);
-                MeeleSkill skill = (MeeleSkill) skillClazz.getConstructor(MeleeWeapon.class).newInstance(meele);
+                MeleeSkill skill = (MeleeSkill) skillClazz.getConstructor(MeleeWeapon.class).newInstance(meele);
                 meele.setSkill(skill);
             }
 

@@ -1,10 +1,11 @@
 package io.github.zap.zombiesplugin.data;
 
+import io.github.zap.zombiesplugin.provider.ICustomSerializerIdentity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public interface IDefaultVisual {
+public interface IDefaultVisual extends ICustomSerializerIdentity {
     ItemStack getDefaultVisual(String displayName, int level, ILeveling levels);
     Material getDisplayItem();
     ChatColor getDisplayColor();

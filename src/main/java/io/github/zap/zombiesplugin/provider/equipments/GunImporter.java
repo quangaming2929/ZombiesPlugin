@@ -9,10 +9,15 @@ import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.equipments.guns.LinearGun;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
+import io.github.zap.zombiesplugin.utils.IOHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.util.FileUtil;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
