@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 
 public class Window {
     private boolean isBreaking;
@@ -10,13 +11,15 @@ public class Window {
     private final int width;
     private final int area;
 
-    private int breakCount = 0;
+    private int brokenBlocks = 0;
     private int lastBreakX = 0;
     private int lastBreakY = 0;
 
     private boolean northSouthFacing;
 
     private Material coverMaterial;
+
+    private Location origin;
 
     public Window(Location bound1, Location bound2, Material coverMaterial) {
         int xMin = Math.min(bound1.getBlockX(), bound2.getBlockX());
@@ -33,9 +36,15 @@ public class Window {
         northSouthFacing = bound1.getBlockZ() == bound2.getBlockZ();
         if(northSouthFacing) {
             width = bound2.getBlockX() - bound1.getBlockX() + 1;
+
+            double average = (bound1.getX() + bound2.getX()) / 2;
+            origin = new Location(bound1.getWorld(), average, bound1.getBlockY(), bound1.getBlockZ());
         }
         else {
             width = bound2.getBlockZ() - bound1.getBlockZ() + 1;
+
+            double average = (bound1.getZ() + bound2.getZ()) / 2;
+            origin = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY(), average);
         }
 
         area = width * (bound2.getBlockY() - bound1.getBlockY() + 1);
@@ -47,10 +56,6 @@ public class Window {
         int y = location.getBlockY();
         int z = location.getBlockZ();
 
-        System.out.println("		    Running bounds check on window. Our values: " + x + ", " + y + ", " + z);
-        System.out.println("		    Bound 1: " + bound1.toVector().toString());
-        System.out.println("		    Bound 2: " + bound2.toVector().toString());
-
         return x >= bound1.getBlockX() &&
                 y >= bound1.getBlockY() &&
                 z >= bound1.getBlockZ() &&
@@ -61,7 +66,7 @@ public class Window {
     }
 
     public void breakWindow() {
-        if(breakCount <= area) {
+        if(brokenBlocks < area) {
             if(northSouthFacing) {
                 Location offset = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
                 bound1.getWorld().getBlockAt(offset).setType(Material.AIR);
@@ -71,9 +76,9 @@ public class Window {
                 bound1.getWorld().getBlockAt(offset).setType(Material.AIR);
             }
 
-            //TODO: sounds
+            origin.getWorld().playSound(origin, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 10, 1);
 
-            breakCount++;
+            brokenBlocks++;
             lastBreakX++;
             if(lastBreakX >= width) {
                 lastBreakY++;
@@ -83,10 +88,10 @@ public class Window {
     }
 
     public void repairWindow() {
-        if(breakCount > 0) {
-            breakCount--;
+        if(brokenBlocks > 0) {
+            brokenBlocks--;
             lastBreakX--;
-            if(lastBreakX < width) {
+            if(lastBreakX < 0) {
                 lastBreakY--;
                 lastBreakX = width - 1;
             }
@@ -99,11 +104,19 @@ public class Window {
                 Location offset = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
                 bound1.getWorld().getBlockAt(offset).setType(coverMaterial);
             }
-            //TODO: sounds
+
+            if(brokenBlocks == 0) {
+                origin.getWorld().playSound(origin, Sound.BLOCK_ANVIL_PLACE, 10, 1);
+            }
+            else {
+                origin.getWorld().playSound(origin, Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 10, 1);
+            }
         }
     }
 
     public void setBreaking(boolean value) { isBreaking = value; }
 
     public boolean getBreaking() { return isBreaking; }
+
+    public Location getOrigin() { return origin; }
 }

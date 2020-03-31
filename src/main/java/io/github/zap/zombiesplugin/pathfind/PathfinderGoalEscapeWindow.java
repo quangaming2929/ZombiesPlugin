@@ -11,8 +11,11 @@ import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.mobs.ai.Pathfinder;
 import io.lumine.xikage.mythicmobs.mobs.ai.PathfindingGoal;
 import io.lumine.xikage.mythicmobs.util.annotations.MythicAIGoal;
+import net.minecraft.server.v1_15_R1.EntityCreature;
+import net.minecraft.server.v1_15_R1.Vec3D;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
 import org.bukkit.util.Vector;
 
 @MythicAIGoal(
@@ -20,14 +23,15 @@ import org.bukkit.util.Vector;
         description = "Used by zombies to navigate out of windows."
 )
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
+    private EntityCreature nmsEntity;
     private SpawnPoint spawnPoint;
-    private Window window = null;
+    private Window targetWindow = null;
     private AbstractLocation destination;
     private boolean reachedGoal = false;
     private boolean hasWindow = false;
 
     private final int searchDistance = 20;
-    private final int radiusSquared = 1;
+    private final int radiusSquared = 2;
 
     private int tickCounter = 0;
 
@@ -48,6 +52,8 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
                 hasWindow = true;
             }
         }
+
+        nmsEntity = (EntityCreature)((CraftEntity)entity.getBukkitEntity()).getHandle();
     }
 
     public boolean shouldStart() {
@@ -59,7 +65,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     public boolean canBreak() {
-        return tickCounter % 30 == 0;
+        return tickCounter % 25 == 0;
     }
 
     public void tick() {
@@ -67,7 +73,9 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         if(canBreak()) {
             tryBreak();
             tickCounter = 0;
+            nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY(), destination.getZ()));
         }
+
         ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
@@ -80,14 +88,9 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     @Override
-    public void end() {
-        if(window != null) {
-            window.setBreaking(false);
-        }
-    }
+    public void end() { }
 
     public void tryBreak() {
-        System.out.println("Attempting to break window.");
         World world = ((BukkitWorld) entity.getWorld()).getBukkitWorld();
         AbstractLocation loc = entity.getLocation();
         int posX = loc.getBlockX();
@@ -97,51 +100,47 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         Direction direction;
         float yaw = loc.getYaw();
         if(yaw <= -135 || yaw > 135) { //north
-            System.out.println("    Facing north.");
             direction = Direction.NORTH;
         }
         else if( yaw <= -45) {
-            System.out.println("    Facing east.");
             direction = Direction.EAST;
         }
         else if(yaw <= 45) {
-            System.out.println("    Facing south.");
             direction = Direction.SOUTH;
         }
         else {
-            System.out.println("    Facing west.");
             direction = Direction.WEST;
         }
 
         Vector testBlock;
         switch (direction) {
             case NORTH:
-                testBlock = new Vector(posX, posY + 1, posZ - 1);
+                testBlock = new Vector(posX, posY + 1, posZ - 0.5);
                 break;
             case EAST:
-                testBlock = new Vector(posX + 1, posY + 1, posZ);
+                testBlock = new Vector(posX + 0.5, posY + 1, posZ);
                 break;
             case SOUTH:
-                testBlock = new Vector(posX, posY + 1, posZ + 1);
+                testBlock = new Vector(posX, posY + 1, posZ + 0.5);
                 break;
             case WEST:
-                testBlock = new Vector(posX - 1, posY + 1, posZ);
+                testBlock = new Vector(posX - 0.5, posY + 1, posZ);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
 
         Location testLoc = new Location(world, testBlock.getBlockX(), testBlock.getBlockY(), testBlock.getBlockZ());
-        System.out.println("    Window sample location: " + testLoc.toVector().toString());
-        window = spawnPoint.getGameManager().getMap().getWindowAt(testLoc);
+        Window foundWindow = spawnPoint.getGameManager().getMap().getWindowAt(testLoc);
 
-        if(window != null) {
-            System.out.println("    Found window.");
-            window.setBreaking(true);
-            window.breakWindow();
+        if(foundWindow == null && targetWindow != null) {
+            targetWindow.setBreaking(false);
+            targetWindow = null;
         }
-        else {
-            System.out.println("    Window is null.");
+        else if(foundWindow != null) {
+            targetWindow = foundWindow;
+            foundWindow.setBreaking(true);
+            foundWindow.breakWindow();
         }
     }
 }

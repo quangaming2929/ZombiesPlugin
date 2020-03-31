@@ -71,19 +71,9 @@ public class UnboundedMeleeAttack extends PathfinderGoal {
         this.counter = 0;
     }
 
-    //seems to be responsible for "stopping" targeting of the target entity if it is invalid
-    public void d() {
-        EntityLiving goalTarget = this.entity.getGoalTarget();
-        if (!IEntitySelector.e.test(goalTarget)) {
-            this.entity.setGoalTarget(null);
-        }
-
-        this.entity.q(false); //datawatcher flag
-        this.entity.getNavigation().o();
-    }
-
     public void e() {
         EntityLiving targetEntity = this.entity.getGoalTarget();
+
         this.entity.getControllerLook().a(targetEntity, 30.0F, 30.0F);
         double distanceToTarget = this.entity.g(targetEntity.locX(), targetEntity.locY(), targetEntity.locZ());
         --this.counter;
@@ -109,12 +99,13 @@ public class UnboundedMeleeAttack extends PathfinderGoal {
 
         this.attackTimer = Math.max(this.attackTimer - 1, 0);
         this.tryAttack(targetEntity, distanceToTarget);
+
     }
 
     protected void tryAttack(EntityLiving targetEntity, double distanceToTarget) {
         double boundsWidth = this.getBoundsWidth(targetEntity);
         if (distanceToTarget <= boundsWidth && this.attackTimer <= 0) {
-            this.attackTimer = 20;
+            this.attackTimer = 15;
             this.entity.a(EnumHand.MAIN_HAND);
             this.entity.B(targetEntity);
         }

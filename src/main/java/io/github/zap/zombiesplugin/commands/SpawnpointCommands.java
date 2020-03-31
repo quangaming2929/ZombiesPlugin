@@ -58,7 +58,7 @@ public class SpawnpointCommands implements CommandExecutor {
                 System.out.println("Players: " + testGame.getPlayerManager().getPlayers().size());
 
                 GameMap map = testGame.getMap();
-                if(map.getSpawnManagers().size() == 0) {
+                if(map.getWindows().size() == 0) {
                     map.add(new Window(new Location(player.getWorld(), -1, 3, -1), new Location(player.getWorld(), -1, 4, 1), Material.OAK_SLAB));
                 }
 

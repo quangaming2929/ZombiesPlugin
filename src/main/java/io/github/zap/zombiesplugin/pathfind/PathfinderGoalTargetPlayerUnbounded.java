@@ -10,6 +10,7 @@ import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.mobs.ai.Pathfinder;
 import io.lumine.xikage.mythicmobs.mobs.ai.PathfindingGoal;
 import io.lumine.xikage.mythicmobs.util.annotations.MythicAIGoal;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
@@ -18,7 +19,8 @@ import org.bukkit.entity.LivingEntity;
         description = "Special goal that only cares about players in the current game and has an infinite range."
 )
 public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements PathfindingGoal {
-    private GameManager game;
+    private int tickCount;
+    private final GameManager game;
     private User target;
 
     public PathfinderGoalTargetPlayerUnbounded(AbstractEntity entity, String line, MythicLineConfig mlc) {
@@ -33,38 +35,66 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
 
     @Override
     public void start() {
-        nearestPlayer();
+        targetNearestUser();
     }
 
+    private boolean retargetTick() {
+        return tickCount % 20 == 0;
+    }
+
+    /**
+     * Stop targeting if the player isn't in survival or adventure mode. If we haven't already targeted a player,
+     * attempt to retarget every second. The latter should not happen during an actual game.
+     */
     @Override
     public void tick() {
-
+        if(target != null) {
+            GameMode mode = target.getPlayer().getGameMode();
+            if(mode == GameMode.CREATIVE || mode == GameMode.SPECTATOR || target.getPlayer().isDead()) {
+                target = null;
+            }
+        }
+        else {
+            tickCount++;
+            if(retargetTick()) {
+                targetNearestUser();
+                tickCount = 0;
+            }
+        }
     }
 
     @Override
     public boolean shouldEnd() {
-        return game == null || (target != null || game.hasEnded() || game.getPlayerManager().getPlayers().size() == 0);
+        return game == null || game.hasEnded();
     }
 
     @Override
-    public void end() {
+    public void end() { }
 
-    }
-
-    private void nearestPlayer() {
-        double lowest = Double.MAX_VALUE;
+    /**
+     * Sets the closest valid player as this entity's target. Cannot target players who are not participating in a game,
+     * or who are not in survival or adventure mode.
+     */
+    private void targetNearestUser() {
+        double shortest = Double.MAX_VALUE;
         User closest = null;
-        for(User user : game.getPlayerManager().getPlayers()) {
-            Location loc = user.getPlayer().getLocation();
 
-            double dyst = this.entity.getLocation().distanceSquared(new AbstractLocation(new BukkitWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
-            if(dyst < lowest) {
-                lowest = dyst;
-                closest = user;
+        for(User user : game.getPlayerManager().getPlayers()) {
+            GameMode mode = user.getPlayer().getGameMode();
+            if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
+                Location loc = user.getPlayer().getLocation();
+
+                double dist = this.entity.getLocation().distanceSquared(new AbstractLocation(new BukkitWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
+                if(dist < shortest) {
+                    shortest = dist;
+                    closest = user;
+                }
             }
         }
 
-        target = closest;
-        ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), target.getPlayer());
+        if(closest != null) {
+            target = closest;
+            ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), target.getPlayer());
+        }
     }
 }
