@@ -4,12 +4,15 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.player.GunUser;
 import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -108,6 +111,19 @@ public class PlayerManager implements Listener {
 
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerClickItem(InventoryClickEvent event) {
+        if(event.getClick() == ClickType.LEFT) {
+            if (event.getSlot() == 8) {
+                TeamMachine.next(getAssociatedUser((Player)event.getWhoClicked()));
+            } else if (event.getSlot() == 7) {
+                TeamMachine.prev(getAssociatedUser((Player)event.getWhoClicked()));
+            }
+
+            event.setCancelled(true);
         }
     }
 

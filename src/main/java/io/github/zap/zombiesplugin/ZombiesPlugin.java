@@ -2,11 +2,13 @@ package io.github.zap.zombiesplugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import io.github.zap.zombiesplugin.commands.DebugInventoryCommand;
 import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
+import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,6 +39,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this,this);
 
         getCommand("gunDebug").setExecutor(new GunDebugCommands());
+        getCommand("invDebug").setExecutor(new DebugInventoryCommand());
     }
 
     @Override
@@ -57,7 +60,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        // manager.addPlayer(e.getPlayer());
+        manager.addPlayer(e.getPlayer());
     }
 
 }

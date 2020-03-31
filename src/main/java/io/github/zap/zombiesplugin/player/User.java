@@ -34,4 +34,12 @@ public class User {
     public int getGold() {
         return gold;
     }
+
+    public void setGold (int amount) {
+        gold = amount;
+    }
+
+    public void addGold (int amount) {
+        gold += amount;
+    }
 }
