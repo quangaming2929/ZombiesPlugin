@@ -4,6 +4,7 @@ import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
 import io.github.zap.zombiesplugin.shop.Shop;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,7 @@ public class GameMap {
 	private final ArrayList<Shop> shops;
 	private final ArrayList<Door> doors;
 	private final ArrayList<Room> rooms;
+	private final ArrayList<Window> windows;
 
 	public GameMap(String name) {
 		this.name = name;
@@ -22,6 +24,7 @@ public class GameMap {
 		this.rounds = new ArrayList<>();
 		this.shops = new ArrayList<>();
 		this.doors = new ArrayList<>();
+		this.windows = new ArrayList<>();
 
 		//TODO: load from config file
 	}
@@ -38,6 +41,13 @@ public class GameMap {
 		return shops;
 	}
 
+	public Window getWindowAt(Location location) {
+		for(Window window : windows) {
+			if(window.isInBound(location)) return window;
+		}
+		return null;
+	}
+
 	public void add(SpawnManager manager) {
 		spawnManagers.add(manager);
 	}
@@ -52,5 +62,13 @@ public class GameMap {
 
 	public void add(Door door) {
 		doors.add(door);
+	}
+
+	public void add(Room room) {
+		rooms.add(room);
+	}
+
+	public void add(Window window) {
+		windows.add(window);
 	}
 }
