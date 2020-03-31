@@ -6,7 +6,6 @@ import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.memes.Direction;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitEntity;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitWorld;
 import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.mobs.ai.Pathfinder;
@@ -14,10 +13,7 @@ import io.lumine.xikage.mythicmobs.mobs.ai.PathfindingGoal;
 import io.lumine.xikage.mythicmobs.util.annotations.MythicAIGoal;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
 
 @MythicAIGoal(
         name = "escapeWindow",
@@ -137,7 +133,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
 
         if(window != null) {
             window.setBreaking(true);
-            window.advanceBreak();
+            window.breakWindow();
         }
     }
 }

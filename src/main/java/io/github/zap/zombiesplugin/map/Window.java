@@ -1,11 +1,22 @@
 package io.github.zap.zombiesplugin.map;
 
+import net.minecraft.server.v1_15_R1.Vec2F;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 public class Window {
     private boolean isBreaking;
-    private Location bound1;
-    private Location bound2;
+    private final Location bound1;
+    private final Location bound2;
+    private final int width;
+    private final int height;
+    private final int area;
+
+    private int breakCount = 0;
+    private int lastBreakX = 0;
+    private int lastBreakY = 0;
+
+    private boolean northSouthFacing;
 
     public Window(Location bound1, Location bound2) {
         int xMin = Math.min(bound1.getBlockX(), bound2.getBlockX());
@@ -18,6 +29,15 @@ public class Window {
 
         this.bound1 = new Location(bound1.getWorld(), xMin, yMin, zMin);
         this.bound2 = new Location(bound2.getWorld(), xMax, yMax, zMax);
+
+        width = bound2.getBlockX() - bound1.getBlockX() *
+                bound2.getBlockZ() - bound1.getBlockZ();
+
+        height = bound2.getBlockY() - bound1.getBlockY();
+
+        area = width * height;
+
+        northSouthFacing = bound1.getBlockZ() == bound2.getBlockZ();
     }
 
     public boolean isInBound(Location location) {
@@ -34,11 +54,31 @@ public class Window {
                 z <= bound2.getBlockZ();
     }
 
-    public void advanceBreak() {
+    public void breakWindow() {
+        if(northSouthFacing) {
+            bound1.getWorld().getBlockAt(bound1.add(lastBreakX, lastBreakY, 0)).setType(Material.AIR);
+        }
+        else {
+            bound1.getWorld().getBlockAt(bound1.add(0, lastBreakY, lastBreakX)).setType(Material.AIR);
+        }
+
+        //TODO: play sound
+
+        breakCount++;
+        if(breakCount > area) return;
+
+        lastBreakX++;
+        if(lastBreakX > bound2.getBlockX() || lastBreakX > bound2.getBlockZ()) {
+            lastBreakY++;
+            lastBreakX = 0;
+        }
+    }
+
+    public void repairWindow() {
 
     }
 
     public void setBreaking(boolean value) { isBreaking = value; }
 
-    public boolean isBreaking() { return isBreaking; }
+    public boolean getBreaking() { return isBreaking; }
 }

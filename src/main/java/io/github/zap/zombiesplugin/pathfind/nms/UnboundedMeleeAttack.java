@@ -29,7 +29,6 @@ public class UnboundedMeleeAttack extends PathfinderGoal {
 
     //entity validator
     public boolean a() {
-        //TODO: remove redundant if/else after testing
         long time = this.entity.world.getTime();
         if (time - this.timeSinceEntityValidation < 20L) {
             return false;
