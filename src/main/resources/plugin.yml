@@ -5,7 +5,7 @@ api-version: 1.13
 authors: [LimeSlayer420, thamid, TachibanaYui]
 description: An improved version of the Hypixel minigame Zombies.
 commands:
+  equipmentDebug:
+    description: Test command related to equipments
   invDebug:
     description: test mostly team machine
-  gunDebug:
-    description: Test command related to guns

@@ -1,8 +1,6 @@
 package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.guns.Gun;
-import io.github.zap.zombiesplugin.player.GunUser;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
@@ -90,14 +88,6 @@ public class PlayerManager implements Listener {
     public void onPlayerUse(PlayerInteractEvent event) {
         User user = getAssociatedUser(event.getPlayer());
         if(user != null) {
-            Gun gun = user.getGunUser().getGunByItemStack(user.getPlayer().getInventory().getItemInMainHand());
-            if(gun != null ) {
-                if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() ==  Action.RIGHT_CLICK_BLOCK)
-                    gun.shoot();
-                else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() ==  Action.LEFT_CLICK_BLOCK)
-                    gun.reload();
-            }
-
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
         }
