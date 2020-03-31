@@ -9,6 +9,7 @@ import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
+import io.github.zap.zombiesplugin.shop.machine.tasks.DebugTask;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
@@ -56,7 +58,9 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         return protocolManager;
     }
 
-    public PlayerManager manager ;
+    // Test fields
+    public PlayerManager manager;
+    public TeamMachine tm = new TeamMachine(null, Arrays.asList(DebugTask.getTest()));
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {

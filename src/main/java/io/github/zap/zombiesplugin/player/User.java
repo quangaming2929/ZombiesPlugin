@@ -14,6 +14,7 @@ public class User {
     private int gold;
 
     public User(Player player) {
+        this.gold = 1500; // TODO: REMOVE THIS AFTER TESTING
         this.player = player;
         this.hotbar = new HotbarManager(player);
         this.gunUser = new GunUser(this, 2, 1,2,3);

@@ -116,14 +116,8 @@ public class PlayerManager implements Listener {
 
     @EventHandler
     public void onPlayerClickItem(InventoryClickEvent event) {
-        if(event.getClick() == ClickType.LEFT) {
-            if (event.getSlot() == 8) {
-                TeamMachine.next(getAssociatedUser((Player)event.getWhoClicked()));
-            } else if (event.getSlot() == 7) {
-                TeamMachine.prev(getAssociatedUser((Player)event.getWhoClicked()));
-            }
-
-            event.setCancelled(true);
+        if (ZombiesPlugin.instance.tm.contains(event.getClickedInventory())) {
+            ZombiesPlugin.instance.tm.processClick(event, getAssociatedUser((Player) event.getWhoClicked()));
         }
     }
 

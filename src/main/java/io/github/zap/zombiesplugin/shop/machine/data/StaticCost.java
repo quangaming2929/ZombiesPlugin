@@ -3,6 +3,13 @@ package io.github.zap.zombiesplugin.shop.machine.data;
 import io.github.zap.zombiesplugin.manager.GameManager;
 
 public class StaticCost implements ICost {
+    public StaticCost(int cost) {
+        this.cost = cost;
+    }
+
+    public StaticCost() {
+    }
+
     public int cost;
 
     @Override

@@ -1,6 +1,10 @@
 package io.github.zap.zombiesplugin.shop.machine.data;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
 
 /**
  * Abbreviation for: Team Machine Task Data
@@ -10,7 +14,7 @@ import org.bukkit.Material;
 public class TMTaskData {
     public String displayName;
     public Material displayItem;
-    public String[] lore;
+    public List<String> description;
     public String task;
     public ICost cost;
 

@@ -10,10 +10,9 @@ import org.bukkit.entity.Player;
 
 public class DebugInventoryCommand implements CommandExecutor {
     @Override
-    public boolean onCommand( CommandSender commandSender, Command command, String s, String[] strings) {
-        Integer requestedSlot = Integer.parseInt(strings[0]);
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         User user = ZombiesPlugin.instance.manager.getAssociatedUser((Player)commandSender);
-        TeamMachine.access(user, requestedSlot);
+        ZombiesPlugin.instance.tm.openTeamMachineGUI(user);
 
         return false;
     }
