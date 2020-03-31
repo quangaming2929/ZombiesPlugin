@@ -13,6 +13,7 @@ public class GameManager {
     private GameSettings settings;
     private PlayerManager playerManager;
     private GameMap map;
+    private boolean hasEnded;
 
     private int lastRound = 0;
 
@@ -50,4 +51,6 @@ public class GameManager {
     }
 
     public String toString() { return name; }
+
+    public boolean hasEnded() {return hasEnded;}
 }

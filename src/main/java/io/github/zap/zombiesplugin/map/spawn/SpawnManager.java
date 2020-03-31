@@ -15,6 +15,7 @@ import java.util.Iterator;
 public abstract class SpawnManager {
 	public final String name;
 	public final String typeConverter;
+
 	protected final GameMap map;
 	protected final HashSet<MythicMob> acceptedMobTypes;
 	protected final ArrayList<SpawnPoint> spawnPoints;

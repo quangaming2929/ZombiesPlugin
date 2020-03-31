@@ -24,12 +24,11 @@ public class SpawnPoint {
 
 	public void spawn(MythicMob mob) {
 		ZombiesPlugin.instance.lastSpawnpoint = this;
-		System.out.println("spawn() called on SpawnPoint " + toString());
 		mob.spawn(new AbstractLocation(new BukkitWorld(spawn.getWorld()), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()), 0);
 		ZombiesPlugin.instance.lastSpawnpoint = null;
 	}
 
-	public GameManager getManager() { return manager; }
+	public GameManager getGameManager() { return manager; }
 
 	public boolean canSpawn() {
 		return true;

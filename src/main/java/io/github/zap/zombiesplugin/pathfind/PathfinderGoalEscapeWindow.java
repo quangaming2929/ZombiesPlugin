@@ -12,14 +12,17 @@ import org.bukkit.Location;
 
 @MythicAIGoal(
         name = "escapeWindow",
-        aliases = {"escape"},
         description = "Used by zombies to navigate out of windows."
 )
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
     private AbstractLocation destination;
     private boolean reachedGoal = false;
     private boolean hasWindow = false;
-    private long tickCount = 0;
+
+    private final int searchDistance = 20;
+    private final int radiusSquared = 4;
+
+    private int tickCounter = 0;
 
     public PathfinderGoalEscapeWindow(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
@@ -27,7 +30,6 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
 
         SpawnPoint spawnpoint = ZombiesPlugin.instance.lastSpawnpoint;
         if(spawnpoint != null) {
-            System.out.println("Inside Pathfinder constructor. lastSpawnpoint: " + spawnpoint.toString());
             Location testSpawnLocation = spawnpoint.getSpawn();
             AbstractLocation location = entity.getLocation();
             if(testSpawnLocation.getBlockX() == location.getBlockX() &&
@@ -42,27 +44,27 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     public boolean shouldStart() {
-        return this.entity.getLocation().distanceSquared(destination) > (double)1 && !reachedGoal;
+        return this.entity.getLocation().distanceSquared(destination) > (double)radiusSquared && !reachedGoal;
     }
 
     public void start() {
-        ai().navigateToLocation(this.entity, destination, 15);
+        ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
-    public boolean shouldNavigate() {
-        //returns true every 20 ticks (1 second)
-        return tickCount % 20 == 0;
+    public boolean tryBreak() {
+        return tickCounter % 20 == 0;
     }
 
     public void tick() {
-        if(shouldNavigate()) {
-            ai().navigateToLocation(this.entity, destination, 15);
+        tickCounter++;
+        if(tryBreak()) {
+
         }
-        else tickCount++;
+        ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
     public boolean shouldEnd() {
-        if(this.entity.getLocation().distanceSquared(destination) <= (double)1 || !hasWindow) {
+        if(this.entity.getLocation().distanceSquared(destination) <= (double)radiusSquared || !hasWindow) {
             reachedGoal = true;
             return true;
         }

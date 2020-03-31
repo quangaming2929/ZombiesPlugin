@@ -15,20 +15,24 @@ import java.util.Set;
 
 public class Hack {
     //disgusting dirty code. be warned, all ye who may enter here, for this will get broken with every minor release, no exceptions.
-    public static void injectCustomGoals(MythicMobs instance, Set<Class<?>> classes) throws NoSuchFieldException, IllegalAccessException {
+    public static void injectCustomAi(MythicMobs instance, Set<Class<?>> goals, Set<Class<?>> targeters) throws NoSuchFieldException, IllegalAccessException {
         VolatileCodeEnabled_v1_15_R1 enabled = (VolatileCodeEnabled_v1_15_R1)instance.getVolatileCodeHandler();
         VolatileAIHandler_v1_15_R1 target = (VolatileAIHandler_v1_15_R1)enabled.getAIHandler();
 
         //this is what happens when you don't have good API documentation but fortunately leave your code un-obfuscated :D
-        Field field = VolatileAIHandler_v1_15_R1.class.getDeclaredField("AI_GOALS");
-        field.setAccessible(true);
-        Map<String, Class<? extends PathfinderAdapter>> AI_GOALS = (Map<String, Class<? extends PathfinderAdapter>>) field.get(target);
+        Field aiGoals = VolatileAIHandler_v1_15_R1.class.getDeclaredField("AI_GOALS");
+        aiGoals.setAccessible(true);
+        Map<String, Class<? extends PathfinderAdapter>> AI_GOALS = (Map<String, Class<? extends PathfinderAdapter>>) aiGoals.get(target);
 
-        Iterator var3 = classes.iterator();
+        Field aiTargets = VolatileAIHandler_v1_15_R1.class.getDeclaredField("AI_TARGETS");
+        aiTargets.setAccessible(true);
+        Map<String, Class<? extends PathfinderAdapter>> AI_TARGETS = (Map<String, Class<? extends PathfinderAdapter>>) aiTargets.get(target);
+
+        Iterator goalsIterator = goals.iterator();
 
         int i;
-        while(var3.hasNext()) {
-            Class clazz = (Class)var3.next();
+        while(goalsIterator.hasNext()) {
+            Class clazz = (Class)goalsIterator.next();
 
             try {
                 String name = ((MythicAIGoal)clazz.getAnnotation(MythicAIGoal.class)).name();
@@ -41,8 +45,30 @@ public class Hack {
                         AI_GOALS.put(alias.toUpperCase(), clazz);
                     }
                 }
-            } catch (Exception var17) {
-                MythicLogger.error("Uh oh. You done went and haxed me and now this happened. Offender: {0}", new Object[]{clazz.getCanonicalName()});
+            } catch (Exception e) {
+                MythicLogger.error("Uh oh. You done went and haxed me and now this happened. Offender: {0}", clazz.getCanonicalName());
+            }
+        }
+
+        Iterator targetsIterator = targeters.iterator();
+
+        int j;
+        while(targetsIterator.hasNext()) {
+            Class clazz = (Class)targetsIterator.next();
+
+            try {
+                String name = ((MythicAIGoal)clazz.getAnnotation(MythicAIGoal.class)).name();
+                String[] aliases = ((MythicAIGoal)clazz.getAnnotation(MythicAIGoal.class)).aliases();
+                if (PathfinderAdapter.class.isAssignableFrom(clazz)) {
+                    AI_TARGETS.put(name.toUpperCase(), clazz);
+
+                    for(j = 0; j < aliases.length; ++j) {
+                        String alias = aliases[j];
+                        AI_TARGETS.put(alias.toUpperCase(), clazz);
+                    }
+                }
+            } catch (Exception e) {
+                MythicLogger.error("Uh oh. You done went and haxed me and now this happened. Offender: {0}", clazz.getCanonicalName());
             }
         }
     }

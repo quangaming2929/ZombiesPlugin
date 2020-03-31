@@ -3,7 +3,6 @@ package io.github.zap.zombiesplugin.map.data;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
-import io.github.zap.zombiesplugin.provider.ICustomSerializerIdentity;
 
 import java.util.ArrayList;
 

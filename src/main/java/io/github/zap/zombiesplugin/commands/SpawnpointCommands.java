@@ -51,6 +51,9 @@ public class SpawnpointCommands implements CommandExecutor {
                 types.add(mob);
 
                 GameManager testGame = ZombiesPlugin.instance.getGameManager("test_game");
+                testGame.getPlayerManager().addPlayer(player);
+                System.out.println("Players: " + testGame.getPlayerManager().getPlayers().size());
+
                 GameMap map = testGame.getMap();
 
                 SpawnManager manager;
