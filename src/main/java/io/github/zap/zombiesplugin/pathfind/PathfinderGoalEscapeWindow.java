@@ -27,13 +27,13 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     private boolean hasWindow = false;
 
     private final int searchDistance = 20;
-    private final int radiusSquared = 4;
+    private final int radiusSquared = 1;
 
     private int tickCounter = 0;
 
     public PathfinderGoalEscapeWindow(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
-        setGoalType(GoalType.MOVE);
+        setGoalType(GoalType.MOVE_LOOK);
 
         spawnPoint = ZombiesPlugin.instance.lastSpawnpoint;
         if(spawnPoint != null) {
@@ -59,7 +59,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     public boolean canBreak() {
-        return tickCounter % 20 == 0;
+        return tickCounter % 30 == 0;
     }
 
     public void tick() {
@@ -68,9 +68,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
             tryBreak();
             tickCounter = 0;
         }
-        else {
-            ai().navigateToLocation(this.entity, destination, searchDistance);
-        }
+        ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
     public boolean shouldEnd() {
@@ -89,6 +87,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     public void tryBreak() {
+        System.out.println("Attempting to break window.");
         World world = ((BukkitWorld) entity.getWorld()).getBukkitWorld();
         AbstractLocation loc = entity.getLocation();
         int posX = loc.getBlockX();
@@ -98,15 +97,19 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         Direction direction;
         float yaw = loc.getYaw();
         if(yaw <= -135 || yaw > 135) { //north
+            System.out.println("    Facing north.");
             direction = Direction.NORTH;
         }
         else if( yaw <= -45) {
+            System.out.println("    Facing east.");
             direction = Direction.EAST;
         }
         else if(yaw <= 45) {
+            System.out.println("    Facing south.");
             direction = Direction.SOUTH;
         }
         else {
+            System.out.println("    Facing west.");
             direction = Direction.WEST;
         }
 
@@ -129,11 +132,16 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         }
 
         Location testLoc = new Location(world, testBlock.getBlockX(), testBlock.getBlockY(), testBlock.getBlockZ());
+        System.out.println("    Window sample location: " + testLoc.toVector().toString());
         window = spawnPoint.getGameManager().getMap().getWindowAt(testLoc);
 
         if(window != null) {
+            System.out.println("    Found window.");
             window.setBreaking(true);
             window.breakWindow();
+        }
+        else {
+            System.out.println("    Window is null.");
         }
     }
 }

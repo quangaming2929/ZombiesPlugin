@@ -4,11 +4,14 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.Room;
+import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.spawn.RandomizedSpawnManager;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -55,6 +58,9 @@ public class SpawnpointCommands implements CommandExecutor {
                 System.out.println("Players: " + testGame.getPlayerManager().getPlayers().size());
 
                 GameMap map = testGame.getMap();
+                if(map.getSpawnManagers().size() == 0) {
+                    map.add(new Window(new Location(player.getWorld(), -1, 3, -1), new Location(player.getWorld(), -1, 4, 1), Material.OAK_SLAB));
+                }
 
                 SpawnManager manager;
                 if(map.getSpawnManagers().size() == 0) {
@@ -62,7 +68,7 @@ public class SpawnpointCommands implements CommandExecutor {
                     map.getSpawnManagers().get(0).add(mob);
                 }
                 manager = map.getSpawnManagers().get(0);
-                manager.add(new SpawnPoint(testGame, new Room(map), player.getLocation(), player.getLocation().add(5, 0, 0)));
+                manager.add(new SpawnPoint(testGame, new Room(map), new Location(player.getWorld(), -6, 2, 3), new Location(player.getWorld(), 0, 1, 0)));
             }
         }
         return false;

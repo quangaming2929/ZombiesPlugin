@@ -8,17 +8,14 @@ import io.lumine.xikage.mythicmobs.util.annotations.MythicAIGoal;
 import io.lumine.xikage.mythicmobs.volatilecode.v1_15_R1.ai.PathfinderHolder;
 import net.minecraft.server.v1_15_R1.EntityCreature;
 import net.minecraft.server.v1_15_R1.PathfinderGoal;
-import net.minecraft.server.v1_15_R1.PathfinderGoalMeleeAttack;
 
 @MythicAIGoal(
         name = "unboundedMeleeAttack",
-        aliases = {"unboundedMeleeAttack"},
         description = "Used by zombies to target players after having left the window."
 )
 public class PathfinderGoalUnboundedMeleeAttack extends WrappedPathfindingGoal implements PathfinderHolder {
     public PathfinderGoalUnboundedMeleeAttack(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
-        System.out.println("Created PathfinderGoalUnboundedMeleeAttack");
     }
 
     @Override
