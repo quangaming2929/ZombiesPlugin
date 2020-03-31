@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.shop.machine.data;
+package io.github.zap.zombiesplugin.data;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
 

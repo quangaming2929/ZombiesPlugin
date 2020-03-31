@@ -2,13 +2,14 @@ package io.github.zap.zombiesplugin.shop.machine;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
-import io.github.zap.zombiesplugin.shop.machine.data.ICost;
-import io.github.zap.zombiesplugin.shop.machine.data.TMTaskData;
+import io.github.zap.zombiesplugin.data.TMTaskData;
 import org.bukkit.ChatColor;
+import org.bukkit.SoundCategory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class TeamMachineTask {
@@ -22,13 +23,17 @@ public abstract class TeamMachineTask {
     }
 
     public void tryPurchase(User executor) {
-        int cost = getCost();
-        if(executor.getGold() >= cost) {
-            if (execTask(executor)) {
-                executor.addGold(-cost);
+        if(executor != null) {
+            int cost = getCost();
+            if(executor.getGold() >= cost) {
+                if (execTask(executor)) {
+                    data.purchaseFx.play(Arrays.asList(executor.getPlayer()), 100, SoundCategory.BLOCKS, null);
+                    executor.addGold(-cost);
+                    boughtCount++;
+                }
+            } else {
+                executor.getPlayer().sendMessage(ChatColor.RED + "You don't have enough Gold!");
             }
-        } else {
-            executor.getPlayer().sendMessage(ChatColor.RED + "You don't have enough Gold!");
         }
     }
 
@@ -44,7 +49,7 @@ public abstract class TeamMachineTask {
         boolean isPurchasable = user.getGold() > getCost();
         ItemStack item = new ItemStack(data.displayItem, 1);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName((isPurchasable ? ChatColor.GREEN  : ChatColor.RED) + data.displayName);
+        meta.setDisplayName((isPurchasable ? ChatColor.GREEN  : ChatColor.RED) + data.name);
 
         List<String> lore = new ArrayList<>();
         for (String line : data.description) {

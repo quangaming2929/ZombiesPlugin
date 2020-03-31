@@ -1,9 +1,8 @@
-package io.github.zap.zombiesplugin.shop.machine.data;
+package io.github.zap.zombiesplugin.data;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -11,13 +10,10 @@ import java.util.List;
  * This is a class that represent Team Machine Task from config file
  */
 // TODO: Refactor with equipment lore builder <Default Visual>
-public class TMTaskData {
-    public String displayName;
+public class TMTaskData extends ItemBasedObjectData{
+    public ICost cost;
+    public String taskName;
     public Material displayItem;
     public List<String> description;
-    public String task;
-    public ICost cost;
-
-
-    // TODO: Add sound fx
+    public SoundFx purchaseFx;
 }

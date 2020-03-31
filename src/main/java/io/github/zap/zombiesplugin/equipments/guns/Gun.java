@@ -32,7 +32,7 @@ public abstract class Gun extends UpgradeableEquipment {
         refill();
     }
 
-    private void refill() {
+    public void refill() {
         setClipAmmo((int)tryGetValue(GUN_CLIP_AMMO));
         setAmmo((int)tryGetValue(GUN_AMMO));
     }

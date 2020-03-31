@@ -25,7 +25,7 @@ public abstract class SoundFx implements ICustomSerializerIdentity {
      */
     public abstract void playGlobal(World world, float masterVolume, SoundCategory category, Location location);
 
-    protected Location getPlaylocation(Player player, Vector offset) {
+    protected Location getPlayLocation(Player player, Vector offset) {
         Location loc = player.getLocation().clone();
         if (offset != null) {
             loc.setX(loc.getX() + offset.getX());

@@ -1,5 +1,6 @@
-package io.github.zap.zombiesplugin.shop.machine.data;
+package io.github.zap.zombiesplugin.data.cost;
 
+import io.github.zap.zombiesplugin.data.ICost;
 import io.github.zap.zombiesplugin.manager.GameManager;
 
 public class StaticCost implements ICost {

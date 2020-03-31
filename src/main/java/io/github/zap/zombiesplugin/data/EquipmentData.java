@@ -7,12 +7,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Hashtable;
 
-public class EquipmentData implements ICustomSerializerIdentity {
+public class EquipmentData extends ItemBasedObjectData {
     public IDefaultVisual defaultVisual;
-    public String id;
-    public String name;
     public ILeveling levels;
-    public Hashtable<String, String> customData;
     public String behaviour;
 
     /**
@@ -28,7 +25,6 @@ public class EquipmentData implements ICustomSerializerIdentity {
     public ItemStack getDefaultVisual(int level) {
         return defaultVisual.getDefaultVisual(name, level, levels);
     }
-
 
     /**
      * Get stats for non-ultimate-able equipment

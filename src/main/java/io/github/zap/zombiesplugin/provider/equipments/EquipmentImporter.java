@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 public abstract class EquipmentImporter extends Importer {
-    protected Gson fileParser;
-
     protected Hashtable<String, EquipmentData> dataVault = new Hashtable<>();
     public Hashtable<String, Class> values = new Hashtable<>();
 
@@ -39,19 +37,18 @@ public abstract class EquipmentImporter extends Importer {
     @Override
     public void init(ConfigFileManager manager) {
         super.init(manager);
-        fileParser = manager.getGsonBuilder()
-                .create();
     }
 
     @Override
-    public void processConfigFile(Path file, String contents) {
+    public void processConfigFile (Path file, String contents) {
         EquipmentData data = fileParser.fromJson(contents, getConfigType());
         finalize(data);
         if(!dataVault.containsKey(data.id)) {
             dataVault.put(data.id, data);
         } else {
-            String errorMessage = "Error: duplicate equipment id or the equipment is already imported. Name: " + data.name + " at " + file.toString();
-            ZombiesPlugin.instance.getLogger().log(Level.WARNING, errorMessage);
+            String errorMessage = "Duplicate equipment id or the equipment is already imported. Name: " + data.name + " at " + file.toString() + "replacing old import...";
+            log(Level.WARNING, errorMessage);
+            dataVault.replace(data.id, data);
         }
     }
 
@@ -65,10 +62,10 @@ public abstract class EquipmentImporter extends Importer {
                         .newInstance(currentData, playerManager);
                 return equipment;
             } else {
-                ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't find equipment behaviour for this data: " + id);
+                log(Level.WARNING, "Can't find equipment behaviour for this data: " + id);
             }
         } else {
-            ZombiesPlugin.instance.getLogger().log(Level.WARNING, "Can't find the equipment id: " + id);
+            log(Level.WARNING, "Can't find the equipment id: " + id);
         }
 
         return null;

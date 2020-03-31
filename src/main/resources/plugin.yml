@@ -9,3 +9,5 @@ commands:
     description: Test command related to equipments
   invDebug:
     description: test mostly team machine
+  setGold:
+    description: Set player gold

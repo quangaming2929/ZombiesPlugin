@@ -18,7 +18,7 @@ public class SingleNoteSoundFx extends SoundFx {
     @Override
     public void play(List<Player> players, float masterVolume, SoundCategory category, Vector offset) {
         for (Player player : players) {
-            Location loc = getPlaylocation(player, offset);
+            Location loc = getPlayLocation(player, offset);
             player.playSound(loc, sound, category, masterVolume * volume, pitch);
         }
     }
