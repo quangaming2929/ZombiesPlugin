@@ -6,6 +6,7 @@ import io.github.zap.zombiesplugin.events.ValueRequestedEventArgs;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.data.TMTaskData;
+import io.github.zap.zombiesplugin.utils.InterpolationString;
 import org.bukkit.ChatColor;
 import org.bukkit.SoundCategory;
 import org.bukkit.inventory.ItemStack;
@@ -57,7 +58,22 @@ public abstract class TeamMachineTask {
 
         List<String> lore = new ArrayList<>();
         for (String line : data.description) {
-            lore.add(ChatColor.GRAY + line);
+            InterpolationString str = new InterpolationString() {
+                @Override
+                protected String evalExpr(String expr) {
+                    String strippedNotation = this.removeExprNotation(expr);
+                    if (data.customData.containsKey(strippedNotation)) {
+                        return data.customData.get(strippedNotation);
+                    }
+
+                    return expr;
+                }
+            };
+
+            str.startSequence = "${";
+            str.endSequence = "}";
+
+            lore.add(ChatColor.GRAY + str.evalString(line));
         }
         lore.add("");
         lore.add(ChatColor.GRAY + "Cost: " + ChatColor.GOLD + getCost() + " Gold");

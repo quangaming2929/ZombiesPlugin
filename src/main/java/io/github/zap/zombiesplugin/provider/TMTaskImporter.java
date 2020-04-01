@@ -7,11 +7,14 @@ import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachineTask;
 import io.github.zap.zombiesplugin.shop.machine.tasks.DragonWrathTask;
+import io.github.zap.zombiesplugin.shop.machine.tasks.FullReviveTask;
 import io.github.zap.zombiesplugin.shop.machine.tasks.TeamAmmoTask;
+import io.github.zap.zombiesplugin.utils.IOHelper;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.logging.Level;
@@ -24,12 +27,13 @@ public class TMTaskImporter extends Importer {
     public void init(ConfigFileManager manager) {
         super.init(manager);
         registerValues();
+        //tes();
     }
 
     private void registerValues() {
         registerValue("TeamAmmo", TeamAmmoTask.class);
         registerValue("DragonWrath", DragonWrathTask.class);
-        tes();
+        registerValue("FullRevive", FullReviveTask.class);
     }
 
     private void tes() {
@@ -49,6 +53,9 @@ public class TMTaskImporter extends Importer {
 
         taskDataSet.put(data.id, data);
 
+
+
+
         TMTaskData dw = new TMTaskData();
         dw.id = "tmt_dragon_wrath";
         dw.name = "Dragon's Wrath";
@@ -67,6 +74,30 @@ public class TMTaskImporter extends Importer {
         dw.customData.put(DragonWrathTask.TMT_WRATH_DELAY, "2");
 
         taskDataSet.put(dw.id, dw);
+
+        TMTaskData fr = new TMTaskData();
+        fr.id = "tmt_full_revive";
+        fr.name = "Full Revive";
+        fr.displayItem = Material.GOLDEN_APPLE;
+        fr.taskName = "FullRevive";
+        fr.description = Arrays.asList("Revives all downed and dead", "teammates.");
+        fr.cost = new StaticCost(2000);
+
+        SingleNoteSoundFx fxfr = new SingleNoteSoundFx();
+        fxfr.sound = Sound.ENTITY_PLAYER_LEVELUP;
+        fxfr.volume = 100;
+        fxfr.pitch = 1;
+        fr.purchaseFx = fxfr;
+
+        taskDataSet.put(fr.id, fr);
+
+        String ammoJson = fileParser.toJson(data);
+        String frJson = fileParser.toJson(fr);
+        String dwJson = fileParser.toJson(dw);
+        IOHelper.writeFile(Paths.get("E:\\Project\\Test Project\\Java\\ZAP\\Resource\\FullRevive.tmtData"), frJson);
+
+        Object z = fileParser.fromJson(frJson, TMTaskData.class);
+        System.out.println("z");
     }
 
     public TeamMachineTask createTask(String id, GameManager manager) throws Exception{

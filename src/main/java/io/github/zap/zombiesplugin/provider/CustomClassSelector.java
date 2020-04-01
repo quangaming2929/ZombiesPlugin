@@ -12,7 +12,12 @@ public class CustomClassSelector implements TypeSelector {
 
     @Override
     public Class getClassForElement(JsonElement jsonElement) {
-        String sig = jsonElement.getAsJsonObject().get("signature").getAsString();
-        return manager.getCustomClass(sig);
+        JsonElement sigElement = jsonElement.getAsJsonObject().get("signature");
+        if(sigElement != null) {
+            String sig = sigElement.getAsString();
+            return manager.getCustomClass(sig);
+        }
+
+        return null;
     }
 }

@@ -1,15 +1,18 @@
 package io.github.zap.zombiesplugin.player;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.equipments.guns.GunObjectGroup;
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
 import io.github.zap.zombiesplugin.equipments.meele.MeeleObjectGroup;
 import io.github.zap.zombiesplugin.equipments.perks.PerkObjectGroup;
 import io.github.zap.zombiesplugin.equipments.skills.SkillObjectGroup;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class User {
     private Player player;
     private HotbarManager hotbar;
+    private PlayerState state;
 
     private int gold;
 
@@ -59,5 +62,26 @@ public class User {
 
     public void addGold (int amount) {
         gold += amount;
+    }
+
+    public PlayerState getState(){
+        return state;
+    }
+
+    public void setState(PlayerState newState) {
+        // TODO: Do actual implementation here @ Tahmid
+        // add more cases here
+        if(getState() != newState) {
+            if (getState() == PlayerState.KNOCKED_DOWN) {
+                if (newState == PlayerState.ALIVE) {
+                    Bukkit.broadcastMessage(player.getDisplayName() + " revived from knock down");
+                }
+            } else if (getState() == PlayerState.DEAD) {
+                Bukkit.broadcastMessage(player.getDisplayName() + " revived from death");
+            } else if (getState() == PlayerState.ALIVE) {
+                getPlayer().closeInventory();
+            }
+        }
+
     }
 }

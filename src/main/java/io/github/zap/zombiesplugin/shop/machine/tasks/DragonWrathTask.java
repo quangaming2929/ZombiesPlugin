@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import javax.swing.text.html.parser.Entity;
 import java.util.Collection;
 
+// TODO: Change Mob to some managed Enemies to avoid stuck unwanted Mob
 public class DragonWrathTask extends TeamMachineTask {
     public static final String TMT_WRATH_RADIUS = "dwRadius";
     public static final String TMT_WRATH_DELAY = "dwDelay";

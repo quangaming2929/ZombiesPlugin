@@ -3,6 +3,7 @@ package io.github.zap.zombiesplugin.provider;
 import com.google.gson.GsonBuilder;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.data.GunData;
+import io.github.zap.zombiesplugin.data.cost.StaticCost;
 import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
 import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
@@ -59,6 +60,9 @@ public class ConfigFileManager {
 
         // SoundFx
         registerCustomClass("SingleNoteSoundFx", SingleNoteSoundFx.class);
+
+        // Cost
+        registerCustomClass("StaticCost", StaticCost.class);
     }
 
     /**
