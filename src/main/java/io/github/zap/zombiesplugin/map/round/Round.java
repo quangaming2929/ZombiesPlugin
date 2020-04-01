@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.map.round;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
@@ -19,18 +20,17 @@ public class Round {
 		this.waves = waves;
 	}
 
-	public void startRound() {
+	public void startRound(GameManager manager, GameDifficulty difficulty) {
 		long accumulatedDelay = 0;
 
 		for (Wave wave : waves) {
-			accumulatedDelay += wave.getDelay();
-
-			ArrayList<MythicMob> mobs = wave.getMobs();
+			accumulatedDelay += wave.getDelay(difficulty);
 			new BukkitRunnable() {
 				@Override
 				public void run() {
+					ArrayList<MythicMob> mobs = wave.getMobs(difficulty);
 					for (SpawnManager spawnManager : gameMap.getSpawnManagers()) {
-						spawnManager.spawn(mobs);
+						spawnManager.spawn(manager, mobs);
 					}
 				}
 
@@ -38,7 +38,7 @@ public class Round {
 		}
 	}
 
-	public GameMap getMap() {return gameMap;}
+	public GameMap getMap() { return gameMap; }
 
-	public ArrayList<Wave> getWaves() {return waves;}
+	public ArrayList<Wave> getWaves() { return waves; }
 }

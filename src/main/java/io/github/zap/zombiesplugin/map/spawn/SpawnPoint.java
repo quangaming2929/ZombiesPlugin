@@ -3,32 +3,33 @@ package io.github.zap.zombiesplugin.map.spawn;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.Room;
+import io.github.zap.zombiesplugin.map.data.SpawnPointData;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitWorld;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
 
 public class SpawnPoint {
-	private final GameManager manager;
 	private final Location spawn;
 	private final Location target;
 	private final Room room;
 
-	public SpawnPoint(GameManager manager, Room room, Location spawnCoordinates, Location target)
+	public SpawnPoint(Room room, Location spawnCoordinates, Location target)
 	{
-		this.manager = manager;
 		this.spawn = spawnCoordinates;
 		this.target = target;
 		this.room = room;
 	}
 
-	public void spawn(MythicMob mob) {
+	public void spawn(GameManager manager, MythicMob mob) {
 		ZombiesPlugin.instance.lastSpawnpoint = this;
-		mob.spawn(new AbstractLocation(new BukkitWorld(spawn.getWorld()), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()), 0);
-		ZombiesPlugin.instance.lastSpawnpoint = null;
-	}
+		ZombiesPlugin.instance.lastManager = manager;
 
-	public GameManager getGameManager() { return manager; }
+		mob.spawn(new AbstractLocation(new BukkitWorld(spawn.getWorld()), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()), 0);
+
+		ZombiesPlugin.instance.lastSpawnpoint = null;
+		ZombiesPlugin.instance.lastManager = null;
+	}
 
 	public boolean canSpawn() {
 		return true;
@@ -44,6 +45,6 @@ public class SpawnPoint {
 
 	@Override
 	public String toString() {
-		return "Manager: " + manager.toString() + " Spawn: " + spawn.toString() + " Target: " + target.toString();
+		return "Spawn: " + spawn.toString() + " Target: " + target.toString();
 	}
 }

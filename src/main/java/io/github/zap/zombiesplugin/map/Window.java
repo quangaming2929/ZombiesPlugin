@@ -1,8 +1,16 @@
 package io.github.zap.zombiesplugin.map;
 
+import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.player.User;
+import net.minecraft.server.v1_15_R1.BlockBarrier;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+
+import java.util.Collection;
 
 public class Window {
     private boolean isBreaking;
@@ -16,10 +24,9 @@ public class Window {
     private int lastBreakY = 0;
 
     private boolean northSouthFacing;
-
     private Material coverMaterial;
-
     private Location origin;
+    private boolean repairedFlag;
 
     public Window(Location bound1, Location bound2, Material coverMaterial) {
         int xMin = Math.min(bound1.getBlockX(), bound2.getBlockX());
@@ -65,18 +72,21 @@ public class Window {
                 z <= bound2.getBlockZ();
     }
 
-    public void breakWindow() {
+    public void breakWindow(GameManager manager) {
         if(brokenBlocks < area) {
+            Location targetBlock;
             if(northSouthFacing) {
-                Location offset = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
-                bound1.getWorld().getBlockAt(offset).setType(Material.AIR);
+                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
             }
             else {
-                Location offset = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
-                bound1.getWorld().getBlockAt(offset).setType(Material.AIR);
+                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
             }
-
+            bound1.getWorld().getBlockAt(targetBlock).setType(Material.AIR);
             origin.getWorld().playSound(origin, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 10, 1);
+
+            for(User user : manager.getPlayerManager().getPlayers()) {
+                user.getPlayer().sendBlockChange(targetBlock, Material.BARRIER.createBlockData());
+            }
 
             brokenBlocks++;
             lastBreakX++;
@@ -87,7 +97,7 @@ public class Window {
         }
     }
 
-    public void repairWindow() {
+    public void repairWindow(GameManager manager) {
         if(brokenBlocks > 0) {
             brokenBlocks--;
             lastBreakX--;
@@ -96,14 +106,16 @@ public class Window {
                 lastBreakX = width - 1;
             }
 
+            Location targetBlock;
             if(northSouthFacing) {
-                Location offset = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
-                bound1.getWorld().getBlockAt(offset).setType(coverMaterial);
+                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
             }
             else {
-                Location offset = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
-                bound1.getWorld().getBlockAt(offset).setType(coverMaterial);
+                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
             }
+
+            repairedFlag = true;
+            bound1.getWorld().getBlockAt(targetBlock).setType(coverMaterial);
 
             if(brokenBlocks == 0) {
                 origin.getWorld().playSound(origin, Sound.BLOCK_ANVIL_PLACE, 10, 1);
@@ -114,9 +126,13 @@ public class Window {
         }
     }
 
+    public Location getOrigin() { return origin; }
+
     public void setBreaking(boolean value) { isBreaking = value; }
 
     public boolean getBreaking() { return isBreaking; }
 
-    public Location getOrigin() { return origin; }
+    public void setJustRepaired(boolean value) { repairedFlag = value; }
+
+    public boolean getJustRepaired() { return repairedFlag; }
 }

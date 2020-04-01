@@ -4,6 +4,7 @@ import io.github.zap.zombiesplugin.map.data.SpawnManagerData;
 
 import java.util.ArrayList;
 
+//TODO: get rid of this
 public class SpawnManagerContainer {
     public ArrayList<SpawnManagerData> managers;
 

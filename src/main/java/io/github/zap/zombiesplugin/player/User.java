@@ -46,7 +46,7 @@ public class User {
                     if(MathUtils.manhattanDistance(window.getOrigin(), player.getLocation()) <= 5) {
                         repairTicks++;
                         if(repairTicks == 4) {
-                            window.repairWindow();
+                            window.repairWindow(manager.getGameManager());
                             repairTicks = 0;
                         }
                         break;

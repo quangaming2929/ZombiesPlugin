@@ -28,14 +28,14 @@ public abstract class SpawnManager {
 		spawnPoints = new ArrayList<>();
 	}
 
-	protected void spawn(ResettableIterator<SpawnPoint> spawnPoints, ArrayList<MythicMob> mobs) {
+	protected void spawn(GameManager manager, ResettableIterator<SpawnPoint> spawnPoints, ArrayList<MythicMob> mobs) {
 		for(int i = mobs.size() - 1; i >= 0 ; i--) {
 			MythicMob mob = mobs.get(i);
 			if(acceptedMobTypes.contains(mob)) {
 				while(spawnPoints.hasNext()) {
 					SpawnPoint point = spawnPoints.next();
 					if(point.canSpawn()) {
-						point.spawn(mob);
+						point.spawn(manager, mob);
 						mobs.remove(i);
 					}
 					if(mobs.size() == 0) return;
@@ -45,7 +45,7 @@ public abstract class SpawnManager {
 		}
 	}
 
-	public abstract void spawn(ArrayList<MythicMob> mobs);
+	public abstract void spawn(GameManager manager, ArrayList<MythicMob> mobs);
 
 	public void add(SpawnPoint spawnPoint) {
 		spawnPoints.add(spawnPoint);

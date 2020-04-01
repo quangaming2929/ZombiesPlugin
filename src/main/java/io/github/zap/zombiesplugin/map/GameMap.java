@@ -46,11 +46,9 @@ public class GameMap {
 	}
 
 	public Window getWindowAt(Location location) {
-		System.out.println("		Attempting to retrieve window. There is/are " + windows.size() + " currently active.");
 		for(Window window : windows) {
 			if(window.isInBound(location)) return window;
 		}
-		System.out.println("		No window found.");
 		return null;
 	}
 

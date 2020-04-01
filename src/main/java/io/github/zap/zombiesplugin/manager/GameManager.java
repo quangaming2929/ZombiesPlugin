@@ -12,26 +12,23 @@ public class GameManager {
 
     private GameSettings settings;
     private PlayerManager playerManager;
-    private GameMap map;
     private boolean hasEnded;
 
     private int lastRound = 0;
 
-    public GameManager(String name, GameSettings settings, GameMap map) {
+    public GameManager(String name, GameSettings settings) {
         this.name = name;
-
         this.settings = settings;
         playerManager = new PlayerManager(this);
-        this.map = map;
     }
 
     public void startNextRound() {
-        ArrayList<Round> rounds = map.getRounds();
+        ArrayList<Round> rounds = settings.gameMap.getRounds();
 
         if (lastRound == rounds.size()) {
             // TODO: Endgame sequence
         } else {
-            rounds.get(lastRound).startRound();
+            rounds.get(lastRound).startRound(this, settings.difficulty);
             lastRound++;
         }
     }
@@ -41,7 +38,7 @@ public class GameManager {
     }
 
     public GameMap getMap() {
-        return map;
+        return settings.gameMap;
     }
 
     public int getGameSize() {return settings.gameSize; }

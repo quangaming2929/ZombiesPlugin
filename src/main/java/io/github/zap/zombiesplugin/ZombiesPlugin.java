@@ -1,22 +1,32 @@
 package io.github.zap.zombiesplugin;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.BlockPosition;
 import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
+import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.GameSettings;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.GameMapImporter;
+import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalTargetPlayerUnbounded;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalUnboundedMeleeAttack;
 import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
+import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -32,7 +42,9 @@ public final class ZombiesPlugin extends JavaPlugin {
     private Hashtable<String, GameManager> gameManagers;
     private Hashtable<String, GameMap> maps;
 
+    //these are needed for communication between pathfinders and the plugin
     public SpawnPoint lastSpawnpoint;
+    public GameManager lastManager;
 
     @Override
     public void onEnable() {
@@ -44,7 +56,7 @@ public final class ZombiesPlugin extends JavaPlugin {
         registerConfigs();
         registerCommands();
 
-        gameManagers.put("test_game", new GameManager( "test_game", new GameSettings(), new GameMap("test_map")));
+        gameManagers.put("test_game", new GameManager( "test_game", new GameSettings(GameDifficulty.NORMAL, new GameMap("test_map"), 4)));
 
         try {
             HashSet<Class<?>> goals = new HashSet<>();
@@ -58,6 +70,35 @@ public final class ZombiesPlugin extends JavaPlugin {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+
+        //creates client-side only barriers in windows
+        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGE) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                StructureModifier<BlockPosition> structureModifier = event.getPacket().getBlockPositionModifier();
+                BlockPosition pos = structureModifier.read(0);
+                Player player = event.getPlayer();
+
+                for(String key : gameManagers.keySet()) {
+                    GameManager manager = gameManagers.get(key);
+                    User user = manager.getPlayerManager().getAssociatedUser(player);
+                    if(user != null) {
+                        Location currentLocation = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+                        Window window = manager.getMap().getWindowAt(currentLocation);
+                        if(window != null) {
+                            Material currentMaterial = currentLocation.getBlock().getType();
+                            Material newMaterial = event.getPacket().getBlockData().read(0).getType();
+
+                            if(currentMaterial == newMaterial && !window.getJustRepaired()) {
+                                event.setCancelled(true);
+                            }
+
+                            window.setJustRepaired(false);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override

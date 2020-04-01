@@ -25,7 +25,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
 
     public PathfinderGoalTargetPlayerUnbounded(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
-        game = ZombiesPlugin.instance.lastSpawnpoint.getGameManager();
+        game = ZombiesPlugin.instance.lastManager;
     }
 
     @Override

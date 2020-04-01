@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.pathfind;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.memes.Direction;
@@ -23,8 +24,9 @@ import org.bukkit.util.Vector;
         description = "Used by zombies to navigate out of windows."
 )
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
-    private EntityCreature nmsEntity;
+    private GameManager manager;
     private SpawnPoint spawnPoint;
+    private EntityCreature nmsEntity;
     private Window targetWindow = null;
     private AbstractLocation destination;
     private boolean reachedGoal = false;
@@ -40,6 +42,9 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         setGoalType(GoalType.MOVE_LOOK);
 
         spawnPoint = ZombiesPlugin.instance.lastSpawnpoint;
+        manager = ZombiesPlugin.instance.lastManager;
+        nmsEntity = (EntityCreature)((CraftEntity)entity.getBukkitEntity()).getHandle();
+
         if(spawnPoint != null) {
             Location testSpawnLocation = spawnPoint.getSpawn();
             AbstractLocation location = entity.getLocation();
@@ -52,8 +57,6 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
                 hasWindow = true;
             }
         }
-
-        nmsEntity = (EntityCreature)((CraftEntity)entity.getBukkitEntity()).getHandle();
     }
 
     public boolean shouldStart() {
@@ -73,9 +76,9 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         if(canBreak()) {
             tryBreak();
             tickCounter = 0;
-            nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY(), destination.getZ()));
         }
 
+        nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY() + 1, destination.getZ()));
         ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
@@ -88,7 +91,11 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     @Override
-    public void end() { }
+    public void end() {
+        if(targetWindow != null) {
+            targetWindow.setBreaking(false);
+        }
+    }
 
     public void tryBreak() {
         World world = ((BukkitWorld) entity.getWorld()).getBukkitWorld();
@@ -131,7 +138,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         }
 
         Location testLoc = new Location(world, testBlock.getBlockX(), testBlock.getBlockY(), testBlock.getBlockZ());
-        Window foundWindow = spawnPoint.getGameManager().getMap().getWindowAt(testLoc);
+        Window foundWindow = manager.getMap().getWindowAt(testLoc);
 
         if(foundWindow == null && targetWindow != null) {
             targetWindow.setBreaking(false);
@@ -139,8 +146,8 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         }
         else if(foundWindow != null) {
             targetWindow = foundWindow;
-            foundWindow.setBreaking(true);
-            foundWindow.breakWindow();
+            targetWindow.setBreaking(true);
+            targetWindow.breakWindow(manager);
         }
     }
 }

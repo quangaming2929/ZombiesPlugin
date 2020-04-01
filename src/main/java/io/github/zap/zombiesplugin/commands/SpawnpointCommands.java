@@ -45,7 +45,7 @@ public class SpawnpointCommands implements CommandExecutor {
                 ArrayList<MythicMob> mobs = new ArrayList<>();
                 mobs.add(mob);
 
-                manager.spawn(mobs);
+                manager.spawn(testGame, mobs);
             }
             else if(command.getName().equals("newspawnpoint")){
                 MythicMob mob =  MythicMobs.inst().getAPIHelper().getMythicMob("TestZombie");
@@ -68,7 +68,7 @@ public class SpawnpointCommands implements CommandExecutor {
                     map.getSpawnManagers().get(0).add(mob);
                 }
                 manager = map.getSpawnManagers().get(0);
-                manager.add(new SpawnPoint(testGame, new Room(map), new Location(player.getWorld(), -6, 2, 3), new Location(player.getWorld(), 0, 1, 0)));
+                manager.add(new SpawnPoint(new Room(map), new Location(player.getWorld(), -6, 2, 3), new Location(player.getWorld(), 0, 1, 0)));
             }
         }
         return false;

@@ -1,7 +1,11 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.map.data.SpawnManagerData;
 import io.github.zap.zombiesplugin.utils.ResettableIterator;
+import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 
 import java.util.ArrayList;
@@ -13,9 +17,17 @@ public class OrderedSpawnManager extends SpawnManager {
 		super(name, "ordered", map, acceptedMobTypes);
 	}
 
+	public OrderedSpawnManager(SpawnManagerData data) {
+		super(data.name, data.typeConverter, ZombiesPlugin.instance.getMap(data.mapName), new HashSet<>());
+
+		for(String name : data.mobNames) {
+			acceptedMobTypes.add(MythicMobs.inst().getAPIHelper().getMythicMob(name));
+		}
+	}
+
 	@Override
-	public void spawn(ArrayList<MythicMob> mobs) {
-		super.spawn(new ResettableIterator<SpawnPoint>() {
+	public void spawn(GameManager manager, ArrayList<MythicMob> mobs) {
+		super.spawn(manager, new ResettableIterator<SpawnPoint>() {
 			private Iterator<SpawnPoint> iterator;
 
 			@Override
