@@ -47,7 +47,10 @@ public class GameCommands implements CommandExecutor {
 
         if (commandSender instanceof Player) {
             DeadBody deadBody = new DeadBody((Player) commandSender);
-            deadBody.displayTo((Player) commandSender);
+
+            for (Player player : ZombiesPlugin.instance.getServer().getOnlinePlayers()) {
+                deadBody.displayTo(player);
+            }
         }
 
         return false;

@@ -43,10 +43,12 @@ public class DeadBody implements Listener {
         public void run() {
             if (tenthSecondsElapsed == 250 && !isCancelled()) {
                 destroyBody();
+                copied.setAllowFlight(true);
                 copied.setFlying(true);
                 copied.sendTitle("You died!", "", 1, 20, 1);;
+                cancel();
             } else {
-                hologram.editLine(ChatColor.RED + String.format("%.1fs", 5.0 - (float) tenthSecondsElapsed / 10), 3);
+                hologram.editLine(ChatColor.RED + String.format("%.1fs", 25.0 - (float) tenthSecondsElapsed / 10), 3);
                 tenthSecondsElapsed++;
             }
         }
@@ -64,6 +66,7 @@ public class DeadBody implements Listener {
                 copied.removePotionEffect(PotionEffectType.JUMP);
                 copied.teleport(copied.getLocation().clone().add(0, 2, 0));
                 HandlerList.unregisterAll(DeadBody.this);
+                cancel();
             } else {
                 hologram.editLine(ChatColor.RED + String.format("%.1fs", 1.5 - (float) tenthSecondsElapsed / 10), 3);
                 tenthSecondsElapsed++;
@@ -86,6 +89,7 @@ public class DeadBody implements Listener {
         copied.setWalkSpeed(0);
 
         createReviveHologram();
+        startKnockdownTask();
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
 
@@ -194,10 +198,6 @@ public class DeadBody implements Listener {
         copied.setWalkSpeed(0F);
     }
 
-    public void startReviveTask() {
-        reviveTask.runTaskTimer(ZombiesPlugin.instance, 0L, 2L);
-    }
-
     public void destroyBody() {
         knockdownTask.cancel();
         hologram.remove();
@@ -207,9 +207,10 @@ public class DeadBody implements Listener {
 
     @EventHandler
     public void onToggleShift(PlayerToggleSneakEvent event) {
-        if (reviver == null && event.getPlayer().getLocation().distance(copied.getLocation()) < 0.5 && event.isSneaking()) {
+        if (reviver == null && event.getPlayer() != copied && event.getPlayer().getLocation().distance(copied.getLocation()) < 3 && event.isSneaking()) {
             reviver = event.getPlayer();
-            startReviveTask();
+            knockdownTask.cancel();
+            reviveTask.runTaskTimer(ZombiesPlugin.instance, 0L, 2L);
             hologram.editLine(ChatColor.YELLOW + "" + ChatColor.BOLD + "REVIVING...", 1);
         } else if (reviver == event.getPlayer() && !event.isSneaking()) {
             reviveTask.cancel();
