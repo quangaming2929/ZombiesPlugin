@@ -6,6 +6,7 @@ import io.github.zap.zombiesplugin.data.cost.StaticCost;
 import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachineTask;
+import io.github.zap.zombiesplugin.shop.machine.tasks.DragonWrathTask;
 import io.github.zap.zombiesplugin.shop.machine.tasks.TeamAmmoTask;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,6 +28,7 @@ public class TMTaskImporter extends Importer {
 
     private void registerValues() {
         registerValue("TeamAmmo", TeamAmmoTask.class);
+        registerValue("DragonWrath", DragonWrathTask.class);
         tes();
     }
 
@@ -46,6 +48,25 @@ public class TMTaskImporter extends Importer {
         data.purchaseFx = fx;
 
         taskDataSet.put(data.id, data);
+
+        TMTaskData dw = new TMTaskData();
+        dw.id = "tmt_dragon_wrath";
+        dw.name = "Dragon's Wrath";
+        dw.displayItem = Material.DRAGON_EGG;
+        dw.taskName = "DragonWrath";
+        dw.description = Arrays.asList("Kill all enemies within a <ZZ>", "block radius after a short", "delay");
+        dw.cost = new StaticCost(3000);
+
+        SingleNoteSoundFx dwfxx = new SingleNoteSoundFx();
+        dwfxx.sound = Sound.ENTITY_ENDER_DRAGON_GROWL;
+        dwfxx.volume = 100;
+        dwfxx.pitch = 1;
+        dw.purchaseFx = dwfxx;
+        dw.customData = new Hashtable<>();
+        dw.customData.put(DragonWrathTask.TMT_WRATH_RADIUS, "15");
+        dw.customData.put(DragonWrathTask.TMT_WRATH_DELAY, "2");
+
+        taskDataSet.put(dw.id, dw);
     }
 
     public TeamMachineTask createTask(String id, GameManager manager) throws Exception{

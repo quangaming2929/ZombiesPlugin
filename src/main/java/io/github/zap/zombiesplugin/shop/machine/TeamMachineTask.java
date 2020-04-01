@@ -1,5 +1,8 @@
 package io.github.zap.zombiesplugin.shop.machine;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.events.EventHandler;
+import io.github.zap.zombiesplugin.events.ValueRequestedEventArgs;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.data.TMTaskData;
@@ -11,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 public abstract class TeamMachineTask {
     protected final GameManager manager;
@@ -66,5 +70,26 @@ public abstract class TeamMachineTask {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    protected String tryGetCustomValue (String name) {
+        if (data.customData.containsKey(name)) {
+            String originalValue = data.customData.get(name);
+            ValueRequestedEventArgs e = new ValueRequestedEventArgs(originalValue, name);
+            onValueRequested(e);
+            return (String) e.modifiedValue;
+        }else {
+            // Log this error to the console and the player
+            String msg = ChatColor.RED + "The requested value: " + name + " is not existed! If you are a server operator," +
+                    "please make sure that the config file is configured correctly. Value defaulted to empty";
+            ZombiesPlugin.instance.getLogger().log(Level.SEVERE, msg);
+
+            return "";
+        }
+    }
+
+    public final EventHandler<ValueRequestedEventArgs> valueRequested = new EventHandler<>();
+    protected void onValueRequested(ValueRequestedEventArgs e) {
+        valueRequested.invoke(this, e);
     }
 }

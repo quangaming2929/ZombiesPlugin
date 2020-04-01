@@ -56,7 +56,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         try {
             gm = new GameManager(null, null);
             manager = gm.getPlayerManager();
-            tm = new TeamMachine(gm, Arrays.asList(DebugTask.getTest(), ((TMTaskImporter) config.getImporter("TMTasks")).createTask("tmt_ammo_supply", gm)));
+            TMTaskImporter tmTasks = (TMTaskImporter) config.getImporter("TMTasks");
+            tm = new TeamMachine(gm, Arrays.asList(DebugTask.getTest(), tmTasks.createTask("tmt_ammo_supply", gm), tmTasks.createTask("tmt_dragon_wrath", gm)));
         } catch (Exception e) {
             e.printStackTrace();
         }
