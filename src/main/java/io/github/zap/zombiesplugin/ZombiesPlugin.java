@@ -10,7 +10,6 @@ import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.TMTaskImporter;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
-import io.github.zap.zombiesplugin.shop.machine.tasks.DebugTask;
 import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
 import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
 import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
@@ -23,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
     public static ZombiesPlugin instance;
@@ -57,7 +55,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
             gm = new GameManager(null, null);
             manager = gm.getPlayerManager();
             TMTaskImporter tmTasks = (TMTaskImporter) config.getImporter("TMTasks");
-            tm = new TeamMachine(gm, Arrays.asList(DebugTask.getTest(), tmTasks.createTask("tmt_ammo_supply", gm), tmTasks.createTask("tmt_dragon_wrath", gm)));
+            tm = new TeamMachine(gm, Arrays.asList(tmTasks.createTask("tmt_ammo_supply", gm),  tmTasks.createTask("tmt_full_revive", gm), tmTasks.createTask("tmt_dragon_wrath", gm)));
         } catch (Exception e) {
             e.printStackTrace();
         }
