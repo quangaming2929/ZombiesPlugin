@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import io.github.zap.zombiesplugin.commands.DebugInventoryCommand;
 import io.github.zap.zombiesplugin.commands.EquipmentDebugCommands;
+import io.github.zap.zombiesplugin.commands.ScoreboardDebugCommand;
 import io.github.zap.zombiesplugin.commands.SetGoldCommand;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
@@ -15,10 +16,13 @@ import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
 import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
 import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +68,9 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         getCommand("equipmentDebug").setExecutor(new EquipmentDebugCommands());
         getCommand("invDebug").setExecutor(new DebugInventoryCommand());
         getCommand("setGold").setExecutor(new SetGoldCommand());
+        getCommand("scoreBoardDebug").setExecutor(new ScoreboardDebugCommand());
+
+
     }
 
     @Override

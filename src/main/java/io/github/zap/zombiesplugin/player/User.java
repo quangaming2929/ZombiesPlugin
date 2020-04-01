@@ -14,7 +14,9 @@ public class User {
     private HotbarManager hotbar;
     private PlayerState state;
 
+    // TODO: make a player statistic class
     private int gold;
+    private int kills;
 
     public User(Player player) {
         this.gold = 1500; // TODO: REMOVE THIS AFTER TESTING

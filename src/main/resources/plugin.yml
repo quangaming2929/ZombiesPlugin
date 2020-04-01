@@ -11,3 +11,5 @@ commands:
     description: test mostly team machine
   setGold:
     description: Set player gold
+  scoreBoardDebug:
+    description: testScoreboard thingy

@@ -3,6 +3,8 @@ package io.github.zap.zombiesplugin.manager;
 import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.map.round.Round;
 import java.util.List;
+
+import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
 import org.bukkit.entity.Player;
 
 public class GameManager {
@@ -13,6 +15,8 @@ public class GameManager {
      * The map of the game
      */
     private final Map map;
+    // No final here because we might allow client to have their own scoreboard
+    private InGameScoreBoard sb;
 
     private List<Player> players;
 
@@ -28,6 +32,7 @@ public class GameManager {
     public GameManager(GameSettings settings, Map map) {
         this.settings = settings;
         this.map = map;
+        this.sb = new InGameScoreBoard(this);
         playerManager = new PlayerManager(this);
     }
 
