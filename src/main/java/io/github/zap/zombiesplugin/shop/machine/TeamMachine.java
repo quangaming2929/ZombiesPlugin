@@ -94,6 +94,6 @@ public class TeamMachine {
     }
 
     public boolean contains (Inventory inventory) {
-        return storedGuiInstances.containsValue(inventory);
+        return inventory != null && storedGuiInstances.containsValue(inventory);
     }
 }

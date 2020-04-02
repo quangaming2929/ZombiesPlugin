@@ -2,12 +2,16 @@ package io.github.zap.zombiesplugin.scoreboard;
 
 import com.destroystokyo.paper.Title;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.data.SoundFx;
+import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.GameState;
 import io.github.zap.zombiesplugin.player.PlayerState;
 import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
@@ -25,6 +29,7 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     protected final GameManager manager;
     protected final ScoreboardManager sbManager;
     protected final Title joinTitle;
+    protected final SoundFx cdSoundFx;
 
     protected IngameStatePanel pnlInGame;
     protected PreGameSidePanel pnlPre;
@@ -49,6 +54,8 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
                 10,
                 70,
                 20 );
+
+        cdSoundFx = new SingleNoteSoundFx(Sound.BLOCK_NOTE_BLOCK_HAT);
     }
 
     @Override
@@ -99,8 +106,6 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
         } else if (state == GameState.STARTED) {
             pnlInGame = new IngameStatePanel(manager.getPlayerManager().getPlayers(), "Test Map Bro", strToday);
             pnlInGame.show();
-            Objective obj = null;
-            obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
         }
 
         this.state = state;
@@ -128,12 +133,15 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
                 if (cdTimer == 10) {
                     manager.getPlayerManager().displayTitle(new Title(ChatColor.GOLD + String.valueOf(display)));
                     manager.getPlayerManager().broadcast(cdChat + ChatColor.GOLD + display + ChatColor.YELLOW + " seconds!", false);
+                    playSound(cdSoundFx);
                 } else if (cdTimer <= 5 && cdTimer > 1 && cdTimer==Math.round(cdTimer)) {
                     manager.getPlayerManager().displayTitle(new Title(ChatColor.RED + String.valueOf(display)));
                     manager.getPlayerManager().broadcast(cdChat + ChatColor.RED + display + ChatColor.YELLOW + " seconds!", false);
+                    playSound(cdSoundFx);
                 } else if (cdTimer == 1) {
                     manager.getPlayerManager().displayTitle(new Title(ChatColor.RED + String.valueOf(display), "", 10, 10, 0));
                     manager.getPlayerManager().broadcast(cdChat + ChatColor.RED + display + ChatColor.YELLOW + " second!", false);
+                    playSound(cdSoundFx);
                 }
                 cdTimer -= 0.5f;
             } else{
@@ -169,6 +177,16 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
         int min = (int) Math.floor(remainder / 60);
         remainder -= min * 60;
         return hour < 1 ? String.format("%02d:%02d", min, (int)remainder) : String.format("%02d:%02d:%02d", hour, min, (int)remainder);
+    }
 
+    private void playSound (SoundFx sound) {
+        // TODO: Exclude quitters
+        List<Player> players = new ArrayList<>();
+
+        for (User user : manager.getPlayerManager().getPlayers()) {
+            players.add(user.getPlayer());
+        }
+
+        sound.play(players, 1, SoundCategory.MASTER, null);
     }
 }

@@ -32,7 +32,7 @@ public abstract class TeamMachineTask {
             int cost = getCost();
             if(executor.getGold() >= cost) {
                 if (execTask(executor)) {
-                    data.purchaseFx.play(Arrays.asList(executor.getPlayer()), 100, SoundCategory.BLOCKS, null);
+                    data.purchaseFx.play(Arrays.asList(executor.getPlayer()), 1, SoundCategory.BLOCKS, null);
                     executor.addGold(-cost);
                     boughtCount++;
                 }

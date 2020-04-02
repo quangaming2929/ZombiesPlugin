@@ -50,7 +50,7 @@ public abstract class UpgradeableEquipment extends Equipment {
             // Play upgrade sound
             ArrayList<Player> players = new ArrayList<>();
             players.add(getPlayer());
-            upgradeSound.play(players, 100, SoundCategory.BLOCKS, null);
+            upgradeSound.play(players, 1, SoundCategory.BLOCKS, null);
 
             // Send message
             String msg = ChatColor.GREEN + String.format(ultMessage, getEquipmentData().name, RomanNumber.toRoman(getLevel()));

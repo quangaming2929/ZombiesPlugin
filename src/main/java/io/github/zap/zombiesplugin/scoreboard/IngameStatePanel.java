@@ -1,13 +1,12 @@
 package io.github.zap.zombiesplugin.scoreboard;
 
 import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.utils.TabDecorator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,22 @@ public class IngameStatePanel {
         for (User user : users ) {
             Scoreboard sb = manager.getNewScoreboard();
             this.users.putIfAbsent(user, sb);
+
+            // Below Name Objective
+            Objective health = sb.registerNewObjective("p_health", "health", ChatColor.RED + "❤");
+            health.setDisplaySlot(DisplaySlot.BELOW_NAME);
+            // Work-around for heath always at 0 until the player takes damage
+            user.getPlayer().setHealth(user.getPlayer().getHealth() - 0.3);
+
+            // Player list zombie kills objective
+            Objective kills = sb.registerNewObjective("p_kill", "dummy", "");
+            kills.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+            for (User userScore : users) {
+                kills.getScore(userScore.getPlayer().getDisplayName()).setScore(0);
+            }
+
+
+            // SideBar objective
             Objective obj =  sb.registerNewObjective("sb_zombies_main", "dummy", ChatColor.YELLOW + "" + ChatColor.BOLD + "ZOMBIES");
             obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -60,7 +75,6 @@ public class IngameStatePanel {
             for (User userSB : users) {
                 String teamName = "p_" + userSB.getPlayer().getDisplayName();
                 String entry = "" + ChatColor.GRAY + userSB.getPlayer().getDisplayName() + ": ";
-                System.out.println(teamName + ", " + user.getPlayer().getDisplayName());
                 createTeam(sb, teamName, entry);
                 obj.getScore(entry).setScore(scoreCounter);
                 setPlayerStats(userSB, ChatColor.GOLD + "0");
@@ -111,6 +125,10 @@ public class IngameStatePanel {
     public void setZombiesKills (User user, int kills) {
         Scoreboard sb = users.get(user);
         sb.getTeam(TEAM_ZOMBIE_KILL).setSuffix(ChatColor.GREEN + String.valueOf(kills));
+
+        for (Scoreboard others : users.values()) {
+            getKillsObjective(others).getScore(user.getPlayer().getDisplayName()).setScore(kills);
+        }
     }
 
     public void setPlayerStats (User userToSet, String stats) {
@@ -141,5 +159,9 @@ public class IngameStatePanel {
 
     private Objective getMainObjective(Scoreboard sb) {
         return sb.getObjective("sb_zombies_main");
+    }
+
+    private Objective getKillsObjective(Scoreboard sb) {
+        return sb.getObjective("p_kill");
     }
 }

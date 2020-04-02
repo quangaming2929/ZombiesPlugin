@@ -15,6 +15,13 @@ public class SingleNoteSoundFx extends SoundFx {
     public float pitch = 1;
     public float volume = 1;
 
+    public SingleNoteSoundFx(Sound sound) {
+        this.sound = sound;
+    }
+
+    public SingleNoteSoundFx() {
+    }
+
     @Override
     public void play(List<Player> players, float masterVolume, SoundCategory category, Vector offset) {
         for (Player player : players) {
