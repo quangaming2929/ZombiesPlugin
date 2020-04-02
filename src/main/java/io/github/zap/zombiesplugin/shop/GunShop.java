@@ -8,6 +8,7 @@ import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -20,11 +21,12 @@ public class GunShop extends ArmorStandShop {
 
 	private final String gunName;
 
-	public GunShop(GameManager gameManager, boolean requiresPower, int cost, SoundFx purchaseSuccessSound, Location hologramLocation, Location armorStandLocation, String gunName, Location itemLocation) {
-		super(gameManager, requiresPower, cost, purchaseSuccessSound, hologramLocation, armorStandLocation, ChatColor.GREEN + gunName);
+	public GunShop(GameManager gameManager, boolean requiresPower, int cost, SoundFx purchaseSuccessSound, Block block, String gunName) {
+		super(gameManager, requiresPower, cost, purchaseSuccessSound, block.getLocation().clone().add(0.5, 0.25, 0.5), block.getLocation().clone().add(0.5, -1, 0.5), ChatColor.GREEN + gunName);
 
 		this.gunName = gunName;
 
+		Location itemLocation = block.getLocation().clone().add(0.5, 0.481250, 0.5);
 		item = itemLocation.getWorld().dropItem(itemLocation, new ItemStack(Material.WOODEN_HOE)); // TODO: Actually get gun
 
 		item.setVelocity(item.getVelocity().zero());

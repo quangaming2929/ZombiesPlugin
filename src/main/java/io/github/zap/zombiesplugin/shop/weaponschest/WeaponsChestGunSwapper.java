@@ -1,4 +1,4 @@
-package io.github.zap.zombiesplugin.weaponschest;
+package io.github.zap.zombiesplugin.shop.weaponschest;
 
 import io.github.zap.zombiesplugin.guns.Gun;
 import java.util.ArrayList;
