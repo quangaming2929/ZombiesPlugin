@@ -47,6 +47,8 @@ public class DeadBody implements Listener {
                 copied.setFlying(true);
                 copied.sendTitle("You died!", "", 1, 20, 1);;
                 cancel();
+            } else if (reviver.getLocation().distance(copied.getLocation()) < 3) {
+                cancel();
             } else {
                 hologram.editLine(ChatColor.RED + String.format("%.1fs", 25.0 - (float) tenthSecondsElapsed / 10), 3);
                 tenthSecondsElapsed++;
@@ -87,6 +89,7 @@ public class DeadBody implements Listener {
         body.setLocation(location.getX(), location.getY(), location.getZ(), 0, 0);
         copied.teleport(copied.getLocation().clone().add(-0.5, -1, 0));
         copied.setWalkSpeed(0);
+        copied.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 250, 1));
 
         createReviveHologram();
         startKnockdownTask();
@@ -199,10 +202,10 @@ public class DeadBody implements Listener {
     }
 
     public void destroyBody() {
-        knockdownTask.cancel();
         hologram.remove();
         body.setHealth(0);
         copied.setWalkSpeed(0.2F);
+        copied.removePotionEffect(PotionEffectType.INVISIBILITY);
     }
 
     @EventHandler
@@ -214,6 +217,7 @@ public class DeadBody implements Listener {
             hologram.editLine(ChatColor.YELLOW + "" + ChatColor.BOLD + "REVIVING...", 1);
         } else if (reviver == event.getPlayer() && !event.isSneaking()) {
             reviveTask.cancel();
+            reviver = null;
             hologram.editLine(ChatColor.YELLOW + "" + ChatColor.BOLD  + "HOLD SNEAK TO REVIVE!", 1);
             knockdownTask.runTaskTimer(ZombiesPlugin.instance, 0L, 2L);
         }
