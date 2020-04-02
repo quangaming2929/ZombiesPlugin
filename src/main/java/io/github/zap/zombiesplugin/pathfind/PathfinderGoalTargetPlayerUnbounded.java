@@ -38,10 +38,6 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
         targetNearestUser();
     }
 
-    private boolean retargetTick() {
-        return tickCount % 20 == 0;
-    }
-
     /**
      * Stop targeting if the player isn't in survival or adventure mode. If we haven't already targeted a player,
      * attempt to retarget every second. The latter should not happen during an actual game.
@@ -50,13 +46,15 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
     public void tick() {
         if(target != null) {
             GameMode mode = target.getPlayer().getGameMode();
+            //TODO: check if target is downed
             if(mode == GameMode.CREATIVE || mode == GameMode.SPECTATOR || target.getPlayer().isDead()) {
                 target = null;
+                ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), null);
             }
         }
         else {
             tickCount++;
-            if(retargetTick()) {
+            if(tickCount == 10) {
                 targetNearestUser();
                 tickCount = 0;
             }
@@ -79,6 +77,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
         double shortest = Double.MAX_VALUE;
         User closest = null;
 
+        //finds the closest User to target
         for(User user : game.getPlayerManager().getPlayers()) {
             GameMode mode = user.getPlayer().getGameMode();
             if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {

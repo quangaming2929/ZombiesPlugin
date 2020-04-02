@@ -73,33 +73,33 @@ public class UnboundedMeleeAttack extends PathfinderGoal {
 
     public void e() {
         EntityLiving targetEntity = this.entity.getGoalTarget();
+        if(targetEntity != null) {
+            this.entity.getControllerLook().a(targetEntity, 30.0F, 30.0F);
+            double distanceToTarget = this.entity.g(targetEntity.locX(), targetEntity.locY(), targetEntity.locZ());
+            --this.counter;
+            if ((this.unknown || this.entity.getEntitySenses().a(targetEntity)) &&
+                    this.counter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D &&
+                    this.targetZ == 0.0D || targetEntity.g(this.targetX, this.targetY, this.targetZ) >= 1.0D ||
+                    this.entity.getRandom().nextFloat() < 0.05F)) {
+                this.targetX = targetEntity.locX();
+                this.targetY = targetEntity.locY();
+                this.targetZ = targetEntity.locZ();
+                this.counter = 4 + this.entity.getRandom().nextInt(7); //no idea why there is rng here
 
-        this.entity.getControllerLook().a(targetEntity, 30.0F, 30.0F);
-        double distanceToTarget = this.entity.g(targetEntity.locX(), targetEntity.locY(), targetEntity.locZ());
-        --this.counter;
-        if ((this.unknown || this.entity.getEntitySenses().a(targetEntity)) &&
-                this.counter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D &&
-                this.targetZ == 0.0D || targetEntity.g(this.targetX, this.targetY, this.targetZ) >= 1.0D ||
-                this.entity.getRandom().nextFloat() < 0.05F)) {
-            this.targetX = targetEntity.locX();
-            this.targetY = targetEntity.locY();
-            this.targetZ = targetEntity.locZ();
-            this.counter = 4 + this.entity.getRandom().nextInt(7); //no idea why there is rng here
+                if (distanceToTarget > 1024.0D) {
+                    this.counter += 10;
+                } else if (distanceToTarget > 256.0D) {
+                    this.counter += 5;
+                }
 
-            if (distanceToTarget > 1024.0D) {
-                this.counter += 10;
-            } else if (distanceToTarget > 256.0D) {
-                this.counter += 5;
+                if (!this.entity.getNavigation().a(targetEntity, this.speedModifier)) {
+                    this.counter += 15;
+                }
             }
 
-            if (!this.entity.getNavigation().a(targetEntity, this.speedModifier)) {
-                this.counter += 15;
-            }
+            this.attackTimer = Math.max(this.attackTimer - 1, 0);
+            this.tryAttack(targetEntity, distanceToTarget);
         }
-
-        this.attackTimer = Math.max(this.attackTimer - 1, 0);
-        this.tryAttack(targetEntity, distanceToTarget);
-
     }
 
     protected void tryAttack(EntityLiving targetEntity, double distanceToTarget) {

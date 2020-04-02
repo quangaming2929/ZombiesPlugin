@@ -1,14 +1,18 @@
 package io.github.zap.zombiesplugin.player;
 
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
+import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.manager.ITickable;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.utils.MathUtils;
 import org.bukkit.entity.Player;
 
 public class User {
+    private GameManager manager;
     private Player player;
-    private int repairTicks = 0;
+
+    private int tick = 0;
 
     /**
      * Manager gun-related
@@ -17,7 +21,8 @@ public class User {
     private HotbarManager hotbar;
     private int gold;
 
-    public User(Player player) {
+    public User(GameManager manager, Player player) {
+        this.manager = manager;
         this.player = player;
         this.hotbar = new HotbarManager(player);
         this.gunUser = new GunUser(this, 2, 1,2,3);
@@ -39,25 +44,30 @@ public class User {
         return gold;
     }
 
-    public void doTick(PlayerManager manager) {
-        if(player.isSneaking()) {
-            for(Window window : manager.getGameManager().getMap().getWindows()) {
-                if(!window.getBreaking()) {
-                    if(MathUtils.manhattanDistance(window.getOrigin(), player.getLocation()) <= 5) {
-                        repairTicks++;
-                        if(repairTicks == 4) {
-                            window.repairWindow(manager.getGameManager());
-                            repairTicks = 0;
+    public void userTick() {
+        tick++;
+        if(tick % 2 == 0) {
+            boolean repairTick = tick == 10;
+            for(Window window : manager.getMap().getWindows()) {
+                if(repairTick) { //one second interval
+                    if(MathUtils.manhattanDistance(window.getOrigin(), player.getLocation()) <= 6) {
+                        if(player.isSneaking()) {
+                            window.repairWindow();
+                            tick = 0;
+                            break;
                         }
-                        break;
+
+                        //todo: display text that says "press sneak to repair"
                     }
-                    else repairTicks = 0;
+                    tick = 0;
                 }
-                else repairTicks = 0;
+
+                //fifth of a second second interval for bounds check
+                if(window.locationInside(player.getLocation())) {
+                    player.teleport(window.getExit());
+                    break;
+                }
             }
-        }
-        else {
-            repairTicks = 0;
         }
     }
 }

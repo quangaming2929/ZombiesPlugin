@@ -47,7 +47,6 @@ public class WeaponsChestGunSwapper implements Listener {
 
 		// TODO: Initialize with player's ultimates
 		weaponStack = weaponsChestWeapons.get(0).gunData.getDefaultVisual(0, null);
-
 		droppedWeapon = player.getWorld().dropItem(doubleChestLocation, weaponStack);
 	}
 

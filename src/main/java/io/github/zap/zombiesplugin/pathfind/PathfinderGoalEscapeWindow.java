@@ -17,6 +17,7 @@ import net.minecraft.server.v1_15_R1.Vec3D;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 @MythicAIGoal(
@@ -25,7 +26,6 @@ import org.bukkit.util.Vector;
 )
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
     private GameManager manager;
-    private SpawnPoint spawnPoint;
     private EntityCreature nmsEntity;
     private Window targetWindow = null;
     private AbstractLocation destination;
@@ -33,7 +33,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     private boolean hasWindow = false;
 
     private final int searchDistance = 20;
-    private final int radiusSquared = 2;
+    private final int radiusSquared = 3;
 
     private int tickCounter = 0;
 
@@ -41,7 +41,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         super(entity, line, mlc);
         setGoalType(GoalType.MOVE_LOOK);
 
-        spawnPoint = ZombiesPlugin.instance.lastSpawnpoint;
+        SpawnPoint spawnPoint = ZombiesPlugin.instance.lastSpawnpoint;
         manager = ZombiesPlugin.instance.lastManager;
         nmsEntity = (EntityCreature)((CraftEntity)entity.getBukkitEntity()).getHandle();
 
@@ -51,7 +51,6 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
             if(testSpawnLocation.getBlockX() == location.getBlockX() &&
                     testSpawnLocation.getBlockY() == location.getBlockY() &&
                     testSpawnLocation.getBlockZ() == location.getBlockZ()) {
-
                 Location target = spawnPoint.getTarget();
                 destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
                 hasWindow = true;
@@ -63,38 +62,36 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         return this.entity.getLocation().distanceSquared(destination) > (double)radiusSquared && !reachedGoal;
     }
 
+    @Override
     public void start() {
         ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
-    public boolean canBreak() {
-        return tickCounter % 25 == 0;
-    }
-
+    @Override
     public void tick() {
-        tickCounter++;
-        if(canBreak()) {
-            tryBreak();
-            tickCounter = 0;
+        if(hasWindow) {
+            tickCounter++;
+            if(tickCounter == 20) {
+                tryBreak();
+                tickCounter = 0;
+            }
         }
 
         nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY() + 1, destination.getZ()));
         ai().navigateToLocation(this.entity, destination, searchDistance);
     }
 
+    @Override
     public boolean shouldEnd() {
-        if(this.entity.getLocation().distanceSquared(destination) <= (double)radiusSquared || !hasWindow) {
-            reachedGoal = true;
-            return true;
-        }
-        return false;
+        AbstractLocation entityLocation = this.entity.getLocation();
+        return (entityLocation.distanceSquared(destination) <= (double) radiusSquared && entityLocation.getY() == destination.getY()) || !hasWindow;
     }
 
     @Override
     public void end() {
-        if(targetWindow != null) {
-            targetWindow.setBreaking(false);
-        }
+        //in most cases it is sufficient for tryBreak() to set window to null itself, but occasionally this may not work
+        targetWindow = null;
+        reachedGoal = true;
     }
 
     public void tryBreak() {
@@ -104,9 +101,10 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         int posY = loc.getBlockY();
         int posZ = loc.getBlockZ();
 
-        Direction direction;
+        //turn yaw into a direction so we know which way the zombie is facing
+        Direction direction; //defaults to 'UP'
         float yaw = loc.getYaw();
-        if(yaw <= -135 || yaw > 135) { //north
+        if(yaw <= -135 || yaw > 135) {
             direction = Direction.NORTH;
         }
         else if( yaw <= -45) {
@@ -119,35 +117,33 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
             direction = Direction.WEST;
         }
 
-        Vector testBlock;
-        switch (direction) {
+        Location testLoc;
+        switch (direction) { //grab a vector in front of the zombie
             case NORTH:
-                testBlock = new Vector(posX, posY + 1, posZ - 0.5);
+                testLoc = new Location(world, posX, posY + 1, posZ - 0.5);
                 break;
             case EAST:
-                testBlock = new Vector(posX + 0.5, posY + 1, posZ);
+                testLoc = new Location(world, posX + 0.5, posY + 1, posZ);
                 break;
             case SOUTH:
-                testBlock = new Vector(posX, posY + 1, posZ + 0.5);
+                testLoc = new Location(world, posX, posY + 1, posZ + 0.5);
                 break;
             case WEST:
-                testBlock = new Vector(posX - 0.5, posY + 1, posZ);
+                testLoc = new Location(world, posX - 0.5, posY + 1, posZ);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
 
-        Location testLoc = new Location(world, testBlock.getBlockX(), testBlock.getBlockY(), testBlock.getBlockZ());
         Window foundWindow = manager.getMap().getWindowAt(testLoc);
-
         if(foundWindow == null && targetWindow != null) {
-            targetWindow.setBreaking(false);
             targetWindow = null;
         }
         else if(foundWindow != null) {
             targetWindow = foundWindow;
-            targetWindow.setBreaking(true);
-            targetWindow.breakWindow(manager);
+            targetWindow.breakWindow( this);
         }
     }
+
+    public boolean reachedGoal() { return reachedGoal || entity == null || entity.isDead(); }
 }

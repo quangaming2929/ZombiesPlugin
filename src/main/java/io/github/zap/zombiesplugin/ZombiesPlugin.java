@@ -6,11 +6,14 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.*;
 import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
 import io.github.zap.zombiesplugin.commands.GunDebugCommands;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
 import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.GameSettings;
+import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.GameMapImporter;
 import io.github.zap.zombiesplugin.map.Window;
@@ -23,17 +26,25 @@ import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
+import io.github.zap.zombiesplugin.utils.Tuple;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-public final class ZombiesPlugin extends JavaPlugin {
+public final class ZombiesPlugin extends JavaPlugin implements Listener {
     public static ZombiesPlugin instance;
 
     private ConfigFileManager config;
@@ -41,6 +52,8 @@ public final class ZombiesPlugin extends JavaPlugin {
 
     private Hashtable<String, GameManager> gameManagers;
     private Hashtable<String, GameMap> maps;
+
+    private TickManager tickManager;
 
     //these are needed for communication between pathfinders and the plugin
     public SpawnPoint lastSpawnpoint;
@@ -52,12 +65,16 @@ public final class ZombiesPlugin extends JavaPlugin {
         protocolManager = ProtocolLibrary.getProtocolManager();
         gameManagers = new Hashtable<>();
         maps = new Hashtable<>();
+        tickManager = new TickManager(2); //runs at 10 TPS
+        getServer().getPluginManager().registerEvents(this, this);
 
         registerConfigs();
         registerCommands();
 
+        //TODO: remove this after testing
         gameManagers.put("test_game", new GameManager( "test_game", new GameSettings(GameDifficulty.NORMAL, new GameMap("test_map"), 4)));
 
+        //inject custom AI pathfinders into MythicMobs
         try {
             HashSet<Class<?>> goals = new HashSet<>();
             goals.add(PathfinderGoalEscapeWindow.class);
@@ -71,34 +88,7 @@ public final class ZombiesPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        //creates client-side only barriers in windows
-        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.BLOCK_CHANGE) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                StructureModifier<BlockPosition> structureModifier = event.getPacket().getBlockPositionModifier();
-                BlockPosition pos = structureModifier.read(0);
-                Player player = event.getPlayer();
-
-                for(String key : gameManagers.keySet()) {
-                    GameManager manager = gameManagers.get(key);
-                    User user = manager.getPlayerManager().getAssociatedUser(player);
-                    if(user != null) {
-                        Location currentLocation = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
-                        Window window = manager.getMap().getWindowAt(currentLocation);
-                        if(window != null) {
-                            Material currentMaterial = currentLocation.getBlock().getType();
-                            Material newMaterial = event.getPacket().getBlockData().read(0).getType();
-
-                            if(currentMaterial == newMaterial && !window.getJustRepaired()) {
-                                event.setCancelled(true);
-                            }
-
-                            window.setJustRepaired(false);
-                        }
-                    }
-                }
-            }
-        });
+        tickManager.start();
     }
 
     @Override
@@ -158,4 +148,6 @@ public final class ZombiesPlugin extends JavaPlugin {
         }
         return false;
     }
+
+    public TickManager getTickManager() { return tickManager; }
 }

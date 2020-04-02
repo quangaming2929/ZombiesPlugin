@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.commands;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.BoundingBox;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.Window;
@@ -47,23 +48,22 @@ public class SpawnpointCommands implements CommandExecutor {
 
                 manager.spawn(testGame, mobs);
             }
-            else if(command.getName().equals("newspawnpoint")){
-                MythicMob mob =  MythicMobs.inst().getAPIHelper().getMythicMob("TestZombie");
+            else if(command.getName().equals("newspawnpoint")) {
+                MythicMob mob = MythicMobs.inst().getAPIHelper().getMythicMob("TestZombie");
 
                 HashSet<MythicMob> types = new HashSet<>();
                 types.add(mob);
 
                 GameManager testGame = ZombiesPlugin.instance.getGameManager("test_game");
                 testGame.getPlayerManager().addPlayer(player);
-                System.out.println("Players: " + testGame.getPlayerManager().getPlayers().size());
 
                 GameMap map = testGame.getMap();
-                if(map.getWindows().size() == 0) {
-                    map.add(new Window(new Location(player.getWorld(), -1, 3, -1), new Location(player.getWorld(), -1, 4, 1), Material.OAK_SLAB));
+                if (map.getWindows().size() == 0) {
+                    map.add(new Window(new Location(player.getWorld(), -1, 3, -1), new Location(player.getWorld(), -1, 4, 1), Material.OAK_SLAB, new BoundingBox(new Location(player.getWorld(), -1, 2, -1), new Location(player.getWorld(), -7, 4, 1)), new Location(player.getWorld(), 0, 1, 0)));
                 }
 
                 SpawnManager manager;
-                if(map.getSpawnManagers().size() == 0) {
+                if (map.getSpawnManagers().size() == 0) {
                     testGame.getMap().add(new RandomizedSpawnManager("test_spawner", testGame.getMap(), types));
                     map.getSpawnManagers().get(0).add(mob);
                 }

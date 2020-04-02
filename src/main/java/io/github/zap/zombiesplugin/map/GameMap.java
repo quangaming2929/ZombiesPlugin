@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.map;
 
-import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
 import io.github.zap.zombiesplugin.shop.Shop;
@@ -16,6 +15,7 @@ public class GameMap {
 	private final ArrayList<Door> doors;
 	private final ArrayList<Room> rooms;
 	private final ArrayList<Window> windows;
+	private final ArrayList<BoundingBox> boundsLimits;
 
 	public GameMap(String name) {
 		this.name = name;
@@ -25,6 +25,7 @@ public class GameMap {
 		this.shops = new ArrayList<>();
 		this.doors = new ArrayList<>();
 		this.windows = new ArrayList<>();
+		this.boundsLimits = new ArrayList<>();
 
 		//TODO: load from config file
 	}
@@ -47,7 +48,18 @@ public class GameMap {
 
 	public Window getWindowAt(Location location) {
 		for(Window window : windows) {
-			if(window.isInBound(location)) return window;
+			if(window.isInBound(location)) {
+				return window;
+			}
+		}
+		return null;
+	}
+
+	public BoundingBox getBoundsLimitAt(Location location) {
+		for(BoundingBox box : boundsLimits) {
+			if(box.isInBound(location)) {
+				return box;
+			}
 		}
 		return null;
 	}
@@ -74,5 +86,9 @@ public class GameMap {
 
 	public void add(Window window) {
 		windows.add(window);
+	}
+
+	public void add(BoundingBox limit) {
+		boundsLimits.add(limit);
 	}
 }
