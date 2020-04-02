@@ -12,6 +12,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.zap.zombiesplugin.utils.ScoreboardUtils.createTeam;
+import static io.github.zap.zombiesplugin.utils.ScoreboardUtils.getBlankLine;
+
 public class IngameStatePanel {
     private static final String TEAM_ZOMBIE_KILL = "zombieKillsLine";
     private static final String TEAM_TIME = "timeLine";
@@ -57,8 +60,10 @@ public class IngameStatePanel {
             for (User userSB : users) {
                 String teamName = "p_" + userSB.getPlayer().getDisplayName();
                 String entry = "" + ChatColor.GRAY + userSB.getPlayer().getDisplayName() + ": ";
+                System.out.println(teamName + ", " + user.getPlayer().getDisplayName());
                 createTeam(sb, teamName, entry);
                 obj.getScore(entry).setScore(scoreCounter);
+                setPlayerStats(userSB, ChatColor.GOLD + "0");
                 scoreCounter ++;
             }
             getBlankLine(obj, 2).setScore(scoreCounter);
@@ -127,28 +132,11 @@ public class IngameStatePanel {
     }
 
     public void setGameOver () {
-        // IDK :)
         for (Scoreboard sb : users.values()) {
             Team a = sb.getTeam(TEAM_ROUND);
             a.setSuffix("Game Over!");
         }
 
-    }
-
-    private Team createTeam (Scoreboard sb, String name, String entry) {
-        Team team = sb.registerNewTeam(name);
-        team.addEntry(entry);
-        team.setSuffix("");
-        team.setPrefix("");
-        return team;
-    }
-
-    private Score getBlankLine(Objective obj, int count) {
-        StringBuilder bd = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            bd.append(' ');
-        }
-        return obj.getScore(bd.toString());
     }
 
     private Objective getMainObjective(Scoreboard sb) {

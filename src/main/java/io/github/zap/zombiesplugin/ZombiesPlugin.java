@@ -10,6 +10,7 @@ import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.TMTaskImporter;
+import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
 import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
@@ -57,6 +58,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
         try {
             gm = new GameManager(null, null);
+            gm.setScoreboard(new InGameScoreBoard(gm));
             manager = gm.getPlayerManager();
             TMTaskImporter tmTasks = (TMTaskImporter) config.getImporter("TMTasks");
             tm = new TeamMachine(gm, Arrays.asList(tmTasks.createTask("tmt_ammo_supply", gm),  tmTasks.createTask("tmt_full_revive", gm), tmTasks.createTask("tmt_dragon_wrath", gm)));
@@ -95,6 +97,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         manager.addPlayer(e.getPlayer());
+
+
     }
 
 }

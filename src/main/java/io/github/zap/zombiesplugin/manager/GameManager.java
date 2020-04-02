@@ -4,12 +4,17 @@ import io.github.zap.zombiesplugin.map.Map;
 import io.github.zap.zombiesplugin.map.round.Round;
 import java.util.List;
 
+import io.github.zap.zombiesplugin.player.PlayerState;
+import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.scoreboard.IInGameScoreboard;
 import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
 import org.bukkit.entity.Player;
 
 public class GameManager {
     private GameSettings settings;
+    private GameState state;
     private PlayerManager playerManager;
+    private IInGameScoreboard scoreboard;
 
     /**
      * The map of the game
@@ -46,6 +51,10 @@ public class GameManager {
             // TODO: Endgame sequence
         } else {
             rounds[lastRound].startRound();
+            if (scoreboard != null) {
+                scoreboard.setRound(lastRound);
+            }
+
             lastRound++;
         }
     }
@@ -64,5 +73,31 @@ public class GameManager {
      */
     public Map getMap() {
         return map;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
+
+        if (state == GameState.STARTED) {
+            for(User user :getPlayerManager().getPlayers()) {
+                user.setState(PlayerState.ALIVE);
+            }
+        }
+
+        if (scoreboard != null) {
+            scoreboard.setGameState(state);
+        }
+    }
+
+    public IInGameScoreboard getScoreboard() {
+        return scoreboard;
+    }
+
+    public void setScoreboard(IInGameScoreboard scoreboard) {
+        this.scoreboard = scoreboard;
     }
 }

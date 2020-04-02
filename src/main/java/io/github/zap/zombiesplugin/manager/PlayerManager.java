@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.manager;
 
+import com.destroystokyo.paper.Title;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
@@ -47,6 +48,23 @@ public class PlayerManager implements Listener {
     }
 
     /**
+     * Send messages to all player in this PlayerManager
+     * @param str
+     */
+    public void broadcast(String str, boolean sentToQuitter) {
+        // TODO: Filter Send message for quitter
+        for (User user : getPlayers()) {
+            user.getPlayer().sendMessage(str);
+        }
+    }
+
+    public void displayTitle(Title title) {
+        for (User user : getPlayers()) {
+            user.getPlayer().sendTitle(title);
+        }
+    }
+
+    /**
      * Returns true if the player is successfully added; returns false otherwise.
      * @param player The player to add
      * @return Whether or not the player was added
@@ -55,12 +73,20 @@ public class PlayerManager implements Listener {
         if(players.size() - 1 < getGameSize())
         {
             for(User user : players) {
-                if(user.getPlayer() == player) // Check if the player already exist in this manager
+                if(user.getPlayer() == player) { // Check if the player already exist in this manager
+                    if (gameManager.getScoreboard() != null) {
+                        gameManager.getScoreboard().onPlayerJoinGame(user);
+                    }
                     return false;
+                }
             }
         }
 
-        players.add(new User(player));
+        User newUser = new User(player);
+        players.add(newUser);
+        if (gameManager.getScoreboard() != null) {
+            gameManager.getScoreboard().onPlayerJoinGame(newUser);
+        }
         return  true;
     }
 

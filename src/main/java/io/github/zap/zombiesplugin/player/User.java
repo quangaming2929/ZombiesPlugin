@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class User {
     private Player player;
     private HotbarManager hotbar;
-    private PlayerState state;
+    private PlayerState state = PlayerState.ALIVE;
 
     // TODO: make a player statistic class
     private int gold;
