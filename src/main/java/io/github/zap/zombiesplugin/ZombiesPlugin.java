@@ -12,6 +12,8 @@ import io.github.zap.zombiesplugin.commands.ScoreboardDebugCommand;
 import io.github.zap.zombiesplugin.commands.SetGoldCommand;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
+import io.github.zap.zombiesplugin.player.PlayerState;
+import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.TMTaskImporter;
 import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
@@ -23,14 +25,17 @@ import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
 import io.github.zap.zombiesplugin.utils.TabDecorator;
 import net.minecraft.server.v1_15_R1.IChatBaseComponent;
 import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,6 +108,16 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        new BukkitRunnable(){
+            Player p = e.getPlayer();
+            @Override
+            public void run() {
+                Vector a = p.getEyeLocation().getDirection();
+                System.out.println("x: " + Math.toDegrees(Math.acos(a.getX())) + " y: " + Math.toDegrees(Math.acos(a.getY())) + " z: " + Math.toDegrees(Math.acos(a.getZ())) );
+            }
+        }.runTaskTimer(this, 0, 10);
+
+
         manager.addPlayer(e.getPlayer());
         sayHelloToTester(e.getPlayer());
 

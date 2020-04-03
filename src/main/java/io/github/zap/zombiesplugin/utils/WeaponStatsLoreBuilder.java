@@ -55,7 +55,7 @@ public class WeaponStatsLoreBuilder {
      * @return current builder
      */
     public WeaponStatsLoreBuilder addStats(String name, Object oldValue, Object newValue) {
-        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.DARK_GRAY + oldValue +  " " + " ➔ " + ChatColor.GREEN + newValue + " " );
+        stats.add(ChatColor.DARK_GRAY.toString() + " ◼ " + ChatColor.GRAY + name + ": " + ChatColor.DARK_GRAY + oldValue +  " " + "➔ " + ChatColor.GREEN + newValue + " " );
         return this;
     }
 

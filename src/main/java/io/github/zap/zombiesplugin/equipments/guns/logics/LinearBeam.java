@@ -22,11 +22,13 @@ public class LinearBeam {
     protected final Vector directionVector;
     protected final Vector targetBlockVector;
     protected final int maxHitEntities;
+    protected final Particle particle;
 
     public LinearBeam(World world, Particle particle, Vector eyeLocation, Vector directionVector, Vector targetBlockVector, int maxHitEntities) {
         this.distance = eyeLocation.distance(targetBlockVector);
 
         this.world = world;
+        this.particle = particle;
         this.particleVector = eyeLocation.clone();
         this.directionVector = directionVector.clone();
         this.targetBlockVector = targetBlockVector;
@@ -40,7 +42,7 @@ public class LinearBeam {
             if (hitEntities.size() == maxHitEntities) {
                 break;
             } else {
-                world.spawnParticle(Particle.CRIT, particleVector.getX(), particleVector.getY(), particleVector.getZ(), 0, 0, 0, 0);
+                world.spawnParticle(particle, particleVector.getX(), particleVector.getY(), particleVector.getZ(), 0, 0, 0, 0);
                 findEntitiesInLineOfSight();
                 particleVector.add(directionVector);
             }

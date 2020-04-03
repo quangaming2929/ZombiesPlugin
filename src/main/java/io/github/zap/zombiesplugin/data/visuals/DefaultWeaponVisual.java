@@ -118,7 +118,7 @@ public class DefaultWeaponVisual implements IDefaultVisual {
     public String getDisplayNameWith(ChatColor color, String name, int level, ILeveling levels) {
         String displayName = name;
         if (level > 0) {
-            displayName = ChatColor.BOLD + name + "Ultimate ";
+            displayName = ChatColor.BOLD + name + " Ultimate ";
             if (levels.size() > 2) {
                 displayName += RomanNumber.toRoman(level);
             }

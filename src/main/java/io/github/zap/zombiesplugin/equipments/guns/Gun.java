@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.equipments.guns;
 
+import com.google.gson.annotations.Expose;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
@@ -31,6 +32,7 @@ public abstract class Gun extends UpgradeableEquipment {
         super.setLevel(level);
         refill();
     }
+
 
     public void refill() {
         setClipAmmo((int)tryGetValue(GUN_CLIP_AMMO));
