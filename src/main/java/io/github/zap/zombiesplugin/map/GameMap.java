@@ -1,26 +1,27 @@
 package io.github.zap.zombiesplugin.map;
 
 import io.github.zap.zombiesplugin.map.round.Round;
-import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
+import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
 import io.github.zap.zombiesplugin.shop.Shop;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameMap {
 	public final String name;
-	private final ArrayList<SpawnManager> spawnManagers;
+	private final ArrayList<SpawnFilter> spawnFilters;
 	private final ArrayList<Round> rounds;
 	private final ArrayList<Shop> shops;
 	private final ArrayList<Door> doors;
-	private final ArrayList<Room> rooms;
+	private final HashMap<String,Room> rooms;
 	private final ArrayList<Window> windows;
 	private final ArrayList<BoundingBox> boundsLimits;
 
 	public GameMap(String name) {
 		this.name = name;
-		this.rooms = new ArrayList<>();
-		this.spawnManagers = new ArrayList<>();
+		this.rooms = new HashMap<>();
+		this.spawnFilters = new ArrayList<>();
 		this.rounds = new ArrayList<>();
 		this.shops = new ArrayList<>();
 		this.doors = new ArrayList<>();
@@ -34,8 +35,8 @@ public class GameMap {
 		return rounds;
 	}
 
-	public ArrayList<SpawnManager> getSpawnManagers() {
-		return spawnManagers;
+	public ArrayList<SpawnFilter> getSpawnFilters() {
+		return spawnFilters;
 	}
 
 	public ArrayList<Window> getWindows() {
@@ -48,24 +49,26 @@ public class GameMap {
 
 	public Window getWindowAt(Location location) {
 		for(Window window : windows) {
-			if(window.isInBound(location)) {
+			if(window.getWindowBounds().isInBound(location)) {
 				return window;
 			}
 		}
 		return null;
 	}
 
-	public BoundingBox getBoundsLimitAt(Location location) {
-		for(BoundingBox box : boundsLimits) {
-			if(box.isInBound(location)) {
-				return box;
-			}
+	public Room getRoom(String name) {
+		if(rooms.containsKey(name)) {
+			return rooms.get(name);
 		}
 		return null;
 	}
 
-	public void add(SpawnManager manager) {
-		spawnManagers.add(manager);
+	public ArrayList<Room> getRooms() {
+		return new ArrayList<>(rooms.values());
+	}
+
+	public void add(SpawnFilter manager) {
+		spawnFilters.add(manager);
 	}
 
 	public void add(Round round) {
@@ -81,7 +84,7 @@ public class GameMap {
 	}
 
 	public void add(Room room) {
-		rooms.add(room);
+		rooms.put(room.getName(), room);
 	}
 
 	public void add(Window window) {

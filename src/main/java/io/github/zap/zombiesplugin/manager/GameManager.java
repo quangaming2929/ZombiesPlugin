@@ -1,53 +1,81 @@
 package io.github.zap.zombiesplugin.manager;
 
-import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
 import io.github.zap.zombiesplugin.map.round.Round;
 
 import java.util.ArrayList;
 
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class GameManager {
     public final String name;
 
     private GameSettings settings;
     private PlayerManager playerManager;
-    private boolean hasEnded;
+    private GameState state;
 
-    private int lastRound = 0;
+    private int currentRound = 0;
+
 
     public GameManager(String name, GameSettings settings) {
         this.name = name;
         this.settings = settings;
+
         playerManager = new PlayerManager(this);
+        playerManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
     }
 
-    public void startNextRound() {
-        ArrayList<Round> rounds = settings.gameMap.getRounds();
+    public String getName() { return name; }
 
-        if (lastRound == rounds.size()) {
-            // TODO: Endgame sequence
-        } else {
-            rounds.get(lastRound).startRound(this, settings.difficulty);
-            lastRound++;
+    public GameSettings getSettings() { return settings; }
+
+    public PlayerManager getPlayerManager() { return playerManager; }
+
+    public GameState getState() { return state; }
+
+    /**
+     * Gets the zero-based round index.
+     * @return
+     */
+    public int getCurrentRound() { return currentRound; }
+
+    public boolean hasEnded() { return state == GameState.CANCELED || state == GameState.LOST || state == GameState.WON; }
+
+    private void onPlayerChange(Object sender, @NotNull UserJoinLeaveEventArgs e) {
+        switch(e.type) {
+            case JOIN:
+                if(state == GameState.PREGAME && playerManager.getPlayers().size() == settings.getGameSize()) {
+                    state = GameState.COUNTDOWN;
+                    startCountdown();
+                }
+                break;
+            case LEAVE:
+                if(state == GameState.COUNTDOWN) {
+                    state = GameState.PREGAME;
+                    stopCountdown();
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + e.type.toString());
         }
     }
 
-    public PlayerManager getPlayerManager() {
-        return playerManager;
+    public void startCountdown() {
+        //TODO: timer code here
     }
 
-    public GameMap getMap() {
-        return settings.gameMap;
+    public void stopCountdown() {
+        //TODO: abort timer
     }
 
-    public int getGameSize() {return settings.gameSize; }
+    public void startGame() {
+        ArrayList<Round> rounds = settings.getGameMap().getRounds();
 
-    public boolean hasPlayer(Player player) {
-        return playerManager.hasUser(playerManager.getAssociatedUser(player));
+        if (currentRound == rounds.size()) {
+            // TODO: Endgame sequence
+        } else {
+            rounds.get(currentRound).startRound(this, settings.getDifficulty());
+            currentRound++;
+        }
     }
-
-    public String toString() { return name; }
-
-    public boolean hasEnded() {return hasEnded;}
 }

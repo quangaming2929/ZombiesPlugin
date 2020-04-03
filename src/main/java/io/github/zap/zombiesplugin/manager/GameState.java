@@ -4,5 +4,7 @@ public enum GameState {
     PREGAME,
     COUNTDOWN,
     STARTED,
-    ENDGAME
+    WON,
+    LOST,
+    CANCELED
 }

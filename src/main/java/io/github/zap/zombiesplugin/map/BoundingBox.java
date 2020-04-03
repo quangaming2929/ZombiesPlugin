@@ -1,20 +1,21 @@
 package io.github.zap.zombiesplugin.map;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 public class BoundingBox {
-    protected Location bound1;
-    protected Location bound2;
+    private Location bound1;
+    private Location bound2;
 
-    protected int width;
-    protected int height;
-    protected int depth;
+    private int width;
+    private int height;
+    private int depth;
 
-    protected int volume;
+    private int volume;
 
-    protected Location origin;
+    private Location center;
 
     public BoundingBox(Location bound1, Location bound2) {
         int xMin = Math.min(bound1.getBlockX(), bound2.getBlockX());
@@ -33,7 +34,7 @@ public class BoundingBox {
         depth =  bound2.getBlockZ() - bound1.getBlockZ() + 1;
 
         volume = width * height * depth;
-        origin = new Location(bound1.getWorld(), (bound1.getX() + bound2.getX()) / 2, (bound1.getY() + bound2.getY()) / 2, (bound1.getZ() + bound2.getZ()) / 2);
+        center = new Location(bound1.getWorld(), (bound1.getX() + bound2.getX()) / 2, (bound1.getY() + bound2.getY()) / 2, (bound1.getZ() + bound2.getZ()) / 2);
     }
 
     public boolean isInBound(Location location) {
@@ -50,9 +51,25 @@ public class BoundingBox {
                 z <= bound2.getBlockZ();
     }
 
-    public Location getOrigin() { return origin; }
-
-    public Block getBlockAt(Vector relative) {
-        return bound1.getWorld().getBlockAt(bound1.getBlockX() + relative.getBlockX(), bound1.getBlockY() + relative.getBlockY(), bound1.getBlockZ() + relative.getBlockZ());
+    public Block getBlockRelative(int x, int y, int z) {
+        return bound1.getWorld().getBlockAt(bound1.getBlockX() + x, bound1.getBlockY() + y, bound1.getBlockZ() + z);
     }
+
+    public World getWorld() {
+        return bound1.getWorld();
+    }
+
+    public Location getBound1() { return bound1; }
+
+    public Location getBound2() { return bound2; }
+
+    public int getWidth() { return width; }
+
+    public int getHeight() { return height; }
+
+    public int getDepth() { return depth; }
+
+    public int getVolume() { return volume; }
+
+    public Location getCenter() { return center; }
 }

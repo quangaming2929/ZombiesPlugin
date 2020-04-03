@@ -2,7 +2,7 @@ package io.github.zap.zombiesplugin.map.data;
 
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.round.Round;
-import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
+import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
 
 import java.util.ArrayList;
 
@@ -19,8 +19,8 @@ public class GameMapData {
         spawnManagers = new ArrayList<>();
         rounds = new ArrayList<>();
 
-        for(SpawnManager manager : from.getSpawnManagers()) {
-            spawnManagers.add(manager.name);
+        for(SpawnFilter manager : from.getSpawnFilters()) {
+            //spawnManagers.add(manager.name);
         }
 
         for(Round round : from.getRounds()) {

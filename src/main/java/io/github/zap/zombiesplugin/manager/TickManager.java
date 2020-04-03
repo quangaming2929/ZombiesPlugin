@@ -14,6 +14,10 @@ public class TickManager {
 
     private boolean started = false;
 
+    /**
+     * Create a new TickManager.
+     * @param interval The rate at which the manager calls its associated ITickable objects, measured in game ticks.
+     */
     public TickManager(long interval) {
         this.interval = interval;
         tickables = new HashSet<>();

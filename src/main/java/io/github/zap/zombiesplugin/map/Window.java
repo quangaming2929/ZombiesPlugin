@@ -1,16 +1,14 @@
 package io.github.zap.zombiesplugin.map;
 
-import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
-import java.util.function.Consumer;
-
-public class Window extends BoundingBox {
-    private BoundingBox interior;
+public class Window {
+    private SpawnPoint spawnPoint;
+    private MultiBoundingBox interiorBounds;
+    private BoundingBox windowBounds;
 
     private int brokenBlocks = 0;
     private int lastBreakX = 0;
@@ -21,34 +19,33 @@ public class Window extends BoundingBox {
     private boolean northSouthFacing;
     private Material coverMaterial;
 
-    private PathfinderGoalEscapeWindow ai;
-    private Location exit;
+    private PathfinderGoalEscapeWindow targetingAI;
 
-    public Window(Location bound1, Location bound2, Material coverMaterial, BoundingBox interior, Location exit) {
-        super(bound1, bound2);
+    public Window(BoundingBox windowBounds, MultiBoundingBox interiorBounds, SpawnPoint spawnPoint, Material coverMaterial) {
+        this.spawnPoint = spawnPoint;
+        this.interiorBounds = interiorBounds;
+        this.windowBounds = windowBounds;
 
-        northSouthFacing = bound1.getBlockZ() == bound2.getBlockZ();
-        if(northSouthFacing) windowWidth = width;
-        else windowWidth = depth;
+        northSouthFacing = windowBounds.getBound1().getBlockZ() == windowBounds.getBound2().getBlockZ();
+        if(northSouthFacing) windowWidth = windowBounds.getWidth();
+        else windowWidth = windowBounds.getDepth();
 
         this.coverMaterial = coverMaterial;
-        this.interior = interior;
-        this.exit = exit;
     }
 
-    public void breakWindow(PathfinderGoalEscapeWindow ai) {
-        if(brokenBlocks < volume) {
-            Location targetBlock;
+    public void breakWindow(PathfinderGoalEscapeWindow targettingAI) {
+        if(brokenBlocks < windowBounds.getVolume()) {
+            Block targetBlock;
             if(northSouthFacing) {
-                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
+                targetBlock = windowBounds.getBlockRelative(lastBreakX, lastBreakY, 0);
             }
             else {
-                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
+                targetBlock = windowBounds.getBlockRelative(0, lastBreakY, lastBreakX);
             }
 
-            this.ai = ai;
-            bound1.getWorld().getBlockAt(targetBlock).setType(Material.AIR);
-            origin.getWorld().playSound(origin, Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 10, 1);
+            this.targetingAI = targettingAI;
+            targetBlock.setType(Material.AIR);
+            windowBounds.getWorld().playSound(windowBounds.getCenter(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 10, 1);
 
             brokenBlocks++;
             lastBreakX++;
@@ -68,21 +65,21 @@ public class Window extends BoundingBox {
                 lastBreakX = windowWidth - 1;
             }
 
-            Location targetBlock;
+            Block targetBlock;
             if(northSouthFacing) {
-                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX() + lastBreakX, bound1.getBlockY() + lastBreakY, bound1.getBlockZ());
+                targetBlock = windowBounds.getBlockRelative(lastBreakX, lastBreakY, 0);
             }
             else {
-                targetBlock = new Location(bound1.getWorld(), bound1.getBlockX(), bound1.getBlockY() + lastBreakY, bound1.getBlockZ() + lastBreakX);
+                targetBlock = windowBounds.getBlockRelative(0, lastBreakY, lastBreakX);
             }
 
-            bound1.getWorld().getBlockAt(targetBlock).setType(coverMaterial);
+            targetBlock.setType(coverMaterial);
 
             if(brokenBlocks == 0) {
-                origin.getWorld().playSound(origin, Sound.BLOCK_ANVIL_PLACE, 10, 1);
+                windowBounds.getWorld().playSound(windowBounds.getCenter(), Sound.BLOCK_ANVIL_PLACE, 10, 1);
             }
             else {
-                origin.getWorld().playSound(origin, Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 10, 1);
+                windowBounds.getWorld().playSound(windowBounds.getCenter(), Sound.ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR, 10, 1);
             }
         }
     }
@@ -90,12 +87,12 @@ public class Window extends BoundingBox {
     public boolean isFullyRepaired() {return brokenBlocks == 0;}
 
     public boolean isReparable() {
-        return !isFullyRepaired() && (ai == null || ai.reachedGoal());
+        return !isFullyRepaired() && (targetingAI == null || targetingAI.reachedGoal());
     }
 
-    public boolean locationInside(Location location) {
-        return interior.isInBound(location);
-    }
+    public MultiBoundingBox getInteriorBounds() { return interiorBounds; }
 
-    public Location getExit() { return exit; }
+    public BoundingBox getWindowBounds() { return  windowBounds; }
+
+    public SpawnPoint getSpawnPoint() { return spawnPoint; }
 }

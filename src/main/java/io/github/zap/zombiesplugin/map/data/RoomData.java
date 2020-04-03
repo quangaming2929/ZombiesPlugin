@@ -8,6 +8,6 @@ public class RoomData {
     public RoomData() {}
 
     public RoomData(Room from) {
-        mapName = from.getMap().name;
+
     }
 }

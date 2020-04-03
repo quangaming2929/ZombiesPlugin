@@ -93,7 +93,7 @@ public class ArmorShop extends WallShop {
 		} else {
 			Objects.requireNonNull(user.getPlayer().getEquipment()).setArmorContents(getNewArmor(user.getPlayer()));
 
-			for (Shop shop : gameManager.getMap().getShops()) {
+			for (Shop shop : gameManager.getSettings().getGameMap().getShops()) {
 				if (shop instanceof ArmorShop) {
 					((ArmorShop) shop).notifyArmorChange(user.getPlayer());
 				}

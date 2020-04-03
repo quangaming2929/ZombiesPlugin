@@ -135,7 +135,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
 
-        Window foundWindow = manager.getMap().getWindowAt(testLoc);
+        Window foundWindow = manager.getSettings().getGameMap().getWindowAt(testLoc);
         if(foundWindow == null && targetWindow != null) {
             targetWindow = null;
         }

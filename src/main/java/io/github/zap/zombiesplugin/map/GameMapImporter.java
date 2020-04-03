@@ -1,21 +1,10 @@
 package io.github.zap.zombiesplugin.map;
 
 import com.google.gson.Gson;
-import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.map.data.GameMapData;
-import io.github.zap.zombiesplugin.map.data.RoundData;
-import io.github.zap.zombiesplugin.map.data.WaveData;
-import io.github.zap.zombiesplugin.map.round.Round;
-import io.github.zap.zombiesplugin.map.round.Wave;
-import io.github.zap.zombiesplugin.map.spawn.SpawnManager;
-import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.Importer;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 public class GameMapImporter extends Importer {
     private Gson fileParser;
