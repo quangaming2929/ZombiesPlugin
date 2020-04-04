@@ -21,6 +21,7 @@ public class Round {
 
 	public void start(GameManager manager, GameDifficulty difficulty) {
 		long accumulatedDelay = 0;
+		GameMap map = manager.getSettings().getGameMap();
 		for (Wave wave : waves) {
 			accumulatedDelay += wave.getDelay(difficulty);
 
@@ -28,7 +29,6 @@ public class Round {
 				@Override
 				public void run() {
 					ArrayList<MythicMob> mobs = wave.getMobs(difficulty);
-					GameMap map = manager.getSettings().getGameMap();
 					for (SpawnFilter spawnFilter : map.getSpawnFilters()) {
 						ArrayList<SpawnPoint> available = new ArrayList<>();
 						for(Room room : map.getRooms()) {

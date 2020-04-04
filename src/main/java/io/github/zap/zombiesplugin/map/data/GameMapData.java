@@ -7,7 +7,7 @@ import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
 
 import java.util.ArrayList;
 
-public class GameMapData implements IData<GameMap> {
+public class GameMapData implements IMapData<GameMap> {
     public String name;
     public ArrayList<SpawnFilterData> spawnFilters;
     public ArrayList<RoundData> rounds;

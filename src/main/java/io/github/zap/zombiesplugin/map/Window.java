@@ -2,7 +2,8 @@ package io.github.zap.zombiesplugin.map;
 
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
-import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 
 public class Window {
@@ -27,8 +28,8 @@ public class Window {
         this.windowBounds = windowBounds;
 
         northSouthFacing = windowBounds.getOrigin().getBlockZ() == windowBounds.getLimit().getBlockZ();
-        if(northSouthFacing) windowWidth = windowBounds.getWidth();
-        else windowWidth = windowBounds.getDepth();
+        if(northSouthFacing) windowWidth = (int)windowBounds.getWidth();
+        else windowWidth = (int)windowBounds.getDepth();
 
         this.coverMaterial = coverMaterial;
     }
@@ -92,7 +93,7 @@ public class Window {
 
     public MultiBoundingBox getInteriorBounds() { return interiorBounds; }
 
-    public BoundingBox getWindowBounds() { return  windowBounds; }
+    public BoundingBox getWindowBounds() { return windowBounds; }
 
     public SpawnPoint getSpawnPoint() { return spawnPoint; }
 

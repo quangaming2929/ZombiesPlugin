@@ -1,5 +1,5 @@
 package io.github.zap.zombiesplugin.map.data;
 
-public interface IData<T> {
+public interface IMapData<T> {
     T load();
 }

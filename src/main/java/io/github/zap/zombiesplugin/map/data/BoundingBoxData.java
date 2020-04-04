@@ -1,9 +1,8 @@
 package io.github.zap.zombiesplugin.map.data;
 
 import io.github.zap.zombiesplugin.map.BoundingBox;
-import org.bukkit.Location;
 
-public class BoundingBoxData implements IData<BoundingBox> {
+public class BoundingBoxData implements IMapData<BoundingBox> {
     public LocationData origin;
     public LocationData limit;
 

@@ -72,6 +72,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         if(hasWindow) {
             tickCounter++;
             if(tickCounter == 20) {
+                System.out.println("Calling tryBreak()");
                 tryBreak();
                 tickCounter = 0;
             }
@@ -97,49 +98,33 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     public void tryBreak() {
         World world = ((BukkitWorld) entity.getWorld()).getBukkitWorld();
         AbstractLocation loc = entity.getLocation();
-        int posX = loc.getBlockX();
-        int posY = loc.getBlockY();
-        int posZ = loc.getBlockZ();
 
-        //turn yaw into a direction so we know which way the zombie is facing
-        Direction direction; //defaults to 'UP'
+        double posX = loc.getX();
+        double posY = loc.getY();
+        double posZ = loc.getZ();
+
         float yaw = loc.getYaw();
+        Location testLoc;
         if(yaw <= -135 || yaw > 135) {
-            direction = Direction.NORTH;
+            testLoc = new Location(world, posX, posY + 1, posZ - 0.75);
         }
         else if( yaw <= -45) {
-            direction = Direction.EAST;
+            testLoc = new Location(world, posX + 0.75, posY + 1, posZ);
         }
         else if(yaw <= 45) {
-            direction = Direction.SOUTH;
+            testLoc = new Location(world, posX, posY + 1, posZ + 0.75);
         }
         else {
-            direction = Direction.WEST;
-        }
-
-        Location testLoc;
-        switch (direction) { //grab a vector in front of the zombie
-            case NORTH:
-                testLoc = new Location(world, posX, posY + 1, posZ - 0.5);
-                break;
-            case EAST:
-                testLoc = new Location(world, posX + 0.5, posY + 1, posZ);
-                break;
-            case SOUTH:
-                testLoc = new Location(world, posX, posY + 1, posZ + 0.5);
-                break;
-            case WEST:
-                testLoc = new Location(world, posX - 0.5, posY + 1, posZ);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + direction);
+            testLoc = new Location(world, posX - 0.75, posY + 1, posZ);
         }
 
         Window foundWindow = manager.getSettings().getGameMap().getAvailableWindow(testLoc);
         if(foundWindow == null && targetWindow != null) {
+            System.out.println("foundWindow is null.");
             targetWindow = null;
         }
         else if(foundWindow != null) {
+            System.out.println("Attempt to break window.");
             targetWindow = foundWindow;
             targetWindow.breakWindow( this);
         }

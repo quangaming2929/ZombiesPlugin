@@ -5,7 +5,7 @@ import io.github.zap.zombiesplugin.map.MultiBoundingBox;
 
 import java.util.ArrayList;
 
-public class MultiBoundingBoxData implements IData<MultiBoundingBox> {
+public class MultiBoundingBoxData implements IMapData<MultiBoundingBox> {
     public ArrayList<BoundingBoxData> bounds;
 
     public MultiBoundingBoxData() { }

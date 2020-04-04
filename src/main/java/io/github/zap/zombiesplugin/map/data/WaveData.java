@@ -8,7 +8,7 @@ import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class WaveData implements IData<Wave> {
+public class WaveData implements IMapData<Wave> {
     public Hashtable<GameDifficulty,Long> delay;
     public Hashtable<GameDifficulty,ArrayList<String>> mobs;
 

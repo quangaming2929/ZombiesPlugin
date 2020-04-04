@@ -3,7 +3,7 @@ package io.github.zap.zombiesplugin.map.data;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import org.bukkit.Location;
 
-public class LocationData implements IData<Location> {
+public class LocationData implements IMapData<Location> {
     public String worldName;
     public double x;
     public double y;

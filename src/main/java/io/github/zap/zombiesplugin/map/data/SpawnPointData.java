@@ -2,7 +2,7 @@ package io.github.zap.zombiesplugin.map.data;
 
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 
-public class SpawnPointData implements IData<SpawnPoint> {
+public class SpawnPointData implements IMapData<SpawnPoint> {
     public LocationData spawn;
     public LocationData target;
 

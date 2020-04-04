@@ -71,8 +71,9 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         registerConfigs();
         registerCommands();
 
-        //TODO: remove this after testing
-        gameManagers.put("test_game", new GameManager( "test_game", new GameSettings(GameDifficulty.NORMAL, new GameMap("test_map"), 4)));
+        //TODO: remove these after loadable config files
+        addMap(new GameMap("test_map"));
+        addGameManager(new GameManager( "test_game", new GameSettings(GameDifficulty.NORMAL, maps.get("test_map"), 4)));
 
         //inject custom AI pathfinders into MythicMobs
         try {
@@ -105,10 +106,10 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
-        SpawnpointCommands spCmd = new SpawnpointCommands();
+        SpawnpointCommands spawnpointCommands = new SpawnpointCommands();
         getCommand("gunDebug").setExecutor(new GunDebugCommands());
-        getCommand("testentity").setExecutor(spCmd);
-        getCommand("newspawnpoint").setExecutor(spCmd);
+        getCommand("testentity").setExecutor(spawnpointCommands);
+        getCommand("testspawnpoint").setExecutor(spawnpointCommands);
     }
 
     public ConfigFileManager getConfigManager() {
@@ -133,17 +134,17 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     public GameMap getMap(String mapName) { return maps.get(mapName); }
 
-    public boolean addGameManager(String id, GameManager manager) {
-        if(!gameManagers.containsKey(id)) {
-            gameManagers.put(id, manager);
+    public boolean addGameManager(GameManager manager) {
+        if(!gameManagers.containsKey(manager.getName())) {
+            gameManagers.put(manager.getName(), manager);
             return true;
         }
         return false;
     }
 
-    public boolean addMap(GameMap map, String name) {
-        if(!maps.containsKey(name)) {
-            maps.put(name, map);
+    public boolean addMap(GameMap map) {
+        if(!maps.containsKey(map.getName())) {
+            maps.put(map.getName(), map);
             return true;
         }
         return false;

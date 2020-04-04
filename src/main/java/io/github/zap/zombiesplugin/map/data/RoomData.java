@@ -8,7 +8,7 @@ import io.github.zap.zombiesplugin.shop.Shop;
 
 import java.util.ArrayList;
 
-public class RoomData implements IData<Room> {
+public class RoomData implements IMapData<Room> {
     public String name;
     public ArrayList<DoorData> doors;
     public ArrayList<WindowData> windows;

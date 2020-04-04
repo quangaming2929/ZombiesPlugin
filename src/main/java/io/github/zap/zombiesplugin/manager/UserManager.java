@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PlayerManager implements Listener, ITickable {
+public class UserManager implements Listener, ITickable {
     private GameManager gameManager;
     private HashMap<Player,User> players = new HashMap<>();
     private ArrayList<User> spectators = new ArrayList<>();
@@ -22,7 +22,7 @@ public class PlayerManager implements Listener, ITickable {
     //event handlers
     private EventHandler<UserJoinLeaveEventArgs> userJoinLeaveEventHandler;
 
-    public PlayerManager(GameManager gameManager) {
+    public UserManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
         //self-register
@@ -90,6 +90,7 @@ public class PlayerManager implements Listener, ITickable {
     @org.bukkit.event.EventHandler
     public void onPlayerUse(PlayerInteractEvent event) {
         User user = getAssociatedUser(event.getPlayer());
+
         if(user != null) {
             Gun gun = user.getGunUser().getGunByItemStack(user.getPlayer().getInventory().getItemInMainHand());
             if(gun != null ) {

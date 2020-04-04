@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 
 public class GameManager {
-    public final String name;
+    private final String name;
 
     private GameSettings settings;
-    private PlayerManager playerManager;
+    private UserManager userManager;
     private GameState state;
 
     private int currentRound = 0;
@@ -21,15 +21,15 @@ public class GameManager {
         this.name = name;
         this.settings = settings;
 
-        playerManager = new PlayerManager(this);
-        playerManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
+        userManager = new UserManager(this);
+        userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
     }
 
     public String getName() { return name; }
 
     public GameSettings getSettings() { return settings; }
 
-    public PlayerManager getPlayerManager() { return playerManager; }
+    public UserManager getUserManager() { return userManager; }
 
     public GameState getState() { return state; }
 
@@ -44,7 +44,7 @@ public class GameManager {
     private void onPlayerChange(Object sender, @NotNull UserJoinLeaveEventArgs e) {
         switch(e.type) {
             case JOIN:
-                if(state == GameState.PREGAME && playerManager.getPlayers().size() == settings.getGameSize()) {
+                if(state == GameState.PREGAME && userManager.getPlayers().size() == settings.getGameSize()) {
                     state = GameState.COUNTDOWN;
                     startCountdown();
                 }

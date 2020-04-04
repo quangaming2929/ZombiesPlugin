@@ -12,24 +12,30 @@ public class GameMap {
 	private final String name;
 	private final ArrayList<SpawnFilter> spawnFilters;
 	private final ArrayList<Round> rounds;
-	private final ArrayList<Room> rooms;
+	private final HashMap<String,Room> rooms;
 
 	public GameMap(String name) {
 		this.name = name;
 		this.spawnFilters = new ArrayList<>();
 		this.rounds = new ArrayList<>();
-		this.rooms = new ArrayList<>();
+		this.rooms = new HashMap<>();
 
 		//TODO: load from config file
 	}
 
 	public Window getAvailableWindow(Location location) {
-		for(Room room : rooms) {
+		System.out.println("getAvailableWindow called, there are " + rooms.size() + " rooms.");
+		for(Room room : rooms.values()) {
 			if(room.isOpen()) {
-				for(Window window : room.getWindows()) {
-					if(window.getWindowBounds().isInBound(location)) return window;
+				System.out.println("room is open, it has "+room.getWindows().size() + " windows");
+				Window sample = room.getWindowAt(location);
+				if(sample != null) {
+					System.out.println("returning sample");
+					return sample;
 				}
+				else System.out.println("returning null");
 			}
+			else System.out.println("room is not open");
 		}
 		return null;
 	}
@@ -43,7 +49,7 @@ public class GameMap {
 	}
 
 	public void add(Room room) {
-		rooms.add(room);
+		rooms.put(room.getName(), room);
 	}
 
 	public String getName() { return name; }
@@ -56,5 +62,12 @@ public class GameMap {
 		return rounds;
 	}
 
-	public ArrayList<Room> getRooms() { return rooms; }
+	public ArrayList<Room> getRooms() { return new ArrayList<>(rooms.values()); }
+
+	public Room getRoom(String name) {
+		if(rooms.containsKey(name)) {
+			return rooms.get(name);
+		}
+		return null;
+	}
 }

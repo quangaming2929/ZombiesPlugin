@@ -24,7 +24,9 @@ public class Room {
 
     public Window getWindowAt(Location location) {
         for(Window window : windows) {
-            if(window.getWindowBounds().isInBound(location)) return window;
+            if(window.getWindowBounds().isInBound(location)) {
+                return window;
+            }
         }
         return null;
     }

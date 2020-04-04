@@ -1,12 +1,9 @@
 package io.github.zap.zombiesplugin.map.data;
 
-import io.github.zap.zombiesplugin.map.BoundingBox;
-import io.github.zap.zombiesplugin.map.MultiBoundingBox;
 import io.github.zap.zombiesplugin.map.Window;
-import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import org.bukkit.Material;
 
-public class WindowData implements IData<Window> {
+public class WindowData implements IMapData<Window> {
     public SpawnPointData spawnPoint;
     public MultiBoundingBoxData interiorBounds;
     public BoundingBoxData windowBounds;

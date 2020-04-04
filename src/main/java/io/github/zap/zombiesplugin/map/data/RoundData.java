@@ -5,7 +5,7 @@ import io.github.zap.zombiesplugin.map.round.Wave;
 
 import java.util.ArrayList;
 
-public class RoundData implements IData<Round> {
+public class RoundData implements IMapData<Round> {
     public ArrayList<WaveData> waves;
 
     public RoundData() {}

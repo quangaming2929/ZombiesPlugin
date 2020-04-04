@@ -1,9 +1,8 @@
 package io.github.zap.zombiesplugin.map.data;
 
-import io.github.zap.zombiesplugin.map.Door;
 import io.github.zap.zombiesplugin.shop.Shop;
 
-public class ShopData implements IData<Shop> {
+public class ShopData implements IMapData<Shop> {
     public ShopData() {}
 
     public ShopData(Shop from) {

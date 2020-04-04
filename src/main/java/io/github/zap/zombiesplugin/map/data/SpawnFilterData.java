@@ -7,7 +7,7 @@ import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class SpawnFilterData implements IData<SpawnFilter> {
+public class SpawnFilterData implements IMapData<SpawnFilter> {
     public ArrayList<String> mobNames;
 
     public SpawnFilterData() {}

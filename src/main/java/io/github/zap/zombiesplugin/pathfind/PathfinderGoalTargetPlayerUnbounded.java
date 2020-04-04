@@ -30,7 +30,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
 
     @Override
     public boolean shouldStart() {
-        return game != null && !game.hasEnded() && game.getPlayerManager().getPlayers().size() > 0;
+        return game != null && !game.hasEnded() && game.getUserManager().getPlayers().size() > 0;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
         User closest = null;
 
         //finds the closest User to target
-        for(User user : game.getPlayerManager().getPlayers()) {
+        for(User user : game.getUserManager().getPlayers()) {
             GameMode mode = user.getPlayer().getGameMode();
             if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
                 Location loc = user.getPlayer().getLocation();

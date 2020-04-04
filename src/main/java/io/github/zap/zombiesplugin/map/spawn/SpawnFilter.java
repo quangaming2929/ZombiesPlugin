@@ -17,15 +17,16 @@ public class SpawnFilter {
 	}
 
 	public void spawn(GameManager manager, ArrayList<MythicMob> mobs, ArrayList<SpawnPoint> spawnPoints) {
-		for(int i = mobs.size() - 1; i >= 0 ; i--) {
-			MythicMob mob = mobs.get(i);
-			for(SpawnPoint spawnPoint : spawnPoints) {
-				if(acceptedMobTypes.contains(mob)) {
-					mobs.remove(i);
-					spawnPoint.spawn(manager, mob);
+		int i = mobs.size() - 1;
+		int j = 0;
+		for(;i >= 0; i--) {
+			MythicMob sample = mobs.get(i);
+			if(acceptedMobTypes.contains(sample)) {
+				mobs.remove(i);
+				spawnPoints.get(j).spawn(manager, sample);
 
-					if(mobs.size() == 0) return;
-				}
+				j++;
+				j %= spawnPoints.size();
 			}
 		}
 	}
