@@ -10,13 +10,11 @@ import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
 
 public class SpawnPoint {
-	private final String roomName;
 	private final Location spawn;
 	private final Location target;
 
-	public SpawnPoint(String roomName, Location spawn, Location target)
+	public SpawnPoint(Location spawn, Location target)
 	{
-		this.roomName = roomName;
 		this.spawn = spawn;
 		this.target = target;
 	}
@@ -29,10 +27,6 @@ public class SpawnPoint {
 
 		ZombiesPlugin.instance.lastSpawnpoint = null;
 		ZombiesPlugin.instance.lastManager = null;
-	}
-
-	public boolean canSpawn() {
-		return true;
 	}
 
 	public Location getSpawn() {

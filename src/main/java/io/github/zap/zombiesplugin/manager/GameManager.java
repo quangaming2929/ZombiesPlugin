@@ -35,7 +35,7 @@ public class GameManager {
 
     /**
      * Gets the zero-based round index.
-     * @return
+     * @return The zero-based round index
      */
     public int getCurrentRound() { return currentRound; }
 
@@ -61,7 +61,7 @@ public class GameManager {
     }
 
     public void startCountdown() {
-        //TODO: timer code here
+        //TODO: timer code
     }
 
     public void stopCountdown() {
@@ -74,7 +74,7 @@ public class GameManager {
         if (currentRound == rounds.size()) {
             // TODO: Endgame sequence
         } else {
-            rounds.get(currentRound).startRound(this, settings.getDifficulty());
+            rounds.get(currentRound).start(this, settings.getDifficulty());
             currentRound++;
         }
     }

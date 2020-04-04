@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.player;
 
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
 import io.github.zap.zombiesplugin.manager.PlayerManager;
+import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.utils.MathUtils;
 import org.bukkit.entity.Player;
@@ -46,23 +47,27 @@ public class User {
         tick++;
         if(tick % 2 == 0) {
             boolean repairTick = tick == 10;
-            for(Window window : manager.getGameManager().getSettings().getGameMap().getWindows()) {
-                if(repairTick) { //one second interval
-                    if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
-                        if(player.isSneaking()) {
-                            window.repairWindow();
+            for(Room room : manager.getGameManager().getSettings().getGameMap().getRooms()) {
+                if(room.isOpen()) {
+                    for(Window window : room.getWindows()) {
+                        if(repairTick) { //one second interval
+                            if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
+                                if(player.isSneaking()) {
+                                    window.repairWindow();
+                                    tick = 0;
+                                    break;
+                                }
+                                //todo: display text that says "press sneak to repair"
+                            }
                             tick = 0;
+                        }
+
+                        //fifth of a second second interval for interior bounds check
+                        if(window.getInteriorBounds().isInBound(player.getLocation())) {
+                            player.teleport(window.getSpawnPoint().getTarget());
                             break;
                         }
-                        //todo: display text that says "press sneak to repair"
                     }
-                    tick = 0;
-                }
-
-                //fifth of a second second interval for interior bounds check
-                if(window.getInteriorBounds().isInBound(player.getLocation())) {
-                    player.teleport(window.getSpawnPoint().getTarget());
-                    break;
                 }
             }
         }

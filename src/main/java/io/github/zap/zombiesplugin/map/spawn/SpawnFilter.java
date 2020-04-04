@@ -1,19 +1,11 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
-import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.map.GameMap;
-import io.github.zap.zombiesplugin.map.Room;
-import io.github.zap.zombiesplugin.map.Window;
-import io.github.zap.zombiesplugin.utils.ResettableIterator;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-public abstract class SpawnFilter {
+public class SpawnFilter {
 	protected final HashSet<MythicMob> acceptedMobTypes;
 
 	public SpawnFilter() {
@@ -24,22 +16,15 @@ public abstract class SpawnFilter {
 		acceptedMobTypes = types;
 	}
 
-	public void spawn(GameManager manager, ArrayList<MythicMob> mobs, ArrayList<Room> rooms) {
-		ArrayList<SpawnPoint> spawns = new ArrayList<>();
-		for(Room testRoom : rooms) {
-			if(testRoom.isOpen()) spawns.addAll(testRoom.getSpawnPoints());
-		}
-
+	public void spawn(GameManager manager, ArrayList<MythicMob> mobs, ArrayList<SpawnPoint> spawnPoints) {
 		for(int i = mobs.size() - 1; i >= 0 ; i--) {
 			MythicMob mob = mobs.get(i);
-			for(SpawnPoint spawnPoint : spawns) {
-				if(spawnPoint.canSpawn()) {
-					if(acceptedMobTypes.contains(mob)) {
-						mobs.remove(i);
-						spawnPoint.spawn(manager, mob);
+			for(SpawnPoint spawnPoint : spawnPoints) {
+				if(acceptedMobTypes.contains(mob)) {
+					mobs.remove(i);
+					spawnPoint.spawn(manager, mob);
 
-						if(mobs.size() == 0) return;
-					}
+					if(mobs.size() == 0) return;
 				}
 			}
 		}

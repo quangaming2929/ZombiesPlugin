@@ -26,7 +26,7 @@ public class Window {
         this.interiorBounds = interiorBounds;
         this.windowBounds = windowBounds;
 
-        northSouthFacing = windowBounds.getBound1().getBlockZ() == windowBounds.getBound2().getBlockZ();
+        northSouthFacing = windowBounds.getOrigin().getBlockZ() == windowBounds.getLimit().getBlockZ();
         if(northSouthFacing) windowWidth = windowBounds.getWidth();
         else windowWidth = windowBounds.getDepth();
 
@@ -95,4 +95,6 @@ public class Window {
     public BoundingBox getWindowBounds() { return  windowBounds; }
 
     public SpawnPoint getSpawnPoint() { return spawnPoint; }
+
+    public Material getCoverMaterial() { return coverMaterial; }
 }

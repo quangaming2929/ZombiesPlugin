@@ -7,36 +7,37 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class Wave {
-	private final Hashtable<GameDifficulty,Long> delay;
+	private final Hashtable<GameDifficulty,Long> delays;
 	private final Hashtable<GameDifficulty,ArrayList<MythicMob>> mobs;
 
 	public Wave() {
-		this.delay = new Hashtable<>();
+		this.delays = new Hashtable<>();
 		this.mobs = new Hashtable<>();
 	}
 
-	public void addDifficulty(GameDifficulty difficulty, long delay) {
-		this.delay.put(difficulty, delay);
+	public Wave(Hashtable<GameDifficulty,Long> delays, Hashtable<GameDifficulty,ArrayList<MythicMob>> mobs) {
+		this.delays = delays;
+		this.mobs = mobs;
 	}
 
-	public void addDifficulty(GameDifficulty difficulty) {
-		mobs.put(difficulty, new ArrayList<>());
+	public void addDelay(GameDifficulty difficulty, long delay) {
+		this.delays.put(difficulty, delay);
 	}
 
-	public void addMob(GameDifficulty difficulty, MythicMob mob) {
-		if(mobs.containsKey(difficulty)) {
-			ArrayList<MythicMob> current = mobs.get(difficulty);
-			if(current != null) {
-				current.add(mob);
-			}
-		}
+	public void addMobs(GameDifficulty difficulty, ArrayList<MythicMob> mobs) {
+		this.mobs.put(difficulty, mobs);
 	}
 
 	public long getDelay(GameDifficulty difficulty) {
-		if(delay.containsKey(difficulty)) {
-			return delay.get(difficulty);
+		if(delays.containsKey(difficulty)) {
+			return delays.get(difficulty);
 		}
 		return -1L;
+	}
+
+
+	public Hashtable<GameDifficulty,Long> getDelays() {
+		return delays;
 	}
 
 	public ArrayList<MythicMob> getMobs(GameDifficulty difficulty) {
@@ -46,11 +47,7 @@ public class Wave {
 		return null;
 	}
 
-	public Hashtable<GameDifficulty,Long> getDelayMappings() {
-		return delay;
-	}
-
-	public Hashtable<GameDifficulty,ArrayList<MythicMob>> getMobMappings() {
+	public Hashtable<GameDifficulty,ArrayList<MythicMob>> getMobs() {
 		return mobs;
 	}
 }

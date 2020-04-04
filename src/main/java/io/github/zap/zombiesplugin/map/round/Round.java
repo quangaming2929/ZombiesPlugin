@@ -4,26 +4,22 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
+import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 
 public class Round {
-	private String mapName;
 	private final ArrayList<Wave> waves;
 
-	private GameMap map;
-
-	public Round(String mapName, ArrayList<Wave> waves) {
-		this.mapName = mapName;
+	public Round(ArrayList<Wave> waves) {
 		this.waves = waves;
-
-		map = ZombiesPlugin.instance.getMap(mapName);
 	}
 
-	public void startRound(GameManager manager, GameDifficulty difficulty) {
+	public void start(GameManager manager, GameDifficulty difficulty) {
 		long accumulatedDelay = 0;
 		for (Wave wave : waves) {
 			accumulatedDelay += wave.getDelay(difficulty);
@@ -32,16 +28,23 @@ public class Round {
 				@Override
 				public void run() {
 					ArrayList<MythicMob> mobs = wave.getMobs(difficulty);
+					GameMap map = manager.getSettings().getGameMap();
 					for (SpawnFilter spawnFilter : map.getSpawnFilters()) {
-						spawnFilter.spawn(manager, mobs, map.getRooms());
+						ArrayList<SpawnPoint> available = new ArrayList<>();
+						for(Room room : map.getRooms()) {
+							if(room.isOpen()) {
+								available.addAll(room.getSpawnPoints());
+								room.getWindows().forEach(window -> available.add(window.getSpawnPoint()));
+							}
+						}
+
+						spawnFilter.spawn(manager, mobs, available);
 					}
 				}
 
 			}.runTaskLater(ZombiesPlugin.instance, accumulatedDelay);
 		}
 	}
-
-	public GameMap getMap() { return ZombiesPlugin.instance.getMap(mapName); }
 
 	public ArrayList<Wave> getWaves() { return waves; }
 }

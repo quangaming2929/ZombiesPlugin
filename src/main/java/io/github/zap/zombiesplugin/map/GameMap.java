@@ -9,62 +9,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameMap {
-	public final String name;
+	private final String name;
 	private final ArrayList<SpawnFilter> spawnFilters;
 	private final ArrayList<Round> rounds;
-	private final ArrayList<Shop> shops;
-	private final ArrayList<Door> doors;
-	private final HashMap<String,Room> rooms;
-	private final ArrayList<Window> windows;
-	private final ArrayList<BoundingBox> boundsLimits;
+	private final ArrayList<Room> rooms;
 
 	public GameMap(String name) {
 		this.name = name;
-		this.rooms = new HashMap<>();
 		this.spawnFilters = new ArrayList<>();
 		this.rounds = new ArrayList<>();
-		this.shops = new ArrayList<>();
-		this.doors = new ArrayList<>();
-		this.windows = new ArrayList<>();
-		this.boundsLimits = new ArrayList<>();
+		this.rooms = new ArrayList<>();
 
 		//TODO: load from config file
 	}
 
-	public ArrayList<Round> getRounds() {
-		return rounds;
-	}
-
-	public ArrayList<SpawnFilter> getSpawnFilters() {
-		return spawnFilters;
-	}
-
-	public ArrayList<Window> getWindows() {
-		return windows;
-	}
-
-	public ArrayList<Shop> getShops() {
-		return shops;
-	}
-
-	public Window getWindowAt(Location location) {
-		for(Window window : windows) {
-			if(window.getWindowBounds().isInBound(location)) {
-				return window;
+	public Window getAvailableWindow(Location location) {
+		for(Room room : rooms) {
+			if(room.isOpen()) {
+				for(Window window : room.getWindows()) {
+					if(window.getWindowBounds().isInBound(location)) return window;
+				}
 			}
 		}
 		return null;
-	}
-
-	public Room getRoom(String name) {
-		if(rooms.containsKey(name)) {
-			return rooms.get(name);
-		}
-		return null;
-	}
-
-	public ArrayList<Room> getRooms() {
-		return new ArrayList<>(rooms.values());
 	}
 
 	public void add(SpawnFilter manager) {
@@ -75,23 +42,19 @@ public class GameMap {
 		rounds.add(round);
 	}
 
-	public void add(Shop shop) {
-		shops.add(shop);
-	}
-
-	public void add(Door door) {
-		doors.add(door);
-	}
-
 	public void add(Room room) {
-		rooms.put(room.getName(), room);
+		rooms.add(room);
 	}
 
-	public void add(Window window) {
-		windows.add(window);
+	public String getName() { return name; }
+
+	public ArrayList<SpawnFilter> getSpawnFilters() {
+		return spawnFilters;
 	}
 
-	public void add(BoundingBox limit) {
-		boundsLimits.add(limit);
+	public ArrayList<Round> getRounds() {
+		return rounds;
 	}
+
+	public ArrayList<Room> getRooms() { return rooms; }
 }

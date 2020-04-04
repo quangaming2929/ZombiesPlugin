@@ -3,11 +3,10 @@ package io.github.zap.zombiesplugin.map;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.util.Vector;
 
 public class BoundingBox {
-    private Location bound1;
-    private Location bound2;
+    private Location origin;
+    private Location limit;
 
     private int width;
     private int height;
@@ -17,24 +16,24 @@ public class BoundingBox {
 
     private Location center;
 
-    public BoundingBox(Location bound1, Location bound2) {
-        int xMin = Math.min(bound1.getBlockX(), bound2.getBlockX());
-        int yMin = Math.min(bound1.getBlockY(), bound2.getBlockY());
-        int zMin = Math.min(bound1.getBlockZ(), bound2.getBlockZ());
+    public BoundingBox(Location origin, Location limit) {
+        int xMin = Math.min(origin.getBlockX(), limit.getBlockX());
+        int yMin = Math.min(origin.getBlockY(), limit.getBlockY());
+        int zMin = Math.min(origin.getBlockZ(), limit.getBlockZ());
 
-        int xMax = Math.max(bound1.getBlockX(), bound2.getBlockX());
-        int yMax = Math.max(bound1.getBlockY(), bound2.getBlockY());
-        int zMax = Math.max(bound1.getBlockZ(), bound2.getBlockZ());
+        int xMax = Math.max(origin.getBlockX(), limit.getBlockX());
+        int yMax = Math.max(origin.getBlockY(), limit.getBlockY());
+        int zMax = Math.max(origin.getBlockZ(), limit.getBlockZ());
 
-        this.bound1 = new Location(bound1.getWorld(), xMin, yMin, zMin);
-        this.bound2 = new Location(bound2.getWorld(), xMax, yMax, zMax);
+        this.origin = new Location(origin.getWorld(), xMin, yMin, zMin);
+        this.limit = new Location(limit.getWorld(), xMax, yMax, zMax);
 
-        width = bound2.getBlockX() - bound1.getBlockX() + 1;
-        height = bound2.getBlockY() - bound1.getBlockY() + 1;
-        depth =  bound2.getBlockZ() - bound1.getBlockZ() + 1;
+        width = limit.getBlockX() - origin.getBlockX() + 1;
+        height = limit.getBlockY() - origin.getBlockY() + 1;
+        depth =  limit.getBlockZ() - origin.getBlockZ() + 1;
 
         volume = width * height * depth;
-        center = new Location(bound1.getWorld(), (bound1.getX() + bound2.getX()) / 2, (bound1.getY() + bound2.getY()) / 2, (bound1.getZ() + bound2.getZ()) / 2);
+        center = new Location(origin.getWorld(), (origin.getX() + limit.getX()) / 2, (origin.getY() + limit.getY()) / 2, (origin.getZ() + limit.getZ()) / 2);
     }
 
     public boolean isInBound(Location location) {
@@ -42,26 +41,26 @@ public class BoundingBox {
         int y = location.getBlockY();
         int z = location.getBlockZ();
 
-        return x >= bound1.getBlockX() &&
-                y >= bound1.getBlockY() &&
-                z >= bound1.getBlockZ() &&
+        return x >= origin.getBlockX() &&
+                y >= origin.getBlockY() &&
+                z >= origin.getBlockZ() &&
 
-                x <= bound2.getBlockX() &&
-                y <= bound2.getBlockY() &&
-                z <= bound2.getBlockZ();
+                x <= limit.getBlockX() &&
+                y <= limit.getBlockY() &&
+                z <= limit.getBlockZ();
     }
 
     public Block getBlockRelative(int x, int y, int z) {
-        return bound1.getWorld().getBlockAt(bound1.getBlockX() + x, bound1.getBlockY() + y, bound1.getBlockZ() + z);
+        return origin.getWorld().getBlockAt(origin.getBlockX() + x, origin.getBlockY() + y, origin.getBlockZ() + z);
     }
 
     public World getWorld() {
-        return bound1.getWorld();
+        return origin.getWorld();
     }
 
-    public Location getBound1() { return bound1; }
+    public Location getOrigin() { return origin; }
 
-    public Location getBound2() { return bound2; }
+    public Location getLimit() { return limit; }
 
     public int getWidth() { return width; }
 
