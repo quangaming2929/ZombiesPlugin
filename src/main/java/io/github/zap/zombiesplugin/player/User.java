@@ -19,10 +19,6 @@ public class User {
 
     private int tick = 0;
 
-    /**
-     * Manager gun-related
-     */
-    private GunUser gunUser;
     private HotbarManager hotbar;
     private PlayerState state = PlayerState.ALIVE;
 
