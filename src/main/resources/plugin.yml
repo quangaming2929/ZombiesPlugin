@@ -1,9 +1,12 @@
 name: ZombiesPlugin
 version: ${project.version}
 main: io.github.zap.zombiesplugin.ZombiesPlugin
-api-version: 1.13
+api-version: "1.13"
 authors: [LimeSlayer420, thamid, TachibanaYui]
 description: An improved version of the Hypixel minigame Zombies.
+depend:
+  - MythicMobs
+  - ProtocolLib
 commands:
   equipmentDebug:
     description: Test command related to equipments
@@ -13,3 +16,9 @@ commands:
     description: Set player gold
   scoreBoardDebug:
     description: testScoreboard thingy
+  newspawnpoint:
+    description: Adds or removes a spawnpoint to the testing spawnpoint.
+    usage: /newspawnpoint
+  testentity:
+    description: Spawns a testing zombie.
+    usage: /testentity

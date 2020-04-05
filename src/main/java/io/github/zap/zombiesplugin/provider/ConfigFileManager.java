@@ -89,7 +89,7 @@ public class ConfigFileManager {
      * This method is used by Gson Type Adapter to resolve custom types
      * @param cc The custom class
      */
-    public String getCustomClassFriendlyName (Class<? extends  ICustomSerializerIdentity> cc) {
+    public String getCustomClassFriendlyName (Class<? extends ICustomSerializerIdentity> cc) {
         for (Map.Entry<String, Class<? extends ICustomSerializerIdentity>> item : customClasses.entrySet()) {
             if (cc == item.getValue()) {
                 return item.getKey();
@@ -102,7 +102,7 @@ public class ConfigFileManager {
     /**
      * Get the GsonBuilder for this provider, it contains the type adapter for resolve
      * registered custom type of this provider
-     * @return
+     * @return The gson builder
      */
     public GsonBuilder getGsonBuilder() {
         return new GsonFireBuilder()
@@ -110,12 +110,6 @@ public class ConfigFileManager {
                 .registerPostProcessor(ICustomSerializerIdentity.class, new CustomClassPostProcessor(this))
                 .createGsonBuilder()
                 .serializeNulls();
-    }
-
-    public void registerValue(String importerName, String valueName, Object value) {
-        if (importers.containsKey(importerName)) {
-            importers.get(importerName).registerValue(valueName, value);
-        }
     }
 
     public boolean addImporter (String name, Importer importer) {

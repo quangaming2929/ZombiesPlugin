@@ -1,8 +1,12 @@
 package io.github.zap.zombiesplugin.player;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.equipments.guns.GunObjectGroup;
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
+import io.github.zap.zombiesplugin.manager.UserManager;
+import io.github.zap.zombiesplugin.map.Room;
+import io.github.zap.zombiesplugin.map.Window;
+import io.github.zap.zombiesplugin.utils.MathUtils;
+import io.github.zap.zombiesplugin.equipments.guns.GunObjectGroup;
 import io.github.zap.zombiesplugin.equipments.meele.MeeleObjectGroup;
 import io.github.zap.zombiesplugin.equipments.perks.PerkObjectGroup;
 import io.github.zap.zombiesplugin.equipments.skills.SkillObjectGroup;
@@ -10,7 +14,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class User {
+    private UserManager manager;
     private Player player;
+
+    private int tick = 0;
+
     private HotbarManager hotbar;
     private PlayerState state = PlayerState.ALIVE;
 
@@ -18,8 +26,8 @@ public class User {
     private int gold;
     private int kills;
 
-    public User(Player player) {
-        this.gold = 1500; // TODO: REMOVE THIS AFTER TESTING
+    public User(UserManager manager, Player player) {
+        this.manager = manager;
         this.player = player;
         this.hotbar = new HotbarManager(player);
 
@@ -85,5 +93,35 @@ public class User {
             }
         }
 
+    }
+
+    public void userTick() {
+        tick++;
+        if(tick % 2 == 0) {
+            boolean repairTick = tick == 10;
+            for(Room room : manager.getGameManager().getSettings().getGameMap().getRooms()) {
+                if(room.isOpen()) {
+                    for(Window window : room.getWindows()) {
+                        if(repairTick) { //one second interval
+                            if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
+                                if(player.isSneaking()) {
+                                    window.repairWindow();
+                                    tick = 0;
+                                    break;
+                                }
+                                //todo: display text that says "press sneak to repair"
+                            }
+                            tick = 0;
+                        }
+
+                        //fifth of a second second interval for interior bounds check
+                        if(window.getInteriorBounds().isInBound(player.getLocation())) {
+                            player.teleport(window.getSpawnPoint().getTarget());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

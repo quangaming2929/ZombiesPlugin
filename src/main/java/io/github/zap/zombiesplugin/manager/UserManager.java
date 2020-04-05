@@ -2,6 +2,8 @@ package io.github.zap.zombiesplugin.manager;
 
 import com.destroystokyo.paper.Title;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.events.EventHandler;
+import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
@@ -18,33 +20,44 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
-public class PlayerManager implements Listener {
-
-
+public class UserManager implements Listener, ITickable {
     private GameManager gameManager;
+    private HashMap<Player,User> players = new HashMap<>();
+    private ArrayList<User> spectators = new ArrayList<>();
 
-    private int gameSize = 4;
-    private List<User> players = new ArrayList<>();
-    private ArrayList<Player> spectators;
+    //event handlers
+    private EventHandler<UserJoinLeaveEventArgs> userJoinLeaveEventHandler;
 
-    public PlayerManager(GameManager gameManager) {
+    public UserManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
         //self-register
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
+        ZombiesPlugin.instance.getTickManager().register(this);
+
+        userJoinLeaveEventHandler = new EventHandler<>();
     }
 
-    public int getGameSize() {
-        return gameSize;
+    public ArrayList<User> getPlayers() {
+        return new ArrayList<>(players.values());
     }
 
-    public void setGameSize(int gameSize) {
-        this.gameSize = gameSize;
-    }
+    public GameManager getGameManager() { return gameManager; }
 
-    public List<User> getPlayers() {
-        return players;
+    public boolean hasUser(User user) { return players.containsValue(user); }
+
+    public EventHandler<UserJoinLeaveEventArgs> getPlayerJoinLeaveHandler() { return userJoinLeaveEventHandler; }
+
+    /**
+     * Essentially a gameloop for users.
+     */
+    @Override
+    public void doTick() {
+        for(User user : players.values()) {
+            user.userTick();
+        }
     }
 
     /**
@@ -69,50 +82,42 @@ public class PlayerManager implements Listener {
      * @param player The player to add
      * @return Whether or not the player was added
      */
-    public boolean addPlayer(Player player) {
-        if(players.size() - 1 < getGameSize())
+    public boolean addUser(Player player) {
+        if(players.size() - 1 < gameManager.getSettings().getGameSize())
         {
-            for(User user : players) {
-                if(user.getPlayer() == player) { // Check if the player already exist in this manager
-                    if (gameManager.getScoreboard() != null) {
-                        gameManager.getScoreboard().onPlayerJoinGame(user);
-                    }
-                    return false;
-                }
-            }
+            if(players.containsKey(player)) return false;
         }
 
-        User newUser = new User(player);
-        players.add(newUser);
+        User user = new User(this, player);
+        players.put(player, user);
+
         if (gameManager.getScoreboard() != null) {
-            gameManager.getScoreboard().onPlayerJoinGame(newUser);
+            gameManager.getScoreboard().onPlayerJoinGame(user);
         }
-        return  true;
+
+        userJoinLeaveEventHandler.invoke(this, new UserJoinLeaveEventArgs(user, UserJoinLeaveEventArgs.ChangeType.JOIN));
+        return true;
     }
 
     /**
-     * Returns true if the player is successfully removed; returns false otherwise.
-     * @param player The player to remove
+     * Returns true if the User is successfully removed; returns false otherwise.
+     * @param user The User to remove
      * @return Whether or not the player was removed
      */
-    public boolean removePlayer(Player player) {
-        User associatedPlayer = getAssociatedUser(player);
-        if(associatedPlayer != null) {
-            this.players.remove(associatedPlayer);
+    public boolean removeUser(User user) {
+        Player player = user.getPlayer();
+        if(players.containsKey(player)) {
+            players.remove(player);
+            userJoinLeaveEventHandler.invoke(this, new UserJoinLeaveEventArgs(user, UserJoinLeaveEventArgs.ChangeType.LEAVE));
             return true;
         }
-
         return false;
     }
 
-    /*
-     * Currently this event is invoked every time ANY player right-clicks, which is obviously not
-     * ideal. Might be a way to have the event only apply to the players in the "players" array without
-     * having to filter manually, but I wasn't able to find one.
-     */
-    @EventHandler(priority= EventPriority.HIGH)
+    @EventHandler
     public void onPlayerUse(PlayerInteractEvent event) {
         User user = getAssociatedUser(event.getPlayer());
+
         if(user != null) {
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
@@ -123,8 +128,6 @@ public class PlayerManager implements Listener {
     public void onPlayerSwitchHeldItem(PlayerItemHeldEvent event) {
         User user = getAssociatedUser(event.getPlayer());
         if(user != null) {
-
-
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
         }

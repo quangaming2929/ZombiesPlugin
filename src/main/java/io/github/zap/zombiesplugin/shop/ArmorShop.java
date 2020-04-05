@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.player.User;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -93,9 +94,13 @@ public class ArmorShop extends WallShop {
 		} else {
 			Objects.requireNonNull(user.getPlayer().getEquipment()).setArmorContents(getNewArmor(user.getPlayer()));
 
-			for (Shop shop : gameManager.getMap().getShops()) {
-				if (shop instanceof ArmorShop) {
-					((ArmorShop) shop).notifyArmorChange(user.getPlayer());
+			for (Room room : gameManager.getSettings().getGameMap().getRooms()) {
+				if(room.isOpen()) {
+					for(Shop shop : room.getShops()) {
+						if (shop instanceof ArmorShop) {
+							((ArmorShop) shop).notifyArmorChange(user.getPlayer());
+						}
+					}
 				}
 			}
 

@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.JsonArray;
@@ -10,9 +11,27 @@ import io.github.zap.zombiesplugin.commands.DebugInventoryCommand;
 import io.github.zap.zombiesplugin.commands.EquipmentDebugCommands;
 import io.github.zap.zombiesplugin.commands.ScoreboardDebugCommand;
 import io.github.zap.zombiesplugin.commands.SetGoldCommand;
+import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
+import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
+import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.player.PlayerState;
+import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.manager.GameSettings;
+import io.github.zap.zombiesplugin.manager.TickManager;
+import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.map.GameMapImporter;
+import io.github.zap.zombiesplugin.map.Window;
+import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
+import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
+import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
+import io.github.zap.zombiesplugin.pathfind.PathfinderGoalTargetPlayerUnbounded;
+import io.github.zap.zombiesplugin.pathfind.PathfinderGoalUnboundedMeleeAttack;
+import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.TMTaskImporter;
@@ -28,31 +47,68 @@ import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import io.github.zap.zombiesplugin.utils.Tuple;
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Hashtable;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
     public static ZombiesPlugin instance;
 
     private ConfigFileManager config;
     private ProtocolManager protocolManager;
-    private ArrayList<GameManager> games;
 
+    private Hashtable<String, GameManager> gameManagers;
+    private Hashtable<String, GameMap> maps;
+
+    private TickManager tickManager;
 
     @Override
     public void onEnable() {
         instance = this;
         protocolManager = ProtocolLibrary.getProtocolManager();
+        gameManagers = new Hashtable<>();
+        maps = new Hashtable<>();
+        tickManager = new TickManager(2); //runs at 10 TPS
+        getServer().getPluginManager().registerEvents(this, this);
 
+        registerConfigs();
+        registerCommands();
+
+        //inject custom AI pathfinders into MythicMobs
+        try {
+            HashSet<Class<?>> goals = new HashSet<>();
+            goals.add(PathfinderGoalEscapeWindow.class);
+            goals.add(PathfinderGoalUnboundedMeleeAttack.class);
+            goals.add(PathfinderGoalTargetPlayerUnbounded.class);
+
+            HashSet<Class<?>> targets = new HashSet<>();
+
+            Hack.injectCustomAi(MythicMobs.inst(), goals, targets);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        tickManager.start();
 
         config = new ConfigFileManager(this, this.getDataFolder());
 
@@ -65,33 +121,32 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         // Team Machine
         config.addImporter("TMTasks", new TMTaskImporter());
 
-
+        // Map & Spawn point
+        config.addImporter("SpawnPointManager", new SpawnManagerImporter());
+        config.addImporter("GameMapImporter", new GameMapImporter());
         config.reload();
 
-        try {
-            gm = new GameManager(null, null);
-            gm.setScoreboard(new InGameScoreBoard(gm));
-            manager = gm.getPlayerManager();
-            TMTaskImporter tmTasks = (TMTaskImporter) config.getImporter("TMTasks");
-            tm = new TeamMachine(gm, Arrays.asList(tmTasks.createTask("tmt_ammo_supply", gm),  tmTasks.createTask("tmt_full_revive", gm), tmTasks.createTask("tmt_dragon_wrath", gm)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         Bukkit.getPluginManager().registerEvents(this,this);
+    }
+
+    private void registerConfigs() {
+        config = new ConfigFileManager(this, this.getDataFolder());
+        config.addImporter("Gun", new GunImporter());
+        config.addImporter("SpawnPointManager", new SpawnManagerImporter());
+        config.addImporter("GameMapImporter", new GameMapImporter());
+        config.reload();
+    }
+
+    private void registerCommands() {
+        SpawnpointCommands spCmd = new SpawnpointCommands();
+        getCommand("testentity").setExecutor(spCmd);
+        getCommand("newspawnpoint").setExecutor(spCmd);
 
         getCommand("equipmentDebug").setExecutor(new EquipmentDebugCommands());
         getCommand("invDebug").setExecutor(new DebugInventoryCommand());
         getCommand("setGold").setExecutor(new SetGoldCommand());
         getCommand("scoreBoardDebug").setExecutor(new ScoreboardDebugCommand());
-
-
     }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
-
 
     public ConfigFileManager getConfigManager() {
         return config;
@@ -101,14 +156,22 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         return protocolManager;
     }
 
-    // Test fields
-    public GameManager gm;
-    public PlayerManager manager;
-    public TeamMachine tm;
+    public boolean removeGameManager(String id) {
+        return gameManagers.remove(id) != null;
+    }
+
+    public ArrayList<GameManager> getGameManagers() {
+        return new ArrayList<>(gameManagers.values());
+    }
+
+    public GameManager getGameManager(String id) {
+        return gameManagers.getOrDefault(id, null);
+    }
+
+    public GameMap getMap(String mapName) { return maps.get(mapName); }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        manager.addPlayer(e.getPlayer());
         sayHelloToTester(e.getPlayer());
 
         String header = ChatColor.AQUA + "Welcome to " +  ChatColor.YELLOW + ChatColor.BOLD +  "ZAP " + ChatColor.GOLD +  ChatColor.BOLD + "closed beta test 1";
@@ -195,4 +258,21 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         ((CraftPlayer)player).getHandle().playerConnection.sendPacket(chatPacket);
     }
 
+    public boolean addGameManager(GameManager manager) {
+        if(!gameManagers.containsKey(manager.getName())) {
+            gameManagers.put(manager.getName(), manager);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addMap(GameMap map) {
+        if(!maps.containsKey(map.getName())) {
+            maps.put(map.getName(), map);
+            return true;
+        }
+        return false;
+    }
+
+    public TickManager getTickManager() { return tickManager; }
 }

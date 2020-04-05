@@ -75,7 +75,7 @@ public class WeaponsChest implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				gunSwapper.endSwapping();;
+				gunSwapper.endSwapping();
 			}
 		}.runTaskLater(ZombiesPlugin.instance, accumulatedDelay);
 	}

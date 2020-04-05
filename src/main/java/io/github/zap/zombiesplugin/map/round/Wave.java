@@ -1,38 +1,53 @@
 package io.github.zap.zombiesplugin.map.round;
 
-import io.github.zap.zombiesplugin.mob.Mob;
-import java.util.List;
+import io.github.zap.zombiesplugin.manager.GameDifficulty;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class Wave {
+	private final Hashtable<GameDifficulty,Long> delays;
+	private final Hashtable<GameDifficulty,ArrayList<MythicMob>> mobs;
 
-	/**
-	 * The delay at the beginning of the wave measured in ticks
-	 */
-	private final long delay;
+	public Wave() {
+		this.delays = new Hashtable<>();
+		this.mobs = new Hashtable<>();
+	}
 
-	/**
-	 * The mobs to spawn
-	 */
-	private final List<Mob> mobs;
-
-	public Wave(long delay, List<Mob> mobs) {
-		this.delay = delay;
+	public Wave(Hashtable<GameDifficulty,Long> delays, Hashtable<GameDifficulty,ArrayList<MythicMob>> mobs) {
+		this.delays = delays;
 		this.mobs = mobs;
 	}
 
-	/** Gets the delay of the beginning of the wave
-	 *
-	 * @return The delay
-	 */
-	public long getDelay() {
-		return delay;
+	public void addDelay(GameDifficulty difficulty, long delay) {
+		this.delays.put(difficulty, delay);
 	}
 
-	/** Gets the mobs in the wave
-	 *
-	 * @return The mobs
-	 */
-	public List<Mob> getMobs() {
+	public void addMobs(GameDifficulty difficulty, ArrayList<MythicMob> mobs) {
+		this.mobs.put(difficulty, mobs);
+	}
+
+	public long getDelay(GameDifficulty difficulty) {
+		if(delays.containsKey(difficulty)) {
+			return delays.get(difficulty);
+		}
+		return -1L;
+	}
+
+
+	public Hashtable<GameDifficulty,Long> getDelays() {
+		return delays;
+	}
+
+	public ArrayList<MythicMob> getMobs(GameDifficulty difficulty) {
+		if(mobs.containsKey(difficulty)) {
+			return mobs.get(difficulty);
+		}
+		return null;
+	}
+
+	public Hashtable<GameDifficulty,ArrayList<MythicMob>> getMobs() {
 		return mobs;
 	}
 }
