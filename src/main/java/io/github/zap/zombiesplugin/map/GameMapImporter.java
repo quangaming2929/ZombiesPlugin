@@ -10,6 +10,11 @@ public class GameMapImporter extends Importer {
     private Gson fileParser;
 
     @Override
+    public boolean registerValue(String name, Object value) {
+        return false;
+    }
+
+    @Override
     public void init(ConfigFileManager manager) {
         super.init(manager);
         fileParser = manager.getGsonBuilder().create();

@@ -7,6 +7,11 @@ import java.nio.file.Path;
 
 public class SpawnManagerImporter extends Importer {
     @Override
+    public boolean registerValue(String name, Object value) {
+        return false;
+    }
+
+    @Override
     public void init(ConfigFileManager manager) {
         super.init(manager);
     }

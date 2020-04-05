@@ -28,7 +28,7 @@ public class GameManager implements Listener {
 
     private GameSettings settings;
     private UserManager userManager;
-    private GameState state
+    private GameState state;
     private IInGameScoreboard scoreboard;
 
     private int currentMobCount = 0;

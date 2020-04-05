@@ -53,7 +53,6 @@ public class RoomData implements IMapData<Room> {
         }
 
         Room result = new Room(name, parent.getLookupHelper());
-
         for(DoorData data : doors) {
             result.add(data.load(null));
         }
