@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.pathfind;
 
-import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
@@ -14,23 +13,41 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.Optional;
+
 @MythicAIGoal(
         name = "unboundedPlayerTarget",
         description = "Special goal that only cares about players in the current game and has an infinite range."
 )
 public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements PathfindingGoal {
     private int tickCount;
-    private final GameManager game;
+    private GameManager manager = null;
     private User target;
+
+    private boolean loadedMetadata = false;
 
     public PathfinderGoalTargetPlayerUnbounded(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
-        game = ZombiesPlugin.instance.lastManager;
+    }
+
+    private void loadMetadata() {
+        if(entity.hasMetadata("zp_manager")) {
+            Optional<Object> optManager = entity.getMetadata("zp_manager");
+
+            if(optManager.isPresent()) {
+                manager = (GameManager)optManager.get();
+                loadedMetadata = true;
+            }
+        }
     }
 
     @Override
     public boolean shouldStart() {
-        return game != null && !game.hasEnded() && game.getPlayerManager().getPlayers().size() > 0;
+        if(!loadedMetadata) {
+            loadMetadata();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -63,7 +80,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
 
     @Override
     public boolean shouldEnd() {
-        return game == null || game.hasEnded();
+        return manager == null || !manager.runAI();
     }
 
     @Override
@@ -74,26 +91,28 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
      * or who are not in survival or adventure mode.
      */
     private void targetNearestUser() {
-        double shortest = Double.MAX_VALUE;
-        User closest = null;
+        if(manager.runAI()) {
+            double shortest = Double.MAX_VALUE;
+            User closest = null;
 
-        //finds the closest User to target
-        for(User user : game.getPlayerManager().getPlayers()) {
-            GameMode mode = user.getPlayer().getGameMode();
-            if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
-                Location loc = user.getPlayer().getLocation();
+            //finds the closest User to target
+            for(User user : manager.getUserManager().getPlayers()) {
+                GameMode mode = user.getPlayer().getGameMode();
+                if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
+                    Location loc = user.getPlayer().getLocation();
 
-                double dist = this.entity.getLocation().distanceSquared(new AbstractLocation(new BukkitWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
-                if(dist < shortest) {
-                    shortest = dist;
-                    closest = user;
+                    double dist = this.entity.getLocation().distanceSquared(new AbstractLocation(new BukkitWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
+                    if(dist < shortest) {
+                        shortest = dist;
+                        closest = user;
+                    }
                 }
             }
-        }
 
-        if(closest != null) {
-            target = closest;
-            ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), target.getPlayer());
+            if(closest != null) {
+                target = closest;
+                ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), target.getPlayer());
+            }
         }
     }
 }

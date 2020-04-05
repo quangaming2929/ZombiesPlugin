@@ -20,6 +20,8 @@ import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
+import java.util.Optional;
+
 @MythicAIGoal(
         name = "escapeWindow",
         description = "Used by zombies to navigate out of windows."
@@ -27,13 +29,18 @@ import org.bukkit.util.Vector;
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
     private GameManager manager;
     private EntityCreature nmsEntity;
+
     private Window targetWindow = null;
+    private AbstractLocation windowCenter;
     private AbstractLocation destination;
+
     private boolean reachedGoal = false;
     private boolean hasWindow = false;
+    private boolean loadedMetadata = false;
 
-    private final int searchDistance = 20;
-    private final int radiusSquared = 3;
+    private final int searchDistance = 32;
+    private final double breakReachSquared = 4;
+    private final int radiusSquared = 4;
 
     private int tickCounter = 0;
 
@@ -41,30 +48,50 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         super(entity, line, mlc);
         setGoalType(GoalType.MOVE_LOOK);
 
-        SpawnPoint spawnPoint = ZombiesPlugin.instance.lastSpawnpoint;
-        manager = ZombiesPlugin.instance.lastManager;
         nmsEntity = (EntityCreature)((CraftEntity)entity.getBukkitEntity()).getHandle();
+    }
 
-        if(spawnPoint != null) {
-            Location testSpawnLocation = spawnPoint.getSpawn();
-            AbstractLocation location = entity.getLocation();
-            if(testSpawnLocation.getBlockX() == location.getBlockX() &&
-                    testSpawnLocation.getBlockY() == location.getBlockY() &&
-                    testSpawnLocation.getBlockZ() == location.getBlockZ()) {
+    private void loadMetadata() {
+        if(entity.hasMetadata("zp_manager") && entity.hasMetadata("zp_spawnpoint")) {
+            Optional<Object> optManager = entity.getMetadata("zp_manager");
+            Optional<Object> optSpawnpoint = entity.getMetadata("zp_spawnpoint");
+
+            if(optManager.isPresent() && optSpawnpoint.isPresent()) {
+                manager = (GameManager)optManager.get();
+                SpawnPoint spawnPoint = (SpawnPoint)optSpawnpoint.get();
+
                 Location target = spawnPoint.getTarget();
-                destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
-                hasWindow = true;
+
+                if(target != null) {
+                    destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
+                    targetWindow = manager.getSettings().getGameMap().getLookupHelper().getWindow(spawnPoint);
+
+                    if(targetWindow != null) {
+                        hasWindow = true;
+
+                        Location center = targetWindow.getWindowBounds().getCenter();
+                        windowCenter = new AbstractLocation(new BukkitWorld(center.getWorld()), center.getX(), center.getY(), center.getZ());
+                    }
+                }
+
+                loadedMetadata = true;
             }
         }
     }
 
     public boolean shouldStart() {
-        return this.entity.getLocation().distanceSquared(destination) > (double)radiusSquared && !reachedGoal;
+        if(!loadedMetadata) {
+            loadMetadata();
+            return false;
+        }
+        return true;
     }
 
     @Override
     public void start() {
-        ai().navigateToLocation(this.entity, destination, searchDistance);
+        if(destination != null) {
+            ai().navigateToLocation(this.entity, destination, searchDistance);
+        }
     }
 
     @Override
@@ -77,73 +104,29 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
             }
         }
 
-        nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY() + 1, destination.getZ()));
-        ai().navigateToLocation(this.entity, destination, searchDistance);
+        if(destination != null) {
+            nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY() + 1, destination.getZ()));
+            ai().navigateToLocation(this.entity, destination, searchDistance);
+        }
     }
 
     @Override
     public boolean shouldEnd() {
         AbstractLocation entityLocation = this.entity.getLocation();
-        return (entityLocation.distanceSquared(destination) <= (double) radiusSquared && entityLocation.getY() == destination.getY()) || !hasWindow;
+        return destination == null || (destination.distanceSquared(destination) <= (double) radiusSquared && entityLocation.getBlockY() == destination.getBlockY());
     }
 
     @Override
     public void end() {
-        //in most cases it is sufficient for tryBreak() to set window to null itself, but occasionally this may not work
         targetWindow = null;
         reachedGoal = true;
     }
 
     public void tryBreak() {
-        World world = ((BukkitWorld) entity.getWorld()).getBukkitWorld();
-        AbstractLocation loc = entity.getLocation();
-        int posX = loc.getBlockX();
-        int posY = loc.getBlockY();
-        int posZ = loc.getBlockZ();
-
-        //turn yaw into a direction so we know which way the zombie is facing
-        Direction direction; //defaults to 'UP'
-        float yaw = loc.getYaw();
-        if(yaw <= -135 || yaw > 135) {
-            direction = Direction.NORTH;
-        }
-        else if( yaw <= -45) {
-            direction = Direction.EAST;
-        }
-        else if(yaw <= 45) {
-            direction = Direction.SOUTH;
-        }
-        else {
-            direction = Direction.WEST;
-        }
-
-        Location testLoc;
-        switch (direction) { //grab a vector in front of the zombie
-            case NORTH:
-                testLoc = new Location(world, posX, posY + 1, posZ - 0.5);
-                break;
-            case EAST:
-                testLoc = new Location(world, posX + 0.5, posY + 1, posZ);
-                break;
-            case SOUTH:
-                testLoc = new Location(world, posX, posY + 1, posZ + 0.5);
-                break;
-            case WEST:
-                testLoc = new Location(world, posX - 0.5, posY + 1, posZ);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + direction);
-        }
-
-        Window foundWindow = manager.getSettings().getGameMap().getWindowAt(testLoc);
-        if(foundWindow == null && targetWindow != null) {
-            targetWindow = null;
-        }
-        else if(foundWindow != null) {
-            targetWindow = foundWindow;
-            targetWindow.breakWindow( this);
+        if(entity.getEyeLocation().distanceSquared(windowCenter) <= breakReachSquared) {
+            targetWindow.breakWindow(this);
         }
     }
 
-    public boolean reachedGoal() { return reachedGoal || entity == null || entity.isDead(); }
+    public boolean finished() { return reachedGoal || entity == null || entity.isDead(); }
 }

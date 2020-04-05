@@ -5,24 +5,26 @@ import org.bukkit.Location;
 import java.util.ArrayList;
 
 public class MultiBoundingBox {
-    private ArrayList<BoundingBox> boxes;
+    private ArrayList<BoundingBox> bounds;
 
     public MultiBoundingBox() {
-        boxes = new ArrayList<>();
+        bounds = new ArrayList<>();
     }
 
-    public MultiBoundingBox(ArrayList<BoundingBox> boxes) {
-        this.boxes = boxes;
+    public MultiBoundingBox(ArrayList<BoundingBox> bounds) {
+        this.bounds = bounds;
     }
 
-    public void add(BoundingBox box) {
-        boxes.add(box);
+    public void add(BoundingBox bound) {
+        bounds.add(bound);
     }
 
     public boolean isInBound(Location location) {
-        for(BoundingBox box : boxes) {
-            if(box.isInBound(location)) return true;
+        for(BoundingBox bound : bounds) {
+            if(bound.isInBound(location)) return true;
         }
         return false;
     }
+
+    public ArrayList<BoundingBox> getBounds() { return bounds; }
 }

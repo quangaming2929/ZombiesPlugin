@@ -11,12 +11,8 @@ import java.util.HashSet;
 
 public class RandomizedSpawnFilter extends SpawnFilter {
     @Override
-    public void spawn(GameManager manager, ArrayList<MythicMob> mobs, ArrayList<Room> rooms) {
-        for(Room room : rooms) {
-            Collections.shuffle(room.getSpawnPoints());
-        }
-
-        Collections.shuffle(rooms);
-        super.spawn(manager, mobs, rooms);
+    public void spawn(GameManager manager, ArrayList<MythicMob> mobs, ArrayList<SpawnPoint> spawnPoints) {
+        Collections.shuffle(spawnPoints);
+        super.spawn(manager, mobs, spawnPoints);
     }
 }

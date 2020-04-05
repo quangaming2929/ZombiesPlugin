@@ -52,6 +52,9 @@ import org.bukkit.entity.Player;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.github.zap.zombiesplugin.utils.Tuple;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -94,9 +97,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         registerConfigs();
         registerCommands();
 
-        //TODO: remove this after testing
-        gameManagers.put("test_game", new GameManager( "test_game", new GameSettings(GameDifficulty.NORMAL, new GameMap("test_map"), 4)));
-
         //inject custom AI pathfinders into MythicMobs
         try {
             HashSet<Class<?>> goals = new HashSet<>();
@@ -130,11 +130,14 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         config.reload();
 
         Bukkit.getPluginManager().registerEvents(this,this);
+    }
 
-        getCommand("equipmentDebug").setExecutor(new EquipmentDebugCommands());
-        getCommand("invDebug").setExecutor(new DebugInventoryCommand());
-        getCommand("setGold").setExecutor(new SetGoldCommand());
-        getCommand("scoreBoardDebug").setExecutor(new ScoreboardDebugCommand());
+    private void registerConfigs() {
+        config = new ConfigFileManager(this, this.getDataFolder());
+        config.addImporter("Gun", new GunImporter());
+        config.addImporter("SpawnPointManager", new SpawnManagerImporter());
+        config.addImporter("GameMapImporter", new GameMapImporter());
+        config.reload();
     }
 
     private void registerCommands() {
@@ -259,17 +262,17 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         ((CraftPlayer)player).getHandle().playerConnection.sendPacket(chatPacket);
     }
 
-    public boolean addGameManager(String id, GameManager manager) {
-        if (!gameManagers.containsKey(id)) {
-            gameManagers.put(id, manager);
+    public boolean addGameManager(GameManager manager) {
+        if(!gameManagers.containsKey(manager.getName())) {
+            gameManagers.put(manager.getName(), manager);
             return true;
         }
         return false;
     }
 
-    public boolean addMap(GameMap map, String name) {
-        if(!maps.containsKey(name)) {
-            maps.put(name, map);
+    public boolean addMap(GameMap map) {
+        if(!maps.containsKey(map.getName())) {
+            maps.put(map.getName(), map);
             return true;
         }
         return false;

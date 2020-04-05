@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
-public class PlayerManager implements Listener, ITickable {
+public class UserManager implements Listener, ITickable {
     private GameManager gameManager;
     private HashMap<Player,User> players = new HashMap<>();
     private ArrayList<User> spectators = new ArrayList<>();
@@ -30,7 +30,7 @@ public class PlayerManager implements Listener, ITickable {
     //event handlers
     private EventHandler<UserJoinLeaveEventArgs> userJoinLeaveEventHandler;
 
-    public PlayerManager(GameManager gameManager) {
+    public UserManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
         //self-register
@@ -117,6 +117,7 @@ public class PlayerManager implements Listener, ITickable {
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent event) {
         User user = getAssociatedUser(event.getPlayer());
+
         if(user != null) {
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
