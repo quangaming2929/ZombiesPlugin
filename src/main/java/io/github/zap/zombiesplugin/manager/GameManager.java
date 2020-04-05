@@ -2,21 +2,14 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
-import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.round.Round;
-import java.util.List;
 
-import io.github.zap.zombiesplugin.player.PlayerState;
-import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.scoreboard.IInGameScoreboard;
 import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import io.github.zap.zombiesplugin.map.round.Wave;
-import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.event.EventHandler;
@@ -27,7 +20,7 @@ public class GameManager implements Listener {
     public final String name;
 
     private GameSettings settings;
-    private UserManager userManager;
+    private PlayerManager playerManager;
     private GameState state;
     private IInGameScoreboard scoreboard;
 
@@ -40,8 +33,8 @@ public class GameManager implements Listener {
         this.settings = settings;
 
         this.scoreboard = new InGameScoreBoard(this);
-        userManager = new UserManager(this);
-        userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
+        playerManager = new PlayerManager(this);
+        playerManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
 
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
@@ -50,9 +43,13 @@ public class GameManager implements Listener {
 
     public GameSettings getSettings() { return settings; }
 
-    public UserManager getUserManager() { return userManager; }
+    public PlayerManager getPlayerManager() { return playerManager; }
 
     public GameState getState() { return state; }
+
+    public void setState(GameState state) {
+        this.state = state;
+    }
 
     /**
      * Gets the zero-based round index.
@@ -65,7 +62,7 @@ public class GameManager implements Listener {
     private void onPlayerChange(Object sender, @NotNull UserJoinLeaveEventArgs e) {
         switch(e.type) {
             case JOIN:
-                if(state == GameState.PREGAME && userManager.getPlayers().size() == settings.getGameSize()) {
+                if(state == GameState.PREGAME && playerManager.getPlayers().size() == settings.getGameSize()) {
                     state = GameState.COUNTDOWN;
                     startCountdown();
                 }
@@ -76,7 +73,7 @@ public class GameManager implements Listener {
                     stopCountdown();
                 }
                 else if(state == GameState.STARTED) {
-                    if(userManager.getPlayers().size() == 0) {
+                    if(playerManager.getPlayers().size() == 0) {
                         state = GameState.CANCELED;
                     }
                 }

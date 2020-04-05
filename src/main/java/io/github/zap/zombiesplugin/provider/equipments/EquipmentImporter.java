@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.Equipment;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.Importer;
 

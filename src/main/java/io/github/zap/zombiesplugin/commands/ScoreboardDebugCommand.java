@@ -19,7 +19,7 @@ public class ScoreboardDebugCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if(strings[0].equals("setState") && commandSender instanceof Player) {
-            ZombiesPlugin.instance.gm.setState(GameState.valueOf(strings[1]));
+            //ZombiesPlugin.instance.gm.setState(GameState.valueOf(strings[1]));
 
             /*Player player = (Player) commandSender;
             List<User> user = new ArrayList<>();

@@ -11,7 +11,7 @@ public class SetGoldCommand implements CommandExecutor {
     public boolean onCommand( CommandSender commandSender, Command command, String s, String[] strings) {
         if(commandSender instanceof Player) {
             int amount = Integer.parseInt(strings[0]);
-            ZombiesPlugin.instance.manager.getAssociatedUser((Player) commandSender).setGold(amount);
+            //ZombiesPlugin.instance.manager.getAssociatedUser((Player) commandSender).setGold(amount);
         }
 
         return false;

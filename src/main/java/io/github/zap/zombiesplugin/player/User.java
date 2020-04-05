@@ -1,8 +1,7 @@
 package io.github.zap.zombiesplugin.player;
 
-import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
-import io.github.zap.zombiesplugin.manager.UserManager;
+import io.github.zap.zombiesplugin.manager.PlayerManager;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.utils.MathUtils;
@@ -14,7 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class User {
-    private UserManager manager;
+    private PlayerManager manager;
     private Player player;
 
     private int tick = 0;
@@ -22,7 +21,6 @@ public class User {
     /**
      * Manager gun-related
      */
-    private GunUser gunUser;
     private HotbarManager hotbar;
     private PlayerState state = PlayerState.ALIVE;
 
@@ -30,7 +28,7 @@ public class User {
     private int gold;
     private int kills;
 
-    public User(UserManager manager, Player player) {
+    public User(PlayerManager manager, Player player) {
         this.manager = manager;
         this.player = player;
         this.hotbar = new HotbarManager(player);

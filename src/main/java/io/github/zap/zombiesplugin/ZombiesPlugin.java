@@ -172,7 +172,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        manager.addPlayer(e.getPlayer());
         sayHelloToTester(e.getPlayer());
 
         String header = ChatColor.AQUA + "Welcome to " +  ChatColor.YELLOW + ChatColor.BOLD +  "ZAP " + ChatColor.GOLD +  ChatColor.BOLD + "closed beta test 1";

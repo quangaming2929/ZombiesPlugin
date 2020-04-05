@@ -16,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -91,7 +90,7 @@ public class SpawnpointCommands implements CommandExecutor {
                     room.add(new Window(windowBounds1, interiorBounds1, spawnPoint1, Material.OAK_SLAB));
                 }
 
-                game.getUserManager().addUser(player);
+                game.getPlayerManager().addUser(player);
                 return true;
             }
         }
