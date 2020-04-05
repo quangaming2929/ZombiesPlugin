@@ -90,7 +90,7 @@ public class Window {
     public boolean isFullyRepaired() {return brokenBlocks == 0;}
 
     public boolean isReparable() {
-        return !isFullyRepaired() && (targetingAI == null || targetingAI.reachedGoal());
+        return !isFullyRepaired() && (targetingAI == null || targetingAI.finished());
     }
 
     public MultiBoundingBox getInteriorBounds() { return interiorBounds; }

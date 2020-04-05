@@ -31,14 +31,15 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     private EntityCreature nmsEntity;
 
     private Window targetWindow = null;
+    private AbstractLocation windowCenter;
     private AbstractLocation destination;
 
     private boolean reachedGoal = false;
     private boolean hasWindow = false;
     private boolean loadedMetadata = false;
 
-    private final int searchDistance = 16;
-    private final double testDistance = 1;
+    private final int searchDistance = 32;
+    private final double breakReachSquared = 4;
     private final int radiusSquared = 4;
 
     private int tickCounter = 0;
@@ -60,9 +61,17 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
                 SpawnPoint spawnPoint = (SpawnPoint)optSpawnpoint.get();
 
                 Location target = spawnPoint.getTarget();
+
                 if(target != null) {
                     destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
-                    hasWindow = true;
+                    targetWindow = manager.getSettings().getGameMap().getLookupHelper().getWindow(spawnPoint);
+
+                    if(targetWindow != null) {
+                        hasWindow = true;
+
+                        Location center = targetWindow.getWindowBounds().getCenter();
+                        windowCenter = new AbstractLocation(new BukkitWorld(center.getWorld()), center.getX(), center.getY(), center.getZ());
+                    }
                 }
 
                 loadedMetadata = true;
@@ -75,7 +84,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
             loadMetadata();
             return false;
         }
-        else return this.entity.getLocation().distanceSquared(destination) > (double)radiusSquared && !reachedGoal;
+        return true;
     }
 
     @Override
@@ -95,14 +104,16 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
             }
         }
 
-        nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY() + 1, destination.getZ()));
-        ai().navigateToLocation(this.entity, destination, searchDistance);
+        if(destination != null) {
+            nmsEntity.getControllerLook().a(new Vec3D(destination.getX(), destination.getY() + 1, destination.getZ()));
+            ai().navigateToLocation(this.entity, destination, searchDistance);
+        }
     }
 
     @Override
     public boolean shouldEnd() {
         AbstractLocation entityLocation = this.entity.getLocation();
-        return (entityLocation.distanceSquared(destination) <= (double) radiusSquared && entityLocation.getY() == destination.getY()) || !hasWindow;
+        return destination == null || (destination.distanceSquared(destination) <= (double) radiusSquared && entityLocation.getBlockY() == destination.getBlockY());
     }
 
     @Override
@@ -112,38 +123,10 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     }
 
     public void tryBreak() {
-        World world = ((BukkitWorld) entity.getWorld()).getBukkitWorld();
-        AbstractLocation loc = entity.getLocation();
-
-        double posX = loc.getX();
-        double posY = loc.getY();
-        double posZ = loc.getZ();
-
-        float yaw = loc.getYaw();
-
-        Location testLoc;
-        if (yaw < 0) {
-            yaw += 360;
-        }
-        if (yaw >= 315 || yaw < 45) {
-            testLoc = new Location(world, posX, posY + 1, posZ + testDistance);
-        } else if (yaw < 135) {
-            testLoc = new Location(world, posX - testDistance, posY + 1, posZ);
-        } else if (yaw < 225) {
-            testLoc = new Location(world, posX, posY + 1, posZ - testDistance);
-        } else {
-            testLoc = new Location(world, posX + testDistance, posY + 1, posZ);
-        }
-
-        Window foundWindow = manager.getSettings().getGameMap().getAvailableWindow(testLoc);
-        if(foundWindow == null && targetWindow != null) {
-            targetWindow = null;
-        }
-        else if(foundWindow != null) {
-            targetWindow = foundWindow;
-            targetWindow.breakWindow( this);
+        if(entity.getEyeLocation().distanceSquared(windowCenter) <= breakReachSquared) {
+            targetWindow.breakWindow(this);
         }
     }
 
-    public boolean reachedGoal() { return reachedGoal || entity == null || entity.isDead(); }
+    public boolean finished() { return reachedGoal || entity == null || entity.isDead(); }
 }

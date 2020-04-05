@@ -31,7 +31,7 @@ public class WaveData implements IMapData<Wave> {
     }
 
     @Override
-    public Wave load() {
+    public Wave load(Object args) {
         Hashtable<GameDifficulty,ArrayList<MythicMob>> result = new Hashtable<>();
         for(GameDifficulty difficulty : mobs.keySet()) {
             ArrayList<MythicMob> resultMobs = new ArrayList<>();

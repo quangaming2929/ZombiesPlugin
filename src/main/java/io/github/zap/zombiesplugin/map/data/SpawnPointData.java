@@ -14,7 +14,7 @@ public class SpawnPointData implements IMapData<SpawnPoint> {
     }
 
     @Override
-    public SpawnPoint load() {
-        return new SpawnPoint(spawn.load(), target.load());
+    public SpawnPoint load(Object args) {
+        return new SpawnPoint(spawn.load(null), target.load(null));
     }
 }

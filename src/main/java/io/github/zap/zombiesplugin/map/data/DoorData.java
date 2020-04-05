@@ -10,7 +10,7 @@ public class DoorData implements IMapData<Door> {
     }
 
     @Override
-    public Door load() {
+    public Door load(Object args) {
         return null;
     }
 }

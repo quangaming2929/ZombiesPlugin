@@ -19,11 +19,11 @@ public class RoundData implements IMapData<Round> {
     }
 
     @Override
-    public Round load() {
+    public Round load(Object args) {
         ArrayList<Wave> result = new ArrayList<>();
 
         for(WaveData data : waves) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         return new Round(result);

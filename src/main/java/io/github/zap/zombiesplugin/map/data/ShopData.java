@@ -10,7 +10,7 @@ public class ShopData implements IMapData<Shop> {
     }
 
     @Override
-    public Shop load() {
+    public Shop load(Object args) {
         return null;
     }
 }

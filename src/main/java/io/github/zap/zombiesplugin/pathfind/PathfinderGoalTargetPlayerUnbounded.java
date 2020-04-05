@@ -1,7 +1,6 @@
 package io.github.zap.zombiesplugin.pathfind;
 
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.player.User;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
@@ -48,7 +47,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
             loadMetadata();
             return false;
         }
-        else return !manager.hasEnded() && manager.getUserManager().getPlayers().size() > 0;
+        return true;
     }
 
     @Override
@@ -81,7 +80,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
 
     @Override
     public boolean shouldEnd() {
-        return manager == null || manager.hasEnded();
+        return manager == null || !manager.runAI();
     }
 
     @Override
@@ -92,26 +91,28 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
      * or who are not in survival or adventure mode.
      */
     private void targetNearestUser() {
-        double shortest = Double.MAX_VALUE;
-        User closest = null;
+        if(manager.runAI()) {
+            double shortest = Double.MAX_VALUE;
+            User closest = null;
 
-        //finds the closest User to target
-        for(User user : manager.getUserManager().getPlayers()) {
-            GameMode mode = user.getPlayer().getGameMode();
-            if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
-                Location loc = user.getPlayer().getLocation();
+            //finds the closest User to target
+            for(User user : manager.getUserManager().getPlayers()) {
+                GameMode mode = user.getPlayer().getGameMode();
+                if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
+                    Location loc = user.getPlayer().getLocation();
 
-                double dist = this.entity.getLocation().distanceSquared(new AbstractLocation(new BukkitWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
-                if(dist < shortest) {
-                    shortest = dist;
-                    closest = user;
+                    double dist = this.entity.getLocation().distanceSquared(new AbstractLocation(new BukkitWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
+                    if(dist < shortest) {
+                        shortest = dist;
+                        closest = user;
+                    }
                 }
             }
-        }
 
-        if(closest != null) {
-            target = closest;
-            ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), target.getPlayer());
+            if(closest != null) {
+                target = closest;
+                ai().setTarget((LivingEntity)this.entity.getBukkitEntity(), target.getPlayer());
+            }
         }
     }
 }

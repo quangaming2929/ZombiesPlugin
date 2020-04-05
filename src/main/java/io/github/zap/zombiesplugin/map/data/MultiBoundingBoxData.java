@@ -18,11 +18,11 @@ public class MultiBoundingBoxData implements IMapData<MultiBoundingBox> {
     }
 
     @Override
-    public MultiBoundingBox load() {
+    public MultiBoundingBox load(Object args) {
         MultiBoundingBox result = new MultiBoundingBox();
 
         for(BoundingBoxData bound : bounds) {
-            result.add(bound.load());
+            result.add(bound.load(null));
         }
 
         return result;

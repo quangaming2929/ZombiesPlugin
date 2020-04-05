@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.map.data;
 
 import io.github.zap.zombiesplugin.map.Door;
+import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
@@ -42,23 +43,31 @@ public class RoomData implements IMapData<Room> {
     }
 
     @Override
-    public Room load() {
-        Room result = new Room(name);
+    public Room load(Object args) {
+        GameMap parent;
+        if(args instanceof GameMap) {
+            parent = (GameMap)args;
+        }
+        else {
+            throw new IllegalArgumentException("args must be an instance of GameMap");
+        }
+
+        Room result = new Room(name, parent.getLookupHelper());
 
         for(DoorData data : doors) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         for(WindowData data : windows) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         for(SpawnPointData data : spawnPoints) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         for(ShopData data : shops) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         return result;

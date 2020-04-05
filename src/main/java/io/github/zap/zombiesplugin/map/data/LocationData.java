@@ -23,7 +23,7 @@ public class LocationData implements IMapData<Location> {
     }
 
     @Override
-    public Location load() {
+    public Location load(Object args) {
         return new Location(ZombiesPlugin.instance.getServer().getWorld(worldName), x, y, z, pitch, yaw);
     }
 }

@@ -14,7 +14,7 @@ public class BoundingBoxData implements IMapData<BoundingBox> {
     }
 
     @Override
-    public BoundingBox load() {
-        return new BoundingBox(origin.load(), limit.load());
+    public BoundingBox load(Object args) {
+        return new BoundingBox(origin.load(null), limit.load(null));
     }
 }

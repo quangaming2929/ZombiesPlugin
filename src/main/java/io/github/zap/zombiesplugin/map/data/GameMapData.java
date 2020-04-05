@@ -35,19 +35,19 @@ public class GameMapData implements IMapData<GameMap> {
     }
 
     @Override
-    public GameMap load() {
+    public GameMap load(Object args) {
         GameMap result = new GameMap(name);
 
         for(SpawnFilterData data : spawnFilters) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         for(RoundData data : rounds) {
-            result.add(data.load());
+            result.add(data.load(null));
         }
 
         for(RoomData data : rooms) {
-            result.add(data.load());
+            result.add(data.load(result));
         }
 
         return result;

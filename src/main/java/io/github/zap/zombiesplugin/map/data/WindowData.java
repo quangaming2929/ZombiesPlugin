@@ -19,7 +19,7 @@ public class WindowData implements IMapData<Window> {
     }
 
     @Override
-    public Window load() {
-        return new Window(windowBounds.load(), interiorBounds.load(), spawnPoint.load(), Material.getMaterial(coverMaterial));
+    public Window load(Object args) {
+        return new Window(windowBounds.load(null), interiorBounds.load(null), spawnPoint.load(null), Material.getMaterial(coverMaterial));
     }
 }

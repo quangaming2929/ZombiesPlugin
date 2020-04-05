@@ -2,13 +2,16 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
+import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.round.Round;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import io.github.zap.zombiesplugin.map.round.Wave;
+import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +24,8 @@ public class GameManager implements Listener {
     private GameState state;
 
     private int currentMobCount = 0;
-    private int currentRound = 0;
-
+    private int currentRoundIndex = 0;
+    private Round currentRound;
 
     public GameManager(String name, GameSettings settings) {
         this.name = name;
@@ -30,6 +33,7 @@ public class GameManager implements Listener {
 
         userManager = new UserManager(this);
         userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
+
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
 
@@ -45,9 +49,9 @@ public class GameManager implements Listener {
      * Gets the zero-based round index.
      * @return The zero-based round index
      */
-    public int getCurrentRound() { return currentRound; }
+    public int getCurrentRound() { return currentRoundIndex; }
 
-    public boolean hasEnded() { return state == GameState.CANCELED || state == GameState.LOST || state == GameState.WON; }
+    public boolean runAI() { return state == GameState.STARTED; }
 
     private void onPlayerChange(Object sender, @NotNull UserJoinLeaveEventArgs e) {
         switch(e.type) {
@@ -62,6 +66,11 @@ public class GameManager implements Listener {
                     state = GameState.PREGAME;
                     stopCountdown();
                 }
+                else if(state == GameState.STARTED) {
+                    if(userManager.getPlayers().size() == 0) {
+                        state = GameState.CANCELED;
+                    }
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Unexpected value: " + e.type.toString());
@@ -70,30 +79,49 @@ public class GameManager implements Listener {
 
     public void startCountdown() {
         //TODO: timer code
+
+        //should eventually call startRound if the countdown successfully completes
     }
 
     public void stopCountdown() {
         //TODO: abort timer
     }
 
-    public void startGame() {
+    private void startRound(int index) {
+        if(state == GameState.COUNTDOWN) {
+            state = GameState.STARTED;
+        }
+
         ArrayList<Round> rounds = settings.getGameMap().getRounds();
 
-        if (currentRound == rounds.size()) {
+        if (index == rounds.size()) {
+            state = GameState.WON;
             // TODO: Endgame sequence
         } else {
-            rounds.get(currentRound).start(this);
-            currentRound++;
+            currentRound = rounds.get(index);
+
+            ArrayList<Wave> waves = currentRound.getWaves();
+            for(Wave wave : waves) {
+                currentMobCount += wave.getMobs(settings.getDifficulty()).size();
+            }
+
+            currentRound.start(this);
         }
     }
 
     @EventHandler
     public void onMythicMobDeath(MythicMobDeathEvent event) {
-        AbstractEntity mob = event.getMob().getEntity();
-        if(mob.hasMetadata("zp_manager") && mob.getMetadata("zp_manager").isPresent()) {
-            GameManager manager = (GameManager)mob.getMetadata("zp_manager").get();
-            if(manager == this) {
-
+        if(state == GameState.STARTED) {
+            AbstractEntity mob = event.getMob().getEntity();
+            if(mob.hasMetadata("zp_manager") && mob.getMetadata("zp_manager").isPresent()) {
+                GameManager manager = (GameManager)mob.getMetadata("zp_manager").get();
+                if(manager == this) {
+                    currentMobCount--;
+                    if(currentMobCount == 0) {
+                        currentRoundIndex++;
+                        startRound(currentRoundIndex);
+                    }
+                }
             }
         }
     }

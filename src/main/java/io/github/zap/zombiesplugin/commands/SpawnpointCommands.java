@@ -64,7 +64,7 @@ public class SpawnpointCommands implements CommandExecutor {
                 }
 
                 if(map.getRooms().size() == 0) {
-                    map.add(new Room("test_room"));
+                    map.add(new Room("test_room", map.getLookupHelper()));
                 }
 
                 Room room = map.getRoom("test_room");

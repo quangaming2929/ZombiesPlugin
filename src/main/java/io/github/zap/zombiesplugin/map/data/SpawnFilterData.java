@@ -20,7 +20,7 @@ public class SpawnFilterData implements IMapData<SpawnFilter> {
     }
 
     @Override
-    public SpawnFilter load() {
+    public SpawnFilter load(Object args) {
         HashSet<MythicMob> result = new HashSet<>();
         for(String name : mobNames) {
             result.add(MythicMobs.inst().getAPIHelper().getMythicMob(name));
