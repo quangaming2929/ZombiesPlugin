@@ -28,6 +28,9 @@ import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.GunImporter;
 import io.github.zap.zombiesplugin.utils.Tuple;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,10 +57,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     private Hashtable<String, GameMap> maps;
 
     private TickManager tickManager;
-
-    //these are needed for communication between pathfinders and the plugin
-    public SpawnPoint lastSpawnpoint;
-    public GameManager lastManager;
 
     @Override
     public void onEnable() {

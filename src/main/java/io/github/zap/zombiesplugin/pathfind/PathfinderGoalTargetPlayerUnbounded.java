@@ -1,7 +1,7 @@
 package io.github.zap.zombiesplugin.pathfind;
 
-import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.player.User;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
@@ -14,23 +14,41 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.Optional;
+
 @MythicAIGoal(
         name = "unboundedPlayerTarget",
         description = "Special goal that only cares about players in the current game and has an infinite range."
 )
 public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements PathfindingGoal {
     private int tickCount;
-    private final GameManager game;
+    private GameManager manager = null;
     private User target;
+
+    private boolean loadedMetadata = false;
 
     public PathfinderGoalTargetPlayerUnbounded(AbstractEntity entity, String line, MythicLineConfig mlc) {
         super(entity, line, mlc);
-        game = ZombiesPlugin.instance.lastManager;
+    }
+
+    private void loadMetadata() {
+        if(entity.hasMetadata("zp_manager")) {
+            Optional<Object> optManager = entity.getMetadata("zp_manager");
+
+            if(optManager.isPresent()) {
+                manager = (GameManager)optManager.get();
+                loadedMetadata = true;
+            }
+        }
     }
 
     @Override
     public boolean shouldStart() {
-        return game != null && !game.hasEnded() && game.getUserManager().getPlayers().size() > 0;
+        if(!loadedMetadata) {
+            loadMetadata();
+            return false;
+        }
+        else return !manager.hasEnded() && manager.getUserManager().getPlayers().size() > 0;
     }
 
     @Override
@@ -63,7 +81,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
 
     @Override
     public boolean shouldEnd() {
-        return game == null || game.hasEnded();
+        return manager == null || manager.hasEnded();
     }
 
     @Override
@@ -78,7 +96,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
         User closest = null;
 
         //finds the closest User to target
-        for(User user : game.getUserManager().getPlayers()) {
+        for(User user : manager.getUserManager().getPlayers()) {
             GameMode mode = user.getPlayer().getGameMode();
             if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
                 Location loc = user.getPlayer().getLocation();

@@ -20,6 +20,8 @@ import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
+import java.util.Optional;
+
 @MythicAIGoal(
         name = "escapeWindow",
         description = "Used by zombies to navigate out of windows."
@@ -27,14 +29,17 @@ import org.bukkit.util.Vector;
 public class PathfinderGoalEscapeWindow extends Pathfinder implements PathfindingGoal {
     private GameManager manager;
     private EntityCreature nmsEntity;
+
     private Window targetWindow = null;
     private AbstractLocation destination;
+
     private boolean reachedGoal = false;
     private boolean hasWindow = false;
+    private boolean loadedMetadata = false;
 
-    private final int searchDistance = 20;
+    private final int searchDistance = 16;
     private final double testDistance = 1;
-    private final int radiusSquared = 3;
+    private final int radiusSquared = 4;
 
     private int tickCounter = 0;
 
@@ -42,30 +47,42 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         super(entity, line, mlc);
         setGoalType(GoalType.MOVE_LOOK);
 
-        SpawnPoint spawnPoint = ZombiesPlugin.instance.lastSpawnpoint;
-        manager = ZombiesPlugin.instance.lastManager;
         nmsEntity = (EntityCreature)((CraftEntity)entity.getBukkitEntity()).getHandle();
+    }
 
-        if(spawnPoint != null) {
-            Location testSpawnLocation = spawnPoint.getSpawn();
-            AbstractLocation location = entity.getLocation();
-            if(testSpawnLocation.getBlockX() == location.getBlockX() &&
-                    testSpawnLocation.getBlockY() == location.getBlockY() &&
-                    testSpawnLocation.getBlockZ() == location.getBlockZ()) {
+    private void loadMetadata() {
+        if(entity.hasMetadata("zp_manager") && entity.hasMetadata("zp_spawnpoint")) {
+            Optional<Object> optManager = entity.getMetadata("zp_manager");
+            Optional<Object> optSpawnpoint = entity.getMetadata("zp_spawnpoint");
+
+            if(optManager.isPresent() && optSpawnpoint.isPresent()) {
+                manager = (GameManager)optManager.get();
+                SpawnPoint spawnPoint = (SpawnPoint)optSpawnpoint.get();
+
                 Location target = spawnPoint.getTarget();
-                destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
-                hasWindow = true;
+                if(target != null) {
+                    destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
+                    hasWindow = true;
+                }
+
+                loadedMetadata = true;
             }
         }
     }
 
     public boolean shouldStart() {
-        return this.entity.getLocation().distanceSquared(destination) > (double)radiusSquared && !reachedGoal;
+        if(!loadedMetadata) {
+            loadMetadata();
+            return false;
+        }
+        else return this.entity.getLocation().distanceSquared(destination) > (double)radiusSquared && !reachedGoal;
     }
 
     @Override
     public void start() {
-        ai().navigateToLocation(this.entity, destination, searchDistance);
+        if(destination != null) {
+            ai().navigateToLocation(this.entity, destination, searchDistance);
+        }
     }
 
     @Override
@@ -73,7 +90,6 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         if(hasWindow) {
             tickCounter++;
             if(tickCounter == 20) {
-                System.out.println("Calling tryBreak()");
                 tryBreak();
                 tickCounter = 0;
             }
@@ -104,22 +120,18 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         double posZ = loc.getZ();
 
         float yaw = loc.getYaw();
-        System.out.println("Entity yaw: "+yaw);
+
         Location testLoc;
         if (yaw < 0) {
             yaw += 360;
         }
         if (yaw >= 315 || yaw < 45) {
-            System.out.println("SOUTH");
             testLoc = new Location(world, posX, posY + 1, posZ + testDistance);
         } else if (yaw < 135) {
-            System.out.println("WEST");
             testLoc = new Location(world, posX - testDistance, posY + 1, posZ);
         } else if (yaw < 225) {
-            System.out.println("NORTH");
             testLoc = new Location(world, posX, posY + 1, posZ - testDistance);
         } else {
-            System.out.println("EAST");
             testLoc = new Location(world, posX + testDistance, posY + 1, posZ);
         }
 

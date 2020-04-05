@@ -86,7 +86,7 @@ public class BoundingBox {
      * @param amount
      */
     public void expand(double amount) {
-        //origin.subtract(amount, amount, amount);
-        //limit.add(amount, amount, amount);
+        origin.subtract(amount, amount, amount);
+        limit.add(amount, amount, amount);
     }
 }

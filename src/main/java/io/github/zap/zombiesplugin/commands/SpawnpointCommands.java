@@ -76,7 +76,6 @@ public class SpawnpointCommands implements CommandExecutor {
                     MultiBoundingBox interiorBounds = new MultiBoundingBox();
                     interiorBounds.add(new BoundingBox(new Location(world, -1, 2, -1), new Location(world, -7, 4, 1)));
                     interiorBounds.add(new BoundingBox(new Location(world, -5, 2, 2), new Location(world, -7, 4, 4)));
-                    interiorBounds.getBounds().forEach(boundingBox -> boundingBox.expand(0.3));
 
                     SpawnPoint spawnPoint = new SpawnPoint(new Location(world, -6, 2, 3), new Location(world, 0, 1, 0));
 
@@ -86,7 +85,6 @@ public class SpawnpointCommands implements CommandExecutor {
 
                     MultiBoundingBox interiorBounds1 = new MultiBoundingBox();
                     interiorBounds1.add(new BoundingBox(new Location(world, 4, 2, 10), new Location(world, 6, 4, 19)));
-                    interiorBounds1.getBounds().forEach(boundingBox -> boundingBox.expand(0.3));
 
                     SpawnPoint spawnPoint1 = new SpawnPoint(new Location(world, 5, 2, 18), new Location(world, 5, 1, 9));
 

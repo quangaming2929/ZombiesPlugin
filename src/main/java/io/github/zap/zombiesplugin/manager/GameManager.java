@@ -1,19 +1,26 @@
 package io.github.zap.zombiesplugin.manager;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
 import io.github.zap.zombiesplugin.map.round.Round;
 
 import java.util.ArrayList;
 
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-public class GameManager {
+public class GameManager implements Listener {
     private final String name;
 
     private GameSettings settings;
     private UserManager userManager;
     private GameState state;
 
+    private int currentMobCount = 0;
     private int currentRound = 0;
 
 
@@ -23,6 +30,7 @@ public class GameManager {
 
         userManager = new UserManager(this);
         userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
+        ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
 
     public String getName() { return name; }
@@ -74,8 +82,19 @@ public class GameManager {
         if (currentRound == rounds.size()) {
             // TODO: Endgame sequence
         } else {
-            rounds.get(currentRound).start(this, settings.getDifficulty());
+            rounds.get(currentRound).start(this);
             currentRound++;
+        }
+    }
+
+    @EventHandler
+    public void onMythicMobDeath(MythicMobDeathEvent event) {
+        AbstractEntity mob = event.getMob().getEntity();
+        if(mob.hasMetadata("zp_manager") && mob.getMetadata("zp_manager").isPresent()) {
+            GameManager manager = (GameManager)mob.getMetadata("zp_manager").get();
+            if(manager == this) {
+
+            }
         }
     }
 }
