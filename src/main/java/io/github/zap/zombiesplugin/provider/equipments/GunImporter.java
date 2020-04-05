@@ -8,6 +8,7 @@ import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
 import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.equipments.guns.LinearGun;
+import io.github.zap.zombiesplugin.equipments.guns.RandomizedConicProjection;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.utils.IOHelper;
 import org.bukkit.ChatColor;
@@ -38,6 +39,7 @@ public class GunImporter extends EquipmentImporter {
     // add gun behaviour here
     private void registerBehaviours() {
         registerValue("LinearGun", LinearGun.class);
+        registerValue("RandomizedConicProjection", RandomizedConicProjection.class);
     }
 
 
@@ -51,7 +53,7 @@ public class GunImporter extends EquipmentImporter {
         GunData data = new GunData();
         data.name = "Development Gun";
         data.id = "gun_dev";
-        data.behaviour = "LinearGun";
+        data.behaviour = "RandomizedConicProjection";
         // Custom data
         data.customData = new Hashtable<>();
         data.customData.put("particle", Particle.CRIT.toString());

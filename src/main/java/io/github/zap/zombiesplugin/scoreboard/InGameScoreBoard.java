@@ -186,4 +186,8 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
 
         sound.play(players, 1, SoundCategory.MASTER, null);
     }
+
+    public float getInGameTimer() {
+        return igTimer;
+    }
 }

@@ -108,16 +108,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        new BukkitRunnable(){
-            Player p = e.getPlayer();
-            @Override
-            public void run() {
-                Vector a = p.getEyeLocation().getDirection();
-                System.out.println("x: " + Math.toDegrees(Math.acos(a.getX())) + " y: " + Math.toDegrees(Math.acos(a.getY())) + " z: " + Math.toDegrees(Math.acos(a.getZ())) );
-            }
-        }.runTaskTimer(this, 0, 10);
-
-
         manager.addPlayer(e.getPlayer());
         sayHelloToTester(e.getPlayer());
 
