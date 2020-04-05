@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.player;
 
-import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
 import io.github.zap.zombiesplugin.manager.UserManager;
 import io.github.zap.zombiesplugin.map.Room;

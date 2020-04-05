@@ -8,7 +8,6 @@ import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -114,7 +113,7 @@ public class UserManager implements Listener, ITickable {
         return false;
     }
 
-    @EventHandler
+    @org.bukkit.event.EventHandler
     public void onPlayerUse(PlayerInteractEvent event) {
         User user = getAssociatedUser(event.getPlayer());
 
@@ -124,7 +123,7 @@ public class UserManager implements Listener, ITickable {
         }
     }
 
-    @EventHandler
+    @org.bukkit.event.EventHandler
     public void onPlayerSwitchHeldItem(PlayerItemHeldEvent event) {
         User user = getAssociatedUser(event.getPlayer());
         if(user != null) {
@@ -133,15 +132,8 @@ public class UserManager implements Listener, ITickable {
         }
     }
 
-    @EventHandler
-    public void onPlayerClickItem(InventoryClickEvent event) {
-        if (ZombiesPlugin.instance.tm.contains(event.getClickedInventory())) {
-            ZombiesPlugin.instance.tm.processClick(event, getAssociatedUser((Player) event.getWhoClicked()));
-        }
-    }
-
     public User getAssociatedUser(Player player) {
-        for (User p : players) {
+        for (User p : getPlayers()) {
             if (p.getPlayer() == player) {
                 return p;
             }

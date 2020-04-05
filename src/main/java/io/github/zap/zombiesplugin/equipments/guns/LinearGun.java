@@ -2,7 +2,7 @@ package io.github.zap.zombiesplugin.equipments.guns;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.guns.logics.LinearBeam;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
+import io.github.zap.zombiesplugin.manager.UserManager;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -18,8 +18,8 @@ public class LinearGun extends Gun {
     public final String GUN_MAX_HIT_ENTITIES = "maxHitEntities";
     public final String GUN_PARTICLE = "particle";
 
-    public LinearGun(EquipmentData equipmentData, PlayerManager playerManager) {
-        super(equipmentData, playerManager);
+    public LinearGun(EquipmentData equipmentData, UserManager userManager) {
+        super(equipmentData, userManager);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.github.zap.zombiesplugin.equipments.guns;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
+import io.github.zap.zombiesplugin.manager.UserManager;
 import io.github.zap.zombiesplugin.utils.Tuple;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -19,8 +19,8 @@ import java.util.Random;
 public class RandomizedConicProjection extends Gun{
     private Random rand = new Random();
 
-    public RandomizedConicProjection(EquipmentData equipmentData, PlayerManager playerManager) {
-        super(equipmentData, playerManager);
+    public RandomizedConicProjection(EquipmentData equipmentData, UserManager userManager) {
+        super(equipmentData, userManager);
     }
 
     @Override

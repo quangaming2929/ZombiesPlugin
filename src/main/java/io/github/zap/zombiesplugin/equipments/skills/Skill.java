@@ -3,20 +3,15 @@ package io.github.zap.zombiesplugin.equipments.skills;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.UpgradeableEquipment;
-import io.github.zap.zombiesplugin.equipments.perks.Perk;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
-import org.bukkit.Bukkit;
+import io.github.zap.zombiesplugin.manager.UserManager;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // TODO: Test this buy making a test skill. ADD importer :)
 public abstract class Skill extends UpgradeableEquipment {
@@ -24,8 +19,8 @@ public abstract class Skill extends UpgradeableEquipment {
     protected static final String READY_LORE = ChatColor.YELLOW + "RIGHT-CLICK " + ChatColor.GRAY + "to use!";
 
     private final int loreSize;
-    public Skill(EquipmentData equipmentData, PlayerManager playerManager) {
-        super(equipmentData, playerManager);
+    public Skill(EquipmentData equipmentData, UserManager userManager) {
+        super(equipmentData, userManager);
         loreSize = equipmentData.getDefaultVisual(0).getItemMeta().getLore().size();
     }
 

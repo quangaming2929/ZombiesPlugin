@@ -2,21 +2,14 @@ package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
-import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.round.Round;
-import java.util.List;
 
-import io.github.zap.zombiesplugin.player.PlayerState;
-import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.scoreboard.IInGameScoreboard;
 import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import io.github.zap.zombiesplugin.map.round.Wave;
-import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
 import org.bukkit.event.EventHandler;
@@ -133,5 +126,9 @@ public class GameManager implements Listener {
                 }
             }
         }
+    }
+
+    public IInGameScoreboard getScoreboard() {
+        return scoreboard;
     }
 }

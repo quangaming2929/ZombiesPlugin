@@ -1,7 +1,5 @@
 package io.github.zap.zombiesplugin.utils;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.*;
 
 public class RandomIterator<T> implements ResettableIterator<T> {

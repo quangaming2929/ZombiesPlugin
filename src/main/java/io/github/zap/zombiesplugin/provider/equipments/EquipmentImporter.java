@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
 import io.github.zap.zombiesplugin.equipments.Equipment;
+import io.github.zap.zombiesplugin.manager.UserManager;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.Importer;
 
@@ -51,14 +52,14 @@ public abstract class EquipmentImporter extends Importer {
         }
     }
 
-    public Equipment createEquipment (String id, PlayerManager playerManager) throws Exception {
+    public Equipment createEquipment (String id, UserManager userManager) throws Exception {
         if (dataVault.containsKey(id)) {
             EquipmentData currentData = dataVault.get(id);
             if(values.containsKey(currentData.behaviour)) {
                 Class<? extends Equipment> bClazz = values.get(currentData.behaviour);
                 Equipment equipment = bClazz
-                        .getConstructor(EquipmentData.class, PlayerManager.class)
-                        .newInstance(currentData, playerManager);
+                        .getConstructor(EquipmentData.class, UserManager.class)
+                        .newInstance(currentData, userManager);
                 return equipment;
             } else {
                 log(Level.WARNING, "Can't find equipment behaviour for this data: " + id);

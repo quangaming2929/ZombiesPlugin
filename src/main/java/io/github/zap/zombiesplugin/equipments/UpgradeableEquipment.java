@@ -6,7 +6,7 @@ import io.github.zap.zombiesplugin.data.IEquipmentValue;
 import io.github.zap.zombiesplugin.data.SoundFx;
 import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.events.ValueRequestedEventArgs;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
+import io.github.zap.zombiesplugin.manager.UserManager;
 import io.github.zap.zombiesplugin.utils.RomanNumber;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -24,8 +24,8 @@ public abstract class UpgradeableEquipment extends Equipment {
     protected SoundFx upgradeSound;
     private int level;
 
-    public UpgradeableEquipment(EquipmentData equipmentData, PlayerManager playerManager) {
-        super(equipmentData, playerManager);
+    public UpgradeableEquipment(EquipmentData equipmentData, UserManager userManager) {
+        super(equipmentData, userManager);
 
         SingleNoteSoundFx sound = new SingleNoteSoundFx();
         sound.sound = Sound.ENTITY_PLAYER_LEVELUP;
