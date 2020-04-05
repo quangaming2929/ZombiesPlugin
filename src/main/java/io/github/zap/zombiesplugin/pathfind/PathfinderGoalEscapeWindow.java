@@ -33,6 +33,7 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
     private boolean hasWindow = false;
 
     private final int searchDistance = 20;
+    private final double testDistance = 1;
     private final int radiusSquared = 3;
 
     private int tickCounter = 0;
@@ -90,7 +91,6 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
 
     @Override
     public void end() {
-        //in most cases it is sufficient for tryBreak() to set window to null itself, but occasionally this may not work
         targetWindow = null;
         reachedGoal = true;
     }
@@ -104,27 +104,30 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
         double posZ = loc.getZ();
 
         float yaw = loc.getYaw();
+        System.out.println("Entity yaw: "+yaw);
         Location testLoc;
-        if(yaw <= -135 || yaw > 135) {
-            testLoc = new Location(world, posX, posY + 1, posZ - 0.75);
+        if (yaw < 0) {
+            yaw += 360;
         }
-        else if( yaw <= -45) {
-            testLoc = new Location(world, posX + 0.75, posY + 1, posZ);
-        }
-        else if(yaw <= 45) {
-            testLoc = new Location(world, posX, posY + 1, posZ + 0.75);
-        }
-        else {
-            testLoc = new Location(world, posX - 0.75, posY + 1, posZ);
+        if (yaw >= 315 || yaw < 45) {
+            System.out.println("SOUTH");
+            testLoc = new Location(world, posX, posY + 1, posZ + testDistance);
+        } else if (yaw < 135) {
+            System.out.println("WEST");
+            testLoc = new Location(world, posX - testDistance, posY + 1, posZ);
+        } else if (yaw < 225) {
+            System.out.println("NORTH");
+            testLoc = new Location(world, posX, posY + 1, posZ - testDistance);
+        } else {
+            System.out.println("EAST");
+            testLoc = new Location(world, posX + testDistance, posY + 1, posZ);
         }
 
         Window foundWindow = manager.getSettings().getGameMap().getAvailableWindow(testLoc);
         if(foundWindow == null && targetWindow != null) {
-            System.out.println("foundWindow is null.");
             targetWindow = null;
         }
         else if(foundWindow != null) {
-            System.out.println("Attempt to break window.");
             targetWindow = foundWindow;
             targetWindow.breakWindow( this);
         }

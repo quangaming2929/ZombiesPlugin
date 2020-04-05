@@ -24,6 +24,7 @@ public class Room {
 
     public Window getWindowAt(Location location) {
         for(Window window : windows) {
+            System.out.println("Trying location "+location.toString());
             if(window.getWindowBounds().isInBound(location)) {
                 return window;
             }

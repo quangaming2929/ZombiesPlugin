@@ -30,13 +30,13 @@ public class BoundingBox {
         double yMin = Math.min(origin.getY(), limit.getY());
         double zMin = Math.min(origin.getZ(), limit.getZ());
 
-        double xMax = Math.max(origin.getX(), limit.getX());
-        double yMax = Math.max(origin.getY(), limit.getY());
-        double zMax = Math.max(origin.getZ(), limit.getZ());
+        double xMax = Math.max(origin.getX(), limit.getX()) + 1;
+        double yMax = Math.max(origin.getY(), limit.getY()) + 1;
+        double zMax = Math.max(origin.getZ(), limit.getZ()) + 1;
 
-        width = xMax - xMin + 1;
-        height = yMax - yMin + 1;
-        depth =  zMax - zMin + 1;
+        width = xMax - xMin;
+        height = yMax - yMin;
+        depth =  zMax - zMin;
         volume = width * height * depth;
 
         center = new Location(origin.getWorld(), (xMin + xMax) / 2, (yMin + yMax) / 2, (zMin + zMax) / 2);

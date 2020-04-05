@@ -27,7 +27,7 @@ public class Window {
         this.interiorBounds = interiorBounds;
         this.windowBounds = windowBounds;
 
-        northSouthFacing = windowBounds.getOrigin().getBlockZ() == windowBounds.getLimit().getBlockZ();
+        northSouthFacing = windowBounds.getDepth() == 1;
         if(northSouthFacing) windowWidth = (int)windowBounds.getWidth();
         else windowWidth = (int)windowBounds.getDepth();
 
