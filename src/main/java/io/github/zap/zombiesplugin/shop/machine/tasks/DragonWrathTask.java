@@ -30,7 +30,7 @@ public class DragonWrathTask extends TeamMachineTask {
             public void run() {
                 World world = user.getPlayer().getWorld();
 
-                for (User player : manager.getPlayerManager().getPlayers()) {
+                for (User player : manager.getUserManager().getPlayers()) {
                     for (Mob mob : world.getNearbyEntitiesByType(Mob.class, player.getPlayer().getLocation(), getRadius())) {
                         world.strikeLightningEffect(mob.getLocation());
                         mob.setHealth(0);

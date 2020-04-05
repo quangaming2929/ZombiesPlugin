@@ -4,6 +4,8 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
 import io.github.zap.zombiesplugin.map.round.Round;
 
+import io.github.zap.zombiesplugin.player.PlayerState;
+import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.scoreboard.IInGameScoreboard;
 import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
 
@@ -130,5 +132,19 @@ public class GameManager implements Listener {
 
     public IInGameScoreboard getScoreboard() {
         return scoreboard;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
+
+        if (state == GameState.STARTED) {
+            for(User user : getUserManager().getPlayers()) {
+                user.setState(PlayerState.ALIVE);
+            }
+        }
+
+        if (scoreboard != null) {
+            scoreboard.setGameState(state);
+        }
     }
 }

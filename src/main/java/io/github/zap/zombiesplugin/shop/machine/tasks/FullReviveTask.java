@@ -14,7 +14,7 @@ public class FullReviveTask extends TeamMachineTask {
 
     @Override
     public boolean execTask(User user) {
-        for (User player : manager.getPlayerManager().getPlayers()) {
+        for (User player : manager.getUserManager().getPlayers()) {
             if (player.getState() == PlayerState.DEAD || player.getState() == PlayerState.KNOCKED_DOWN) {
                 player.setState(PlayerState.ALIVE);
             }

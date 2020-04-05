@@ -64,8 +64,8 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     public void onPlayerJoinGame(User user) {
         if (state == GameState.PREGAME || state == GameState.COUNTDOWN) {
             pnlPre.show(user.getPlayer());
-            manager.getPlayerManager().displayTitle(joinTitle);
-            setPlayerCount(manager.getPlayerManager().getPlayers().size());
+            manager.getUserManager().displayTitle(joinTitle);
+            setPlayerCount(manager.getUserManager().getPlayers().size());
         }
     }
 
@@ -73,7 +73,7 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     public void onPlayerLeave(User user) {
         if (state == GameState.PREGAME || state == GameState.COUNTDOWN) {
             pnlPre.show(null);
-            setPlayerCount(manager.getPlayerManager().getPlayers().size());
+            setPlayerCount(manager.getUserManager().getPlayers().size());
         }
     }
 
@@ -85,23 +85,23 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     @Override
     public void setGameState(GameState state) {
         if (state == GameState.PREGAME || state == GameState.COUNTDOWN) {
-            for(User user : manager.getPlayerManager().getPlayers()) {
+            for(User user : manager.getUserManager().getPlayers()) {
                 pnlPre.show(user.getPlayer());
             }
             cdTimer = 20;
 
             if (state == GameState.PREGAME) {
                 // TODO: Remove test code
-                manager.getPlayerManager().displayTitle(joinTitle);
+                manager.getUserManager().displayTitle(joinTitle);
                 pnlPre.setState(false);
             }
             else if (state == GameState.COUNTDOWN) {
                 pnlPre.setState(true);
                 pnlPre.setCountDownTime(20);
-                manager.getPlayerManager().broadcast(ChatColor.YELLOW + "The game starts in 20 seconds!", false);
+                manager.getUserManager().broadcast(ChatColor.YELLOW + "The game starts in 20 seconds!", false);
             }
         } else if (state == GameState.STARTED) {
-            pnlInGame = new IngameStatePanel(manager.getPlayerManager().getPlayers(), "Test Map Bro", strToday);
+            pnlInGame = new IngameStatePanel(manager.getUserManager().getPlayers(), "Test Map Bro", strToday);
             pnlInGame.show();
         }
 
@@ -128,16 +128,16 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
 
                 String cdChat = ChatColor.YELLOW + "The game starts in ";
                 if (cdTimer == 10) {
-                    manager.getPlayerManager().displayTitle(new Title(ChatColor.GOLD + String.valueOf(display)));
-                    manager.getPlayerManager().broadcast(cdChat + ChatColor.GOLD + display + ChatColor.YELLOW + " seconds!", false);
+                    manager.getUserManager().displayTitle(new Title(ChatColor.GOLD + String.valueOf(display)));
+                    manager.getUserManager().broadcast(cdChat + ChatColor.GOLD + display + ChatColor.YELLOW + " seconds!", false);
                     playSound(cdSoundFx);
                 } else if (cdTimer <= 5 && cdTimer > 1 && cdTimer==Math.round(cdTimer)) {
-                    manager.getPlayerManager().displayTitle(new Title(ChatColor.RED + String.valueOf(display)));
-                    manager.getPlayerManager().broadcast(cdChat + ChatColor.RED + display + ChatColor.YELLOW + " seconds!", false);
+                    manager.getUserManager().displayTitle(new Title(ChatColor.RED + String.valueOf(display)));
+                    manager.getUserManager().broadcast(cdChat + ChatColor.RED + display + ChatColor.YELLOW + " seconds!", false);
                     playSound(cdSoundFx);
                 } else if (cdTimer == 1) {
-                    manager.getPlayerManager().displayTitle(new Title(ChatColor.RED + String.valueOf(display), "", 10, 10, 0));
-                    manager.getPlayerManager().broadcast(cdChat + ChatColor.RED + display + ChatColor.YELLOW + " second!", false);
+                    manager.getUserManager().displayTitle(new Title(ChatColor.RED + String.valueOf(display), "", 10, 10, 0));
+                    manager.getUserManager().broadcast(cdChat + ChatColor.RED + display + ChatColor.YELLOW + " second!", false);
                     playSound(cdSoundFx);
                 }
                 cdTimer -= 0.5f;
@@ -148,7 +148,7 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
         }
         else if (state == GameState.STARTED) {
             pnlInGame.setTime(getTimeStringFromSeconds(igTimer));
-            for (User user : manager.getPlayerManager().getPlayers()) {
+            for (User user : manager.getUserManager().getPlayers()) {
                 switch (user.getState()) {
                     case ALIVE:
                         pnlInGame.setPlayerStats(user, ChatColor.GOLD + "" + user.getGold());
@@ -180,7 +180,7 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
         // TODO: Exclude quitters
         List<Player> players = new ArrayList<>();
 
-        for (User user : manager.getPlayerManager().getPlayers()) {
+        for (User user : manager.getUserManager().getPlayers()) {
             players.add(user.getPlayer());
         }
 
