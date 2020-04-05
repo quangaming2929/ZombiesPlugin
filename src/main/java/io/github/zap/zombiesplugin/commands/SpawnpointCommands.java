@@ -90,7 +90,7 @@ public class SpawnpointCommands implements CommandExecutor {
                     room.add(new Window(windowBounds1, interiorBounds1, spawnPoint1, Material.OAK_SLAB));
                 }
 
-                game.getPlayerManager().addUser(player);
+                game.getUserManager().addUser(player);
                 return true;
             }
         }

@@ -96,7 +96,7 @@ public class PathfinderGoalTargetPlayerUnbounded extends Pathfinder implements P
             User closest = null;
 
             //finds the closest User to target
-            for(User user : manager.getPlayerManager().getPlayers()) {
+            for(User user : manager.getUserManager().getPlayers()) {
                 GameMode mode = user.getPlayer().getGameMode();
                 if(mode != GameMode.SPECTATOR && mode != GameMode.CREATIVE) {
                     Location loc = user.getPlayer().getLocation();

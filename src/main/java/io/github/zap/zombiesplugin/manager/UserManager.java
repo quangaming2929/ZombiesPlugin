@@ -32,7 +32,7 @@ public class UserManager implements Listener, ITickable {
     public UserManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
-        //self-register
+        //self-registers
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
         ZombiesPlugin.instance.getTickManager().register(this);
 

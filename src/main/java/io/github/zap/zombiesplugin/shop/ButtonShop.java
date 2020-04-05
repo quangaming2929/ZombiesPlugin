@@ -28,9 +28,9 @@ public abstract class ButtonShop extends SingleHologramShop {
 
 	@EventHandler
 	public void onRightClick(PlayerInteractEvent event) {
-		if (event.getHand() == EquipmentSlot.HAND && event.getAction() == Action.RIGHT_CLICK_BLOCK && gameManager.getPlayerManager().getAssociatedUser(event.getPlayer()) != null && event.getClickedBlock() != null) {
+		if (event.getHand() == EquipmentSlot.HAND && event.getAction() == Action.RIGHT_CLICK_BLOCK && gameManager.getUserManager().getAssociatedUser(event.getPlayer()) != null && event.getClickedBlock() != null) {
 			if (event.getClickedBlock().equals(button)) {
-				User user = gameManager.getPlayerManager().getAssociatedUser(event.getPlayer());
+				User user = gameManager.getUserManager().getAssociatedUser(event.getPlayer());
 				if (user.getGold() < cost) {
 					user.getPlayer().sendMessage(ChatColor.RED + "You don't have enough gold!");
 				} else {
