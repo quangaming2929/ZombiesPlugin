@@ -5,16 +5,23 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.EventHandler;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
 import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
+import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
-public class PlayerManager implements Listener, ITickable {
+public class UserManager implements Listener, ITickable {
     private GameManager gameManager;
     private HashMap<Player,User> players = new HashMap<>();
     private ArrayList<User> spectators = new ArrayList<>();
@@ -22,7 +29,7 @@ public class PlayerManager implements Listener, ITickable {
     //event handlers
     private EventHandler<UserJoinLeaveEventArgs> userJoinLeaveEventHandler;
 
-    public PlayerManager(GameManager gameManager) {
+    public UserManager(GameManager gameManager) {
         this.gameManager = gameManager;
 
         //self-register
@@ -125,15 +132,8 @@ public class PlayerManager implements Listener, ITickable {
         }
     }
 
-    @org.bukkit.event.EventHandler
-    public void onPlayerClickItem(InventoryClickEvent event) {
-        if (ZombiesPlugin.instance.tm.contains(event.getClickedInventory())) {
-            ZombiesPlugin.instance.tm.processClick(event, getAssociatedUser((Player) event.getWhoClicked()));
-        }
-    }
-
     public User getAssociatedUser(Player player) {
-        for (User p : players.values()) {
+        for (User p : getPlayers()) {
             if (p.getPlayer() == player) {
                 return p;
             }

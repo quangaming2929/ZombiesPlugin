@@ -1,7 +1,7 @@
 package io.github.zap.zombiesplugin.equipments.skills;
 
 import io.github.zap.zombiesplugin.data.EquipmentData;
-import io.github.zap.zombiesplugin.manager.PlayerManager;
+import io.github.zap.zombiesplugin.manager.UserManager;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.utils.MathUtils;
 import org.bukkit.ChatColor;
@@ -9,7 +9,6 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
-import javax.management.JMException;
 import java.util.Collection;
 
 public class HealSkill extends Skill{
@@ -17,8 +16,8 @@ public class HealSkill extends Skill{
     public static final String SKILL_HEAL_TEAM = "healTeam";
     public static final String SKILL_HEAL_RADIUS = "radius";
 
-    public HealSkill(EquipmentData equipmentData, PlayerManager playerManager) {
-        super(equipmentData, playerManager);
+    public HealSkill(EquipmentData equipmentData, UserManager userManager) {
+        super(equipmentData, userManager);
     }
 
     @Override

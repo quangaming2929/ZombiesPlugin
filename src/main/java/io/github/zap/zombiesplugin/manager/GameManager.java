@@ -4,6 +4,8 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
 import io.github.zap.zombiesplugin.map.round.Round;
 
+import io.github.zap.zombiesplugin.player.PlayerState;
+import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.scoreboard.IInGameScoreboard;
 import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
 
@@ -20,7 +22,7 @@ public class GameManager implements Listener {
     public final String name;
 
     private GameSettings settings;
-    private PlayerManager playerManager;
+    private UserManager userManager;
     private GameState state;
     private IInGameScoreboard scoreboard;
 
@@ -28,13 +30,13 @@ public class GameManager implements Listener {
     private int currentRoundIndex = 0;
     private Round currentRound;
 
-    public GameManager(String name, GameSettings settings) {
+    public GameManager(String name, GameSettings settings, IInGameScoreboard sb) {
         this.name = name;
         this.settings = settings;
 
-        this.scoreboard = new InGameScoreBoard(this);
-        playerManager = new PlayerManager(this);
-        playerManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
+        this.scoreboard = sb;
+        userManager = new UserManager(this);
+        userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
 
         ZombiesPlugin.instance.getServer().getPluginManager().registerEvents(this, ZombiesPlugin.instance);
     }
@@ -43,13 +45,9 @@ public class GameManager implements Listener {
 
     public GameSettings getSettings() { return settings; }
 
-    public PlayerManager getPlayerManager() { return playerManager; }
+    public UserManager getUserManager() { return userManager; }
 
     public GameState getState() { return state; }
-
-    public void setState(GameState state) {
-        this.state = state;
-    }
 
     /**
      * Gets the zero-based round index.
@@ -62,7 +60,7 @@ public class GameManager implements Listener {
     private void onPlayerChange(Object sender, @NotNull UserJoinLeaveEventArgs e) {
         switch(e.type) {
             case JOIN:
-                if(state == GameState.PREGAME && playerManager.getPlayers().size() == settings.getGameSize()) {
+                if(state == GameState.PREGAME && userManager.getPlayers().size() == settings.getGameSize()) {
                     state = GameState.COUNTDOWN;
                     startCountdown();
                 }
@@ -73,7 +71,7 @@ public class GameManager implements Listener {
                     stopCountdown();
                 }
                 else if(state == GameState.STARTED) {
-                    if(playerManager.getPlayers().size() == 0) {
+                    if(userManager.getPlayers().size() == 0) {
                         state = GameState.CANCELED;
                     }
                 }
@@ -129,6 +127,24 @@ public class GameManager implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    public IInGameScoreboard getScoreboard() {
+        return scoreboard;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
+
+        if (state == GameState.STARTED) {
+            for(User user : getUserManager().getPlayers()) {
+                user.setState(PlayerState.ALIVE);
+            }
+        }
+
+        if (scoreboard != null) {
+            scoreboard.setGameState(state);
         }
     }
 }

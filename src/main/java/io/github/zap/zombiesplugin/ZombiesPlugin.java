@@ -1,42 +1,22 @@
 package io.github.zap.zombiesplugin;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.github.zap.zombiesplugin.commands.DebugInventoryCommand;
-import io.github.zap.zombiesplugin.commands.EquipmentDebugCommands;
-import io.github.zap.zombiesplugin.commands.ScoreboardDebugCommand;
-import io.github.zap.zombiesplugin.commands.SetGoldCommand;
-import com.comphenix.protocol.events.*;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.MultiBlockChangeInfo;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
-import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.player.PlayerState;
-import io.github.zap.zombiesplugin.player.User;
-import io.github.zap.zombiesplugin.manager.GameSettings;
 import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.GameMapImporter;
-import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
-import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalTargetPlayerUnbounded;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalUnboundedMeleeAttack;
 import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
-import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
 import io.github.zap.zombiesplugin.provider.TMTaskImporter;
-import io.github.zap.zombiesplugin.scoreboard.InGameScoreBoard;
-import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
 import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
 import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
 import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
@@ -47,27 +27,13 @@ import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import io.github.zap.zombiesplugin.utils.Tuple;
 import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 
@@ -141,11 +107,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         SpawnpointCommands spCmd = new SpawnpointCommands();
         getCommand("testentity").setExecutor(spCmd);
         getCommand("newspawnpoint").setExecutor(spCmd);
-
-        getCommand("equipmentDebug").setExecutor(new EquipmentDebugCommands());
-        getCommand("invDebug").setExecutor(new DebugInventoryCommand());
-        getCommand("setGold").setExecutor(new SetGoldCommand());
-        getCommand("scoreBoardDebug").setExecutor(new ScoreboardDebugCommand());
     }
 
     public ConfigFileManager getConfigManager() {

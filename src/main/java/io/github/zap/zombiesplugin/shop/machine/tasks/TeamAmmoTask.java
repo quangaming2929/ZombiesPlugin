@@ -14,7 +14,7 @@ public class TeamAmmoTask extends TeamMachineTask {
 
     @Override
     public boolean execTask(User user) {
-        for(User player : manager.getPlayerManager().getPlayers()) {
+        for(User player : manager.getUserManager().getPlayers()) {
             for (HotbarObject obj : player.getGunGroup().getObjects()) {
                 if (obj instanceof Gun) {
                     ((Gun) obj).refill();
