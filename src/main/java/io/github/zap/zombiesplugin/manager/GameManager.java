@@ -30,11 +30,11 @@ public class GameManager implements Listener {
     private int currentRoundIndex = 0;
     private Round currentRound;
 
-    public GameManager(String name, GameSettings settings) {
+    public GameManager(String name, GameSettings settings, IInGameScoreboard sb) {
         this.name = name;
         this.settings = settings;
 
-        this.scoreboard = new InGameScoreBoard(this);
+        this.scoreboard = sb;
         userManager = new UserManager(this);
         userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
 

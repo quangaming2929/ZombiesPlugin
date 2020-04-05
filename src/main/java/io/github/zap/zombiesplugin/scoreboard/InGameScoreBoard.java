@@ -23,7 +23,7 @@ import java.util.List;
 // Update interval 0.5 sec
 public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboard {
     protected final String strToday;
-    protected final GameManager manager;
+    protected GameManager manager;
     protected final ScoreboardManager sbManager;
     protected final Title joinTitle;
     protected final SoundFx cdSoundFx;
@@ -37,8 +37,7 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     protected float igTimer = 0;
     protected GameState state;
 
-    public InGameScoreBoard(GameManager manager) {
-        this.manager = manager;
+    public InGameScoreBoard() {
         this.sbManager = Bukkit.getScoreboardManager();
 
         strToday = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yy"));
@@ -53,6 +52,10 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
                 20 );
 
         cdSoundFx = new SingleNoteSoundFx(Sound.BLOCK_NOTE_BLOCK_HAT);
+    }
+
+    public void init (GameManager manager) {
+        this.manager = manager;
     }
 
     @Override
