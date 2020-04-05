@@ -1,57 +1,38 @@
 package io.github.zap.zombiesplugin.map.spawn;
 
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
-import io.github.zap.zombiesplugin.mob.Mob;
+import io.github.zap.zombiesplugin.map.Room;
+import io.github.zap.zombiesplugin.map.Window;
+import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
+import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
+import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitWorld;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
+import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
 
 public class SpawnPoint {
+	private final Location spawn;
+	private final Location target;
 
-	/**
-	 * Whether or not the spawn point can be used
-	 */
-	private boolean available = false;
-
-	/**
-	 * The location of the actual spawn point
-	 */
-	private final Location coordinates;
-
-	/** Initializes the spawnpoint with the coordinates of the spawnpoint
-	 *
-	 * @param coordinates The spawnpoint coordinates
-	 */
-	public SpawnPoint(Location coordinates) {
-		this.coordinates = coordinates;
+	public SpawnPoint(Location spawn, Location target)
+	{
+		this.spawn = spawn;
+		this.target = target;
 	}
 
-	/** Spawns mobs in the spawnpoint
-	 *
-	 * @param mob The mobs to spawn
-	 */
-	public void spawn(Mob mob) {
-		// TODO: Actually spawning the mob
+	public void spawn(GameManager manager, MythicMob mob) {
+		BukkitWorld world = new BukkitWorld(spawn.getWorld());
+		int difficulty = manager.getSettings().getDifficulty().ordinal();
+
+		AbstractEntity entity = mob.spawn(new AbstractLocation(world, spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()), difficulty).getEntity();
+		entity.setMetadata("zp_manager", manager);
+		entity.setMetadata("zp_spawnpoint", this);
 	}
 
-	/** Tests whether or not the spawn point can be used
-	 *
-	 * @return The availability of the spawn point
-	 */
-	public boolean isAvailable() {
-		return available;
+	public Location getSpawn() {
+		return spawn;
 	}
 
-	/** Makes the spawn point usable
-	 *
-	 */
-	public void makeAvailable() {
-		available = true;
-	}
-
-	/** Gets the coordinates of the spawnpoint
-	 *
-	 * @return The coordinates
-	 */
-	public Location getCoordinates() {
-		return coordinates;
-	}
+	public Location getTarget() { return target; }
 }

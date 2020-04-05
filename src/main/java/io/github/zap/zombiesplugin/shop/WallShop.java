@@ -1,6 +1,5 @@
 package io.github.zap.zombiesplugin.shop;
 
-import io.github.zap.zombiesplugin.hologram.Hologram;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.ChatColor;
@@ -28,9 +27,9 @@ public abstract class WallShop extends SingleHologramShop {
 
 	@Override
 	public void onPurchaseAttempt(PlayerInteractEvent event) {
-		if (event.getHand() == EquipmentSlot.HAND && gameManager.getPlayerManager().getAssociatedUser(event.getPlayer()) != null) { // TODO: Check other things
+		if (event.getHand() == EquipmentSlot.HAND && gameManager.getUserManager().getAssociatedUser(event.getPlayer()) != null) { // TODO: Check other things
 			Player player = event.getPlayer();
-			User user = gameManager.getPlayerManager().getAssociatedUser(player);
+			User user = gameManager.getUserManager().getAssociatedUser(player);
 			Location location = player.getEyeLocation();
 
 			if (entity.getBoundingBox().rayTrace(location.toVector(), location.getDirection(), 3.0) != null) {
@@ -42,5 +41,4 @@ public abstract class WallShop extends SingleHologramShop {
 			}
 		}
 	}
-
 }

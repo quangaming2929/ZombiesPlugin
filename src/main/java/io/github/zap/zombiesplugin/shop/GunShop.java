@@ -1,7 +1,8 @@
 package io.github.zap.zombiesplugin.shop;
 
-import io.github.zap.zombiesplugin.guns.Gun;
-import io.github.zap.zombiesplugin.guns.GunPlaceHolder;
+import io.github.zap.zombiesplugin.equipments.guns.Gun;
+import io.github.zap.zombiesplugin.equipments.EquipmentPlaceHolder;
+import io.github.zap.zombiesplugin.hotbar.HotbarObject;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.ChatColor;
@@ -26,11 +27,11 @@ public class GunShop extends WallShop {
 	@Override
 	protected boolean purchase(User user) {
 		int slot = user.getPlayer().getInventory().getHeldItemSlot();
-		if (user.getHotbar().getHotbarObject(2) instanceof GunPlaceHolder) {
+		if (user.getHotbar().getHotbarObject(2) instanceof EquipmentPlaceHolder) {
 		}
 		try {
-			Gun gun = user.getGunUser().getGunBySlot(slot);
-			if (gun != null) {
+			HotbarObject gunObject = user.getHotbar().getSelectedObject();
+			if (gunObject instanceof Gun) {
 				// TODO: Refill the gun
 			} else {
 				// TODO: Purchase the gun

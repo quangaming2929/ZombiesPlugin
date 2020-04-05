@@ -1,8 +1,17 @@
 package io.github.zap.zombiesplugin.provider;
 
 import com.google.gson.GsonBuilder;
-import io.github.zap.zombiesplugin.guns.data.leveling.UltimateLevelingList;
+import io.github.zap.zombiesplugin.data.EquipmentData;
+import io.github.zap.zombiesplugin.data.GunData;
+import io.github.zap.zombiesplugin.data.cost.StaticCost;
+import io.github.zap.zombiesplugin.data.leveling.ListLeveling;
+import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
+import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
+import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
+import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
+import io.github.zap.zombiesplugin.data.visuals.ExpressionVisual;
 import io.github.zap.zombiesplugin.utils.IOHelper;
+import io.gsonfire.GsonFireBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -33,7 +42,27 @@ public class ConfigFileManager {
     }
 
     private void registerCustomClasses() {
-        registerCustomClass("LevelList", UltimateLevelingList.class);
+        // Equipment custom class section
+        // Data files
+        registerCustomClass("EquipmentData", EquipmentData.class);
+        registerCustomClass("GunData", GunData.class);
+
+        // IDefaultVisual
+        registerCustomClass("DefaultWeaponVisual", DefaultWeaponVisual.class);
+        registerCustomClass("ExpressionVisual", ExpressionVisual.class);
+
+        // Levels
+        registerCustomClass("ListLeveling", ListLeveling.class);
+        registerCustomClass("EquipmentValue", EquipmentValue.class);
+        registerCustomClass("LoreEquipmentValue", LoreEquipmentValue.class);
+
+        // Melee skill <Their is no subclass of MeleeSkill at the moment
+
+        // SoundFx
+        registerCustomClass("SingleNoteSoundFx", SingleNoteSoundFx.class);
+
+        // Cost
+        registerCustomClass("StaticCost", StaticCost.class);
     }
 
     /**
@@ -60,7 +89,7 @@ public class ConfigFileManager {
      * This method is used by Gson Type Adapter to resolve custom types
      * @param cc The custom class
      */
-    public String getCustomClassFriendlyName (Class<? extends  ICustomSerializerIdentity> cc) {
+    public String getCustomClassFriendlyName (Class<? extends ICustomSerializerIdentity> cc) {
         for (Map.Entry<String, Class<? extends ICustomSerializerIdentity>> item : customClasses.entrySet()) {
             if (cc == item.getValue()) {
                 return item.getKey();
@@ -73,18 +102,14 @@ public class ConfigFileManager {
     /**
      * Get the GsonBuilder for this provider, it contains the type adapter for resolve
      * registered custom type of this provider
-     * @return
+     * @return The gson builder
      */
     public GsonBuilder getGsonBuilder() {
-        return new GsonBuilder()
-                .serializeNulls()
-                .registerTypeHierarchyAdapter( ICustomSerializerIdentity.class, new CustomClassGsonAdapter(this));
-    }
-
-    public void registerValue(String importerName, String valueName, Object value) {
-        if (importers.containsKey(importerName)) {
-            importers.get(importerName).registerValue(valueName, value);
-        }
+        return new GsonFireBuilder()
+                .registerTypeSelector(ICustomSerializerIdentity.class, new CustomClassSelector(this))
+                .registerPostProcessor(ICustomSerializerIdentity.class, new CustomClassPostProcessor(this))
+                .createGsonBuilder()
+                .serializeNulls();
     }
 
     public boolean addImporter (String name, Importer importer) {
@@ -108,12 +133,14 @@ public class ConfigFileManager {
     }
 
     public void reload(String name){
-        try (Stream<Path> paths = Files.walk(Paths.get(this.rootDir.getPath()))) {
+        try (Stream<Path> paths = Files.walk(Paths.get(this.rootDir.getAbsolutePath()))) {
             Importer importer = getImporter(name);
             String ext = importer.getConfigExtension();
+            String finalExt = ext.startsWith(".") ? ext : "." + ext;
 
-            paths.filter(path -> path.endsWith(ext))
+            paths.filter(path -> path.toString().endsWith(finalExt))
                     .forEach(path -> importer.processConfigFile(path, IOHelper.readFile(path)));
+
         }
         catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to reload importer" + name);

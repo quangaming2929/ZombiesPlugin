@@ -1,10 +1,12 @@
 package io.github.zap.zombiesplugin.weaponschest;
 
-import io.github.zap.zombiesplugin.guns.Gun;
+import io.github.zap.zombiesplugin.equipments.guns.Gun;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -46,14 +48,14 @@ public class WeaponsChestGunSwapper implements Listener {
 		doubleChestLocation.setY(doubleChestLocation.getY() + 11.0/8.0);
 
 		// TODO: Initialize with player's ultimates
-		weaponStack = weaponsChestWeapons.get(0).gunData.getDefaultVisual(0, null);
+		weaponStack = weaponsChestWeapons.get(0).getEquipmentData().getDefaultVisual(0);
 
 		droppedWeapon = player.getWorld().dropItem(doubleChestLocation, weaponStack);
 	}
 
 	public void nextGun() {
 		counter++;
-		weaponsChestWeapons.get(counter % weaponsChestWeapons.size()).gunData.getDefaultVisual(0, weaponStack);
+		weaponsChestWeapons.get(counter % weaponsChestWeapons.size()).getEquipmentData().getDefaultVisual(0);
 	}
 
 	public void endSwapping() {

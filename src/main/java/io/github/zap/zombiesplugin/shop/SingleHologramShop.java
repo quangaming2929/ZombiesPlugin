@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 
 public abstract class SingleHologramShop extends Shop {
-
 	protected final Hologram hologram;
 
 	public SingleHologramShop(GameManager gameManager, String rewardName, Sound purchaseSuccessSound, Location location, String lineOne, String lineTwo) {
