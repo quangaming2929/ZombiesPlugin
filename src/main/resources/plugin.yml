@@ -8,8 +8,14 @@ depend:
   - MythicMobs
   - ProtocolLib
 commands:
-  gunDebug:
-    description: Test command related to guns
+  equipmentDebug:
+    description: Test command related to equipments
+  invDebug:
+    description: test mostly team machine
+  setGold:
+    description: Set player gold
+  scoreBoardDebug:
+    description: testScoreboard thingy
   newspawnpoint:
     description: Adds or removes a spawnpoint to the testing spawnpoint.
     usage: /newspawnpoint

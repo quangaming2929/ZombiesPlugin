@@ -31,7 +31,6 @@
                 </configuration>
             </plugin>
         </plugins>
-
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -88,6 +87,12 @@
             <artifactId>mythicmobs</artifactId>
             <version>4.9.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.gsonfire</groupId>
+            <artifactId>gson-fire</artifactId>
+            <version>1.8.4</version>
         </dependency>
     </dependencies>
 </project>

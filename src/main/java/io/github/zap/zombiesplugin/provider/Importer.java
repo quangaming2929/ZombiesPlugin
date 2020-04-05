@@ -1,10 +1,18 @@
 package io.github.zap.zombiesplugin.provider;
 
 
+import com.google.gson.Gson;
+import io.github.zap.zombiesplugin.ZombiesPlugin;
+
+import java.io.File;
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 public abstract class Importer {
     protected ConfigFileManager manager;
+    protected Gson fileParser;
+
+    public abstract boolean registerValue(String name, Object value);
 
     /**
      * This methods will be called when added to a manager. Override this method to init
@@ -13,6 +21,7 @@ public abstract class Importer {
      */
     public void init(ConfigFileManager manager) {
         this.manager = manager;
+        this.fileParser = manager.getGsonBuilder().create();
     }
 
     /**
@@ -31,4 +40,8 @@ public abstract class Importer {
      * Called before the manager reload this Importer
      */
     public void onReload() {}
+
+    public void log(Level level, String message) {
+        ZombiesPlugin.instance.getLogger().log(level, message);
+    }
 }

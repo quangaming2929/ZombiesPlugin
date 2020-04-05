@@ -1,17 +1,25 @@
 package io.github.zap.zombiesplugin.manager;
 
+import com.destroystokyo.paper.Title;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.EventHandler;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
-import io.github.zap.zombiesplugin.guns.Gun;
 import io.github.zap.zombiesplugin.player.User;
+import io.github.zap.zombiesplugin.shop.machine.TeamMachine;
+import io.github.zap.zombiesplugin.utils.CollectionUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 public class PlayerManager implements Listener, ITickable {
@@ -38,8 +46,6 @@ public class PlayerManager implements Listener, ITickable {
 
     public GameManager getGameManager() { return gameManager; }
 
-    public User getAssociatedUser(Player player) { return players.get(player); }
-
     public boolean hasUser(User user) { return players.containsValue(user); }
 
     public EventHandler<UserJoinLeaveEventArgs> getPlayerJoinLeaveHandler() { return userJoinLeaveEventHandler; }
@@ -51,6 +57,23 @@ public class PlayerManager implements Listener, ITickable {
     public void doTick() {
         for(User user : players.values()) {
             user.userTick();
+        }
+    }
+
+    /**
+     * Send messages to all player in this PlayerManager
+     * @param str
+     */
+    public void broadcast(String str, boolean sentToQuitter) {
+        // TODO: Filter Send message for quitter
+        for (User user : getPlayers()) {
+            user.getPlayer().sendMessage(str);
+        }
+    }
+
+    public void displayTitle(Title title) {
+        for (User user : getPlayers()) {
+            user.getPlayer().sendTitle(title);
         }
     }
 
@@ -67,6 +90,10 @@ public class PlayerManager implements Listener, ITickable {
 
         User user = new User(this, player);
         players.put(player, user);
+
+        if (gameManager.getScoreboard() != null) {
+            gameManager.getScoreboard().onPlayerJoinGame(user);
+        }
 
         userJoinLeaveEventHandler.invoke(this, new UserJoinLeaveEventArgs(user, UserJoinLeaveEventArgs.ChangeType.JOIN));
         return true;
@@ -87,29 +114,38 @@ public class PlayerManager implements Listener, ITickable {
         return false;
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onPlayerUse(PlayerInteractEvent event) {
         User user = getAssociatedUser(event.getPlayer());
         if(user != null) {
-            Gun gun = user.getGunUser().getGunByItemStack(user.getPlayer().getInventory().getItemInMainHand());
-            if(gun != null ) {
-                if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() ==  Action.RIGHT_CLICK_BLOCK)
-                    gun.shoot();
-                else if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() ==  Action.LEFT_CLICK_BLOCK)
-                    gun.reload();
-            }
-
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
         }
     }
 
-    @org.bukkit.event.EventHandler
+    @EventHandler
     public void onPlayerSwitchHeldItem(PlayerItemHeldEvent event) {
         User user = getAssociatedUser(event.getPlayer());
         if(user != null) {
             // Pass the event to hotbar manager
             user.getHotbar().processEvent(event);
         }
+    }
+
+    @EventHandler
+    public void onPlayerClickItem(InventoryClickEvent event) {
+        if (ZombiesPlugin.instance.tm.contains(event.getClickedInventory())) {
+            ZombiesPlugin.instance.tm.processClick(event, getAssociatedUser((Player) event.getWhoClicked()));
+        }
+    }
+
+    public User getAssociatedUser(Player player) {
+        for (User p : players) {
+            if (p.getPlayer() == player) {
+                return p;
+            }
+        }
+
+        return null;
     }
 }

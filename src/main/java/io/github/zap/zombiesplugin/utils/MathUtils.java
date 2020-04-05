@@ -62,4 +62,8 @@ public class MathUtils {
     public static double manhattanDistance(Location location1, Location location2) {
         return Math.abs(location1.getX() - location2.getX()) + Math.abs(location1.getY() - location2.getY()) + Math.abs(location1.getZ() - location2.getZ());
     }
+
+    public static double clamp (double min, double max, double value) {
+        return Math.max(min, Math.min(max, value));
+    }
 }

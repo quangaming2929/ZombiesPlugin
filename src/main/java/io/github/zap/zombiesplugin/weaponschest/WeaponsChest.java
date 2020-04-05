@@ -1,7 +1,7 @@
 package io.github.zap.zombiesplugin.weaponschest;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
-import io.github.zap.zombiesplugin.guns.Gun;
+import io.github.zap.zombiesplugin.equipments.guns.Gun;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.utils.PacketUtils;
 import java.lang.reflect.InvocationTargetException;
