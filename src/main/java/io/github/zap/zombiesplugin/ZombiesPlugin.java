@@ -9,7 +9,7 @@ import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
-import io.github.zap.zombiesplugin.map.GameMapImporter;
+import io.github.zap.zombiesplugin.map.serialize.GameMapImporter;
 import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalTargetPlayerUnbounded;
@@ -57,7 +57,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         tickManager = new TickManager(2); //runs at 10 TPS
         getServer().getPluginManager().registerEvents(this, this);
 
-        registerConfigs();
         registerCommands();
 
         //inject custom AI pathfinders into MythicMobs
@@ -93,14 +92,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         config.reload();
 
         Bukkit.getPluginManager().registerEvents(this,this);
-    }
-
-    private void registerConfigs() {
-        config = new ConfigFileManager(this, this.getDataFolder());
-        config.addImporter("Gun", new GunImporter());
-        config.addImporter("SpawnPointManager", new SpawnManagerImporter());
-        config.addImporter("GameMapImporter", new GameMapImporter());
-        config.reload();
     }
 
     private void registerCommands() {

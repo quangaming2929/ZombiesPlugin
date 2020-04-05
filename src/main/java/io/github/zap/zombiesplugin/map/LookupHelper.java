@@ -19,12 +19,9 @@ public class LookupHelper {
     }
 
     public Window getWindow(SpawnPoint point) {
-        System.out.println("getWindow called");
         if(spawnPointToWindow.containsKey(point)) {
-            System.out.println("returning window");
             return spawnPointToWindow.get(point);
         }
-        System.out.println("returning null");
         return null;
     }
 
