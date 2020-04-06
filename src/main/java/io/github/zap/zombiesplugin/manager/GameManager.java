@@ -62,13 +62,11 @@ public class GameManager implements Listener {
             case JOIN:
                 if(state == GameState.PREGAME && userManager.getPlayers().size() == settings.getGameSize()) {
                     state = GameState.COUNTDOWN;
-                    startCountdown();
                 }
                 break;
             case LEAVE:
                 if(state == GameState.COUNTDOWN) {
                     state = GameState.PREGAME;
-                    stopCountdown();
                 }
                 else if(state == GameState.STARTED) {
                     if(userManager.getPlayers().size() == 0) {
@@ -79,16 +77,6 @@ public class GameManager implements Listener {
             default:
                 throw new IllegalArgumentException("Unexpected value: " + e.type.toString());
         }
-    }
-
-    public void startCountdown() {
-        //TODO: timer code
-
-        //should eventually call startRound if the countdown successfully completes
-    }
-
-    public void stopCountdown() {
-        //TODO: abort timer
     }
 
     private void startRound(int index) {

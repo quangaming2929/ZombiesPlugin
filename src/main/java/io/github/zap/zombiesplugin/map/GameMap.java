@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class GameMap {
 	private final LookupHelper lookup;
 
+	// reflect the
 	private final String name;
 	private final ArrayList<SpawnFilter> spawnFilters;
 	private final ArrayList<Round> rounds;

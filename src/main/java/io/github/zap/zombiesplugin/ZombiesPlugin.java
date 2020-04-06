@@ -5,7 +5,11 @@ import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.zap.zombiesplugin.commands.RoomsZombiesCommand;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
+import io.github.zap.zombiesplugin.gamecreator.ZombiesRoomManager;
+import io.github.zap.zombiesplugin.gamecreator.ZombiesRoomUser;
+import io.github.zap.zombiesplugin.gamecreator.gui.PlayerHeadFactory;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
@@ -21,6 +25,7 @@ import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
 import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
 import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
 import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
+import io.github.zap.zombiesplugin.utils.EncoderUtil;
 import io.github.zap.zombiesplugin.utils.TabDecorator;
 import net.minecraft.server.v1_15_R1.IChatBaseComponent;
 import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
@@ -33,15 +38,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.*;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
     public static ZombiesPlugin instance;
 
     private ConfigFileManager config;
     private ProtocolManager protocolManager;
+    private ZombiesRoomManager roomManager;
 
     private Hashtable<String, GameManager> gameManagers;
     private Hashtable<String, GameMap> maps;
@@ -55,6 +59,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         gameManagers = new Hashtable<>();
         maps = new Hashtable<>();
         tickManager = new TickManager(2); //runs at 10 TPS
+        roomManager = new ZombiesRoomManager();
         getServer().getPluginManager().registerEvents(this, this);
 
         registerConfigs();
@@ -91,8 +96,6 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         config.addImporter("SpawnPointManager", new SpawnManagerImporter());
         config.addImporter("GameMapImporter", new GameMapImporter());
         config.reload();
-
-        Bukkit.getPluginManager().registerEvents(this,this);
     }
 
     private void registerConfigs() {
@@ -104,6 +107,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
+        getCommand("zombiesrooms").setExecutor(new RoomsZombiesCommand());
+
         SpawnpointCommands spCmd = new SpawnpointCommands();
         getCommand("testentity").setExecutor(spCmd);
         getCommand("newspawnpoint").setExecutor(spCmd);
@@ -133,6 +138,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        //String a = EncoderUtil.toBase64(e.getPlayer().getInventory().getItemInMainHand());
+        //e.getPlayer().getInventory().setItemInMainHand(PlayerHeadFactory.getOak_Wood_L());
         sayHelloToTester(e.getPlayer());
 
         String header = ChatColor.AQUA + "Welcome to " +  ChatColor.YELLOW + ChatColor.BOLD +  "ZAP " + ChatColor.GOLD +  ChatColor.BOLD + "closed beta test 1";
@@ -235,5 +242,13 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         return false;
     }
 
+    public Map<String, GameMap> getMaps() {
+        return Collections.unmodifiableMap(maps);
+    }
+
     public TickManager getTickManager() { return tickManager; }
+
+    public ZombiesRoomManager getRoomManager() {
+        return roomManager;
+    }
 }
