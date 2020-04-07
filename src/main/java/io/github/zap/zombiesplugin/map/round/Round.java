@@ -33,15 +33,7 @@ public class Round {
 				public void run() {
 					ArrayList<MythicMob> mobs = wave.getMobs(difficulty);
 					for (SpawnFilter spawnFilter : map.getSpawnFilters()) {
-						ArrayList<SpawnPoint> available = new ArrayList<>();
-						for(Room room : map.getRooms()) {
-							if(room.isOpen()) {
-								available.addAll(room.getSpawnPoints());
-								room.getWindows().forEach(window -> available.add(window.getSpawnPoint()));
-							}
-						}
-
-						spawnFilter.spawn(manager, mobs, available);
+						spawnFilter.spawn(manager, mobs);
 					}
 				}
 

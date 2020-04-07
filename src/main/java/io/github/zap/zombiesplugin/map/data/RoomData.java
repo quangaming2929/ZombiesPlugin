@@ -1,9 +1,6 @@
 package io.github.zap.zombiesplugin.map.data;
 
-import io.github.zap.zombiesplugin.map.Door;
-import io.github.zap.zombiesplugin.map.GameMap;
-import io.github.zap.zombiesplugin.map.Room;
-import io.github.zap.zombiesplugin.map.Window;
+import io.github.zap.zombiesplugin.map.*;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.shop.Shop;
 
@@ -15,6 +12,7 @@ public class RoomData implements IMapData<Room> {
     public ArrayList<WindowData> windows;
     public ArrayList<SpawnPointData> spawnPoints;
     public ArrayList<ShopData> shops;
+    public MultiBoundingBoxData bounds;
 
     public RoomData() {}
 
@@ -29,12 +27,13 @@ public class RoomData implements IMapData<Room> {
             doors.add(new DoorData(door));
         }
 
-        for(Window window : from.getWindows()) {
-            windows.add(new WindowData(window));
-        }
-
-        for(SpawnPoint spawnPoint : from.getSpawnPoints()) {
-            spawnPoints.add(new SpawnPointData(spawnPoint));
+        for(ISpawnpointContainer container : from.getSpawnPoints()) {
+            if(container instanceof Window) {
+                windows.add(new WindowData((Window)container));
+            }
+            else if(container instanceof SpawnPoint) {
+                spawnPoints.add(new SpawnPointData((SpawnPoint)container));
+            }
         }
 
         for(Shop shop : from.getShops()) {
@@ -52,7 +51,7 @@ public class RoomData implements IMapData<Room> {
             throw new IllegalArgumentException("args must be an instance of GameMap");
         }
 
-        Room result = new Room(name, parent.getLookupHelper());
+        Room result = new Room(name, bounds.load(null), parent.getLookupHelper());
         for(DoorData data : doors) {
             result.add(data.load(null));
         }

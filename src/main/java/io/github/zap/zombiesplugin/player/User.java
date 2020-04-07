@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.player;
 
 import io.github.zap.zombiesplugin.hotbar.HotbarManager;
 import io.github.zap.zombiesplugin.manager.UserManager;
+import io.github.zap.zombiesplugin.map.ISpawnpointContainer;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.utils.MathUtils;
@@ -100,23 +101,26 @@ public class User {
             boolean repairTick = tick == 10;
             for(Room room : manager.getGameManager().getSettings().getGameMap().getRooms()) {
                 if(room.isOpen()) {
-                    for(Window window : room.getWindows()) {
-                        if(repairTick) { //one second interval
-                            if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
-                                if(player.isSneaking()) {
-                                    window.repairWindow();
-                                    tick = 0;
-                                    break;
+                    for(ISpawnpointContainer container : room.getSpawnPoints()) {
+                        if(container instanceof Window) {
+                            Window window = (Window)container;
+                            if(repairTick) { //one second interval
+                                if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
+                                    if(player.isSneaking()) {
+                                        window.repairWindow();
+                                        tick = 0;
+                                        break;
+                                    }
+                                    //todo: display text that says "press sneak to repair"
                                 }
-                                //todo: display text that says "press sneak to repair"
+                                tick = 0;
                             }
-                            tick = 0;
-                        }
 
-                        //fifth of a second second interval for interior bounds check
-                        if(window.getInteriorBounds().isInBound(player.getLocation())) {
-                            player.teleport(window.getSpawnPoint().getTarget());
-                            break;
+                            //fifth of a second second interval for interior bounds check
+                            if(window.getInteriorBounds().isInBound(player.getLocation())) {
+                                player.teleport(window.getSpawnpoint().getTarget());
+                                break;
+                            }
                         }
                     }
                 }

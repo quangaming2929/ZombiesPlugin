@@ -12,7 +12,7 @@ public class WindowData implements IMapData<Window> {
     public WindowData() {}
 
     public WindowData(Window from) {
-        spawnPoint = new SpawnPointData(from.getSpawnPoint());
+        spawnPoint = new SpawnPointData(from.getSpawnpoint());
         interiorBounds = new MultiBoundingBoxData(from.getInteriorBounds());
         windowBounds = new BoundingBoxData(from.getWindowBounds());
         coverMaterial = from.getCoverMaterial().name();

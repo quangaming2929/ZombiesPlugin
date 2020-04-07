@@ -22,3 +22,5 @@ commands:
   testentity:
     description: Spawns a testing zombie.
     usage: /testentity
+  mapeditor:
+    description: Command used to edit and create map configuration files.

@@ -10,40 +10,34 @@ public class Room {
     private LookupHelper lookup;
     private final String name;
     private ArrayList<Door> doors;
-    private ArrayList<Window> windows;
-    private ArrayList<SpawnPoint> spawnPoints;
+    private ArrayList<ISpawnpointContainer> spawnPoints;
     private ArrayList<Shop> shops;
+    private MultiBoundingBox bounds;
     private boolean open;
 
-    public Room(String name, LookupHelper helper) {
+    public Room(String name, MultiBoundingBox bounds, LookupHelper helper) {
+        lookup = helper;
         this.name = name;
         doors = new ArrayList<>();
-        windows = new ArrayList<>();
         spawnPoints = new ArrayList<>();
         shops = new ArrayList<>();
-        lookup = helper;
+        this.bounds = bounds;
+    }
+
+    public Room(String name, LookupHelper helper) {
+        this(name, new MultiBoundingBox(), helper);
     }
 
     public void setLookup(LookupHelper helper) {
         if(lookup == null) lookup = helper;
     }
 
-
-    public Window getWindowAt(Location location) {
-        for(Window window : windows) {
-            if(window.getWindowBounds().isInBound(location)) {
-                return window;
-            }
-        }
-        return null;
-    }
-
     public void add(Door door) { doors.add(door); }
 
     public void add(Window window) {
         lookup.addMapping(window, this);
-        lookup.addMapping(window.getSpawnPoint(), window);
-        windows.add(window);
+        lookup.addMapping(window.getSpawnpoint(), window);
+        spawnPoints.add(window);
     }
 
     public void add(SpawnPoint spawnPoint) {
@@ -52,6 +46,10 @@ public class Room {
     }
 
     public void add(Shop shop) { shops.add(shop); }
+
+    public boolean isInBounds(Location location) {
+        return bounds.isInBound(location);
+    }
 
     public boolean isOpen() {
         return open;
@@ -65,9 +63,29 @@ public class Room {
 
     public ArrayList<Door> getDoors() { return doors; }
 
-    public ArrayList<Window> getWindows() { return windows; }
-
-    public ArrayList<SpawnPoint> getSpawnPoints() { return spawnPoints; }
+    public ArrayList<ISpawnpointContainer> getSpawnPoints() { return spawnPoints; }
 
     public ArrayList<Shop> getShops() { return shops; }
+
+    public MultiBoundingBox getBounds() { return bounds; }
+
+    public void clearWindows() {
+        int size = spawnPoints.size();
+        for(int i = size - 1; i >= 0; i--) {
+            ISpawnpointContainer container = spawnPoints.get(i);
+            if(container instanceof Window) {
+                spawnPoints.remove(i);
+            }
+        }
+    }
+
+    public void clearRoomSpawns() {
+        int size = spawnPoints.size();
+        for(int i = size - 1; i >= 0; i--) {
+            ISpawnpointContainer container = spawnPoints.get(i);
+            if(container instanceof SpawnPoint) {
+                spawnPoints.remove(i);
+            }
+        }
+    }
 }

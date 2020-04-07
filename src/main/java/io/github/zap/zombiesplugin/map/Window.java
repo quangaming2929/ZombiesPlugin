@@ -6,7 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 
-public class Window {
+public class Window implements ISpawnpointContainer {
     private SpawnPoint spawnPoint;
     private MultiBoundingBox interiorBounds;
     private BoundingBox windowBounds;
@@ -97,7 +97,8 @@ public class Window {
 
     public BoundingBox getWindowBounds() { return windowBounds; }
 
-    public SpawnPoint getSpawnPoint() { return spawnPoint; }
-
     public Material getCoverMaterial() { return coverMaterial; }
+
+    @Override
+    public SpawnPoint getSpawnpoint() { return spawnPoint; }
 }

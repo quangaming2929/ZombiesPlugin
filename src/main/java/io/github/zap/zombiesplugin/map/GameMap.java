@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.map;
 
+import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
 import org.bukkit.Location;
@@ -25,18 +26,6 @@ public class GameMap {
 		//TODO: load from config file
 	}
 
-	public Window getAvailableWindow(Location location) {
-		for(Room room : rooms.values()) {
-			if(room.isOpen()) {
-				Window sample = room.getWindowAt(location);
-				if(sample != null) {
-					return sample;
-				}
-			}
-		}
-		return null;
-	}
-
 	public void add(SpawnFilter manager) { spawnFilters.add(manager); }
 
 	public void add(Round round) { rounds.add(round); }
@@ -45,6 +34,8 @@ public class GameMap {
 		room.setLookup(lookup);
 		rooms.put(room.getName(), room);
 	}
+
+	public boolean hasRoom(String name) { return rooms.containsKey(name); }
 
 	public String getName() { return name; }
 
@@ -64,4 +55,8 @@ public class GameMap {
 	}
 
 	public LookupHelper getLookupHelper() { return lookup; }
+
+	public void spawn(int round) {
+
+	}
 }

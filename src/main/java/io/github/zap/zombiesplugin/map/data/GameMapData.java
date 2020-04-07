@@ -6,12 +6,13 @@ import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class GameMapData implements IMapData<GameMap> {
     public String name;
     public ArrayList<SpawnFilterData> spawnFilters;
     public ArrayList<RoundData> rounds;
-    public ArrayList<RoomData> rooms;
+    public Hashtable<String,RoomData> rooms;
 
     public GameMapData() { }
 
@@ -19,7 +20,7 @@ public class GameMapData implements IMapData<GameMap> {
         name = from.getName();
         spawnFilters = new ArrayList<>();
         rounds = new ArrayList<>();
-        rooms = new ArrayList<>();
+        rooms = new Hashtable<>();
 
         for(SpawnFilter filter : from.getSpawnFilters()) {
             spawnFilters.add(new SpawnFilterData(filter));
@@ -30,7 +31,7 @@ public class GameMapData implements IMapData<GameMap> {
         }
 
         for(Room room : from.getRooms()) {
-            rooms.add(new RoomData(room));
+            rooms.put(from.getName(), new RoomData(room));
         }
     }
 
@@ -46,7 +47,7 @@ public class GameMapData implements IMapData<GameMap> {
             result.add(data.load(null));
         }
 
-        for(RoomData data : rooms) {
+        for(RoomData data : rooms.values()) {
             result.add(data.load(result));
         }
 

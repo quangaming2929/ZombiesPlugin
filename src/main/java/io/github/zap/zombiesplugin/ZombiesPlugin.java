@@ -5,22 +5,15 @@ import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
+import io.github.zap.zombiesplugin.commands.MapEditorCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
-import io.github.zap.zombiesplugin.map.serialize.GameMapImporter;
-import io.github.zap.zombiesplugin.map.spawn.SpawnManagerImporter;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalTargetPlayerUnbounded;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalUnboundedMeleeAttack;
 import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
-import io.github.zap.zombiesplugin.provider.TMTaskImporter;
-import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
-import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
-import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
-import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
 import io.github.zap.zombiesplugin.utils.TabDecorator;
 import net.minecraft.server.v1_15_R1.IChatBaseComponent;
 import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
@@ -55,8 +48,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         gameManagers = new Hashtable<>();
         maps = new Hashtable<>();
         tickManager = new TickManager(2); //runs at 10 TPS
-        getServer().getPluginManager().registerEvents(this, this);
 
+        getServer().getPluginManager().registerEvents(this, this);
         registerCommands();
 
         //inject custom AI pathfinders into MythicMobs
@@ -75,29 +68,27 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
         tickManager.start();
 
-        config = new ConfigFileManager(this, this.getDataFolder());
+        //config = new ConfigFileManager(this, this.getDataFolder());
 
         // Equipments
-        config.addImporter("Melee", new MeleeImporter());
-        config.addImporter("Gun", new GunImporter());
-        config.addImporter("Skill", new SkillImporter());
-        config.addImporter("Perk", new PerkImporter());
+        //config.addImporter("Melee", new MeleeImporter());
+        //config.addImporter("Gun", new GunImporter());
+        //config.addImporter("Skill", new SkillImporter());
+        //config.addImporter("Perk", new PerkImporter());
 
         // Team Machine
-        config.addImporter("TMTasks", new TMTaskImporter());
+        //config.addImporter("TMTasks", new TMTaskImporter());
 
         // Map & Spawn point
-        config.addImporter("SpawnPointManager", new SpawnManagerImporter());
-        config.addImporter("GameMapImporter", new GameMapImporter());
-        config.reload();
-
-        Bukkit.getPluginManager().registerEvents(this,this);
+        //config.addImporter("SpawnPointManager", new SpawnManagerImporter());
+        //config.addImporter("GameMapImporter", new GameMapImporter());
+        //config.reload();
     }
 
     private void registerCommands() {
-        SpawnpointCommands spCmd = new SpawnpointCommands();
-        getCommand("testentity").setExecutor(spCmd);
-        getCommand("newspawnpoint").setExecutor(spCmd);
+        MapEditorCommands mapEditorCommands = new MapEditorCommands();
+        getCommand("mapeditor").setExecutor(mapEditorCommands);
+        getCommand("window").setExecutor(mapEditorCommands);
     }
 
     public ConfigFileManager getConfigManager() {
@@ -225,6 +216,14 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         }
         return false;
     }
+
+    public boolean hasMap(String name) {
+        return maps.containsKey(name);
+    }
+
+    public void removeMap(String name) { maps.remove(name); }
+
+    public Hashtable<String,GameMap> getMaps() { return maps; }
 
     public TickManager getTickManager() { return tickManager; }
 }

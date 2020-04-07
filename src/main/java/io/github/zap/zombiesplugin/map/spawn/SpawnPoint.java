@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.map.spawn;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.ISpawnpointContainer;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.Window;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
@@ -11,7 +12,7 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
 
-public class SpawnPoint {
+public class SpawnPoint implements ISpawnpointContainer {
 	private final Location spawn;
 	private final Location target;
 
@@ -35,4 +36,7 @@ public class SpawnPoint {
 	}
 
 	public Location getTarget() { return target; }
+
+	@Override
+	public SpawnPoint getSpawnpoint() { return this; }
 }
