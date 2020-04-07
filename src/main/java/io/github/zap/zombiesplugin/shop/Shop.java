@@ -67,7 +67,7 @@ public abstract class Shop implements Listener {
 
 	protected void checkCostBeforePurchase(PlayerEvent event) {
 		User user = gameManager.getPlayerManager().getAssociatedUser(event.getPlayer());
-		if (user.getGold() < cost) {
+		if (user.getGold() < cost) { // TODO: getCost?
 			user.getPlayer().sendMessage(ChatColor.RED + "You don't have enough gold!");
 		} else {
 			playPurchaseSound(user.getPlayer(), purchase(user));
@@ -91,5 +91,9 @@ public abstract class Shop implements Listener {
 	public abstract void onPurchaseAttempt(PlayerEvent event);
 
 	protected abstract boolean purchase(User user);
+
+	public void display() {
+		hologram.show();
+	}
 
 }

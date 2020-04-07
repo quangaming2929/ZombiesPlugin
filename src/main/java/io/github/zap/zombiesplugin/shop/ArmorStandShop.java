@@ -14,12 +14,13 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 public abstract class ArmorStandShop extends Shop {
 
-	protected final ArmorStand armorStand;
+	protected ArmorStand armorStand;
+
+	private Location armorStandLocation;
 
 	public ArmorStandShop(GameManager gameManager, boolean requiresPower, int cost, SoundFx purchaseSuccessSound, Location hologramLocation, Location armorStandLocation, String lineOne) {
 		super(gameManager, requiresPower, cost, purchaseSuccessSound, hologramLocation, lineOne, testCostMessage(requiresPower, cost));
-		armorStand = (ArmorStand) armorStandLocation.getWorld().spawnEntity(armorStandLocation, EntityType.ARMOR_STAND);
-		armorStand.setGravity(false);
+		this.armorStandLocation = armorStandLocation;
 	}
 
 	@EventHandler
@@ -37,5 +38,11 @@ public abstract class ArmorStandShop extends Shop {
 
 			checkCostBeforePurchase(event);
 		}
+	}
+
+	@Override
+	public void display() {
+		armorStand = (ArmorStand) armorStandLocation.getWorld().spawnEntity(armorStandLocation, EntityType.ARMOR_STAND);
+		armorStand.setGravity(false);
 	}
 }

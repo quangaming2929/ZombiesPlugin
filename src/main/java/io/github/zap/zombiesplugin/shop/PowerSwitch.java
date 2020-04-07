@@ -20,6 +20,11 @@ public class PowerSwitch extends ButtonShop {
 		return true;
 	}
 
+	@Override
+	public void display() {
+
+	}
+
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (turnedOn && event.getClickedBlock() != null) {

@@ -29,10 +29,6 @@ public class ArmorShop extends ArmorStandShop {
 	public ArmorShop(GameManager gameManager, boolean requiresPower, int cost, SoundFx purchaseSuccessSound, Location hologramLocation, Location armorStandLocation, String armorName, ItemStack[] armor) {
 		super(gameManager, requiresPower, cost, purchaseSuccessSound, hologramLocation, armorStandLocation, ChatColor.GREEN + armorName);
 		this.armor = armor;
-		EntityEquipment equipment = Objects.requireNonNull(armorStand.getEquipment());
-		equipment.setArmorContents(armor);
-		armorStand.setSmall(true);
-		armorStand.setVisible(false);
 	}
 
 	public void notifyArmorChange(Player player) {
@@ -101,5 +97,14 @@ public class ArmorShop extends ArmorStandShop {
 
 			return true;
 		}
+	}
+
+	@Override
+	public void display() {
+		super.display();
+		EntityEquipment equipment = armorStand.getEquipment();
+		equipment.setArmorContents(armor);
+		armorStand.setSmall(true);
+		armorStand.setVisible(false);
 	}
 }
