@@ -8,8 +8,7 @@ import com.google.gson.JsonPrimitive;
 import io.github.zap.zombiesplugin.commands.RoomsZombiesCommand;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
 import io.github.zap.zombiesplugin.gamecreator.ZombiesRoomManager;
-import io.github.zap.zombiesplugin.gamecreator.ZombiesRoomUser;
-import io.github.zap.zombiesplugin.gamecreator.gui.PlayerHeadFactory;
+import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
@@ -25,7 +24,6 @@ import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
 import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
 import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
 import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
-import io.github.zap.zombiesplugin.utils.EncoderUtil;
 import io.github.zap.zombiesplugin.utils.TabDecorator;
 import net.minecraft.server.v1_15_R1.IChatBaseComponent;
 import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
@@ -38,6 +36,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
@@ -138,8 +137,12 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        // TODO: Test code
         //String a = EncoderUtil.toBase64(e.getPlayer().getInventory().getItemInMainHand());
         //e.getPlayer().getInventory().setItemInMainHand(PlayerHeadFactory.getOak_Wood_L());
+        maps.put("test_map", new GameMap("Test map", Arrays.asList("Test bro"), Material.ZOMBIE_HEAD, Arrays.asList(GameDifficulty.NORMAL, GameDifficulty.HARD, GameDifficulty.RIP)));
+
+
         sayHelloToTester(e.getPlayer());
 
         String header = ChatColor.AQUA + "Welcome to " +  ChatColor.YELLOW + ChatColor.BOLD +  "ZAP " + ChatColor.GOLD +  ChatColor.BOLD + "closed beta test 1";

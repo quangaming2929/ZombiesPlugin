@@ -4,6 +4,7 @@ import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.Room;
 import io.github.zap.zombiesplugin.map.round.Round;
 import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
+import org.bukkit.Material;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,9 @@ public class GameMapData implements IMapData<GameMap> {
 
     @Override
     public GameMap load(Object args) {
-        GameMap result = new GameMap(name);
+        // TODO: @John-DND: Request review, I don't know how you serialize the map config
+        //       I just add placeholder values here
+        GameMap result = new GameMap(name, new ArrayList<>(), Material.ZOMBIE_HEAD, new ArrayList<>());
 
         for(SpawnFilterData data : spawnFilters) {
             result.add(data.load(null));

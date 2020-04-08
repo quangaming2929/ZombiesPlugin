@@ -1,7 +1,11 @@
 package io.github.zap.zombiesplugin.gamecreator.gui;
 
 import io.github.zap.zombiesplugin.utils.EncoderUtil;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
 
 /**
  * SB class to store custom head data
@@ -24,5 +28,9 @@ public class PlayerHeadFactory {
          "aWkxSml0R3gyMEVXQTIvTUtueUpadkdHRSs0VnZYOUZPdXY5Y2U4eGpXNlNXWDJlbmNDcjZTTjla\n" +
          "ZThHM2U2UHNQNitFaVNacmlReVlMd2pEWnNyZWYyaU1EYnFKbXBTVk16SFhOWW54VEpuZlVSYk9L\n" +
          "VnQzZ2RmZEF1OUxCakV4YUV0TXVnbG5lcXRGNW1HWjltbHpUQXgzZVE5L3dpOFBRaGdCQUFBPQ==\n");
+    }
+
+    public static ItemStack getInfoHead() {
+        return CommonVisual.createVisualItem(Material.BARRIER, 1, "Please implement", Arrays.asList(ChatColor.GRAY + "SB!"));
     }
 }
