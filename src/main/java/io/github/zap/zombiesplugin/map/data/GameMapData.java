@@ -53,4 +53,8 @@ public class GameMapData implements IMapData<GameMap> {
 
         return result;
     }
+
+    public RoomData getRoom(String name) {
+        return rooms.getOrDefault(name,  null);
+    }
 }

@@ -1,63 +1,88 @@
 package io.github.zap.zombiesplugin.commands;
 
-import io.github.zap.zombiesplugin.map.Room;
-import io.github.zap.zombiesplugin.map.Window;
+import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.map.data.GameMapData;
 import io.github.zap.zombiesplugin.map.data.RoomData;
 import io.github.zap.zombiesplugin.map.data.WindowData;
 import org.bukkit.Location;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 public class EditorSession {
-    private UUID id;
-    private String mapName;
+    private UUID uuid;
+    private GameMapData mapData;
 
-    private RoomData currentRoom;
+    private Location previousSelection;
+    private Location lastSelection;
+
     private WindowData currentWindow;
+    private RoomData currentRoom;
 
-    private HashMap<String,Location> boundsMappings;
+    private boolean isSaved;
 
-    public EditorSession(UUID id, String mapName) {
-        this.id = id;
-        this.mapName = mapName;
-        boundsMappings = new HashMap<>();
+    public EditorSession(UUID uuid, String mapName) {
+        this.uuid = uuid;
+        mapData = new GameMapData(new GameMap(mapName));
     }
 
-    public UUID getId() {
-        return id;
+    public EditorSession(UUID uuid, GameMap map) {
+        this.uuid = uuid;
+        mapData = new GameMapData(map);
     }
 
-    public String getMapName() {
-        return mapName;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public Location getLocation(String name) {
-        return boundsMappings.getOrDefault(name, null);
-    }
-
-    public void putLocation(String name, Location location) {
-        if(boundsMappings.containsKey(name)) {
-            boundsMappings.remove(name);
-            boundsMappings.put(name, location);
-        }
-        else boundsMappings.put(name, location);
-    }
-
-    public RoomData getCurrentRoom() {
-        return currentRoom;
-    }
-
-    public void setCurrentRoom(RoomData currentRoom) {
-        this.currentRoom = currentRoom;
-        currentWindow = null;
+    public GameMapData getMapData() {
+        return mapData;
     }
 
     public WindowData getCurrentWindow() {
         return currentWindow;
     }
 
+    public RoomData getCurrentRoom() {
+        return currentRoom;
+    }
+
+    public Location getPreviousSelection() {
+        return previousSelection;
+    }
+
+    public Location getLastSelection() {
+        return lastSelection;
+    }
+
+    public boolean isSaved() {
+        return isSaved;
+    }
+
     public void setCurrentWindow(WindowData currentWindow) {
+        previousSelection = null;
+        lastSelection = null;
+        isSaved = false;
         this.currentWindow = currentWindow;
+    }
+
+    public void setCurrentRoom(RoomData currentRoom) {
+        previousSelection = null;
+        lastSelection = null;
+        isSaved = false;
+        this.currentWindow = null;
+        this.currentRoom = currentRoom;
+    }
+    public void setPreviousSelection(Location previousSelection) {
+        this.previousSelection = previousSelection;
+        isSaved = false;
+    }
+
+    public void setLastSelection(Location lastSelection) {
+        this.lastSelection = lastSelection;
+        isSaved = false;
+    }
+
+    public void save() {
+
     }
 }

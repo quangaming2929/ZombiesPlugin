@@ -24,3 +24,13 @@ commands:
     usage: /testentity
   mapeditor:
     description: Command used to edit and create map configuration files.
+  room:
+    description: Creates a room.
+  roomspawn:
+    description: Creates room spawnpoints.
+  windowspawn:
+    description: Creates window spawnpoints.
+  windowblocks:
+    description: Creates window blocks.
+  windowinterior:
+    description: Creates window interior.
