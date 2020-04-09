@@ -10,6 +10,8 @@ depend:
 commands:
   zombiesrooms:
     description: Join, create a room
+  mit:
+    description: Test multiverse
   newspawnpoint:
     description: Adds or removes a spawnpoint to the testing spawnpoint.
     usage: /newspawnpoint

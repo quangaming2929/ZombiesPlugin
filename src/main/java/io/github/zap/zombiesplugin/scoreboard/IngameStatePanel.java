@@ -1,5 +1,6 @@
 package io.github.zap.zombiesplugin.scoreboard;
 
+import io.github.zap.zombiesplugin.player.PlayerState;
 import io.github.zap.zombiesplugin.player.User;
 import io.github.zap.zombiesplugin.utils.TabDecorator;
 import org.bukkit.Bukkit;
@@ -103,7 +104,12 @@ public class IngameStatePanel {
 
     public void show () {
         for (Map.Entry<User, Scoreboard> sbs : users.entrySet()) {
-            sbs.getKey().getPlayer().setScoreboard(sbs.getValue());
+            Player player = sbs.getKey().getPlayer();
+            if (sbs.getKey().getState() != PlayerState.QUIT) {
+                player.setScoreboard(sbs.getValue());
+            } else if (player.getScoreboard() == sbs.getValue()) {
+                player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            }
         }
     }
 

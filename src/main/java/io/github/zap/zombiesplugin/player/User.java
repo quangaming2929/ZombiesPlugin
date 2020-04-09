@@ -41,6 +41,15 @@ public class User {
         return player;
     }
 
+    /**
+     * Set a new player for this User. Use this to update a new player after they leave
+     * the server and rejoin
+     * @return
+     */
+    public void setPlayer (Player p) {
+        this.player = p;
+    }
+
     public MeeleObjectGroup getMeleeGroup() {
         return (MeeleObjectGroup) getHotbar().getGroup("MeleeGroup");
     }
@@ -73,6 +82,14 @@ public class User {
         gold += amount;
     }
 
+    public int getKills() {
+        return kills;
+    }
+
+    public void setKills(int kills) {
+        this.kills = kills;
+    }
+
     public PlayerState getState(){
         return state;
     }
@@ -92,6 +109,7 @@ public class User {
             }
         }
 
+        this.state = newState;
     }
 
     public void userTick() {

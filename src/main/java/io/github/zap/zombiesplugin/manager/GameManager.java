@@ -1,7 +1,10 @@
 package io.github.zap.zombiesplugin.manager;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
+import io.github.zap.zombiesplugin.events.EventArgs;
+import io.github.zap.zombiesplugin.events.EventHandler;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
+import io.github.zap.zombiesplugin.gamecreator.GameRoom;
 import io.github.zap.zombiesplugin.map.round.Round;
 
 import io.github.zap.zombiesplugin.player.PlayerState;
@@ -14,27 +17,26 @@ import java.util.ArrayList;
 import io.github.zap.zombiesplugin.map.round.Wave;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobDeathEvent;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 public class GameManager implements Listener {
     public final String name;
 
+
     private GameSettings settings;
     private UserManager userManager;
     private GameState state;
-    private IInGameScoreboard scoreboard;
+    private GameSession session;
 
     private int currentMobCount = 0;
     private int currentRoundIndex = 0;
     private Round currentRound;
 
-    public GameManager(String name, GameSettings settings, IInGameScoreboard sb) {
+    public GameManager(String name, GameSettings settings) {
         this.name = name;
         this.settings = settings;
 
-        this.scoreboard = sb;
         userManager = new UserManager(this);
         userManager.getPlayerJoinLeaveHandler().registerEvent(this::onPlayerChange);
 
@@ -101,7 +103,7 @@ public class GameManager implements Listener {
         }
     }
 
-    @EventHandler
+    @org.bukkit.event.EventHandler
     public void onMythicMobDeath(MythicMobDeathEvent event) {
         if(state == GameState.STARTED) {
             AbstractEntity mob = event.getMob().getEntity();
@@ -118,8 +120,20 @@ public class GameManager implements Listener {
         }
     }
 
+    public void setGameSession(GameSession session) {
+        this.session = session;
+    }
+
     public IInGameScoreboard getScoreboard() {
-        return scoreboard;
+        return session.scoreboard;
+    }
+
+    public GameRoom getContainingRoom () {
+        return session.room;
+    }
+
+    public GameManagerHook getGameHook () {
+        return session.hook;
     }
 
     public void setState(GameState state) {
@@ -131,8 +145,16 @@ public class GameManager implements Listener {
             }
         }
 
-        if (scoreboard != null) {
-            scoreboard.setGameState(state);
+        if (session.scoreboard != null) {
+            session.scoreboard.setGameState(state);
         }
+    }
+
+    public final EventHandler<EventArgs> gameEnded = new EventHandler<>();
+    protected void onGameEnded() {
+        if(session.hook != null)
+            session.hook.onGameEnded();
+
+        gameEnded.invoke(this, EventArgs.Empty);
     }
 }

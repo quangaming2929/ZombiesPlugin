@@ -1,5 +1,7 @@
 package io.github.zap.zombiesplugin.gamecreator;
 
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.GameState;
@@ -18,6 +20,7 @@ public class GameRoom {
         this.roomID = roomID;
     }
 
+    private final DimensionManager dimensionManager = ZombiesPlugin.instance.getDimensionManager();
     private final int roomID;
     private String roomName;
     private String roomPassword = "";
@@ -69,6 +72,31 @@ public class GameRoom {
 
     public static String getRoomPrefix() {
         return ChatColor.DARK_BLUE + "Room > " + ChatColor.WHITE;
+    }
+
+    public boolean createGame () {
+        GameManager manager = dimensionManager.getArenaProvider().createGame(this);
+        manager.setState(GameState.COUNTDOWN);
+        if (manager != null) {
+            setGameManager(manager);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean enterArena (ZombiesRoomUser user) {
+        if (getGameManager() != null) {
+            if (getPlayers().contains(user)) {
+                getGameManager().getUserManager().addUser(user.player);
+            }
+
+            return dimensionManager.warpPlayerToGame(this, user.player);
+            //TODO: Set player to spec mode before warp
+        } else {
+            user.player.sendMessage(ChatColor.RED + "This game hasn't start yet!");
+            return false;
+        }
     }
 
     public int getRoomID() {
@@ -193,8 +221,28 @@ public class GameRoom {
         return gameManager;
     }
 
+    /**
+     * Attach the game manager to this room. This class also add, remove item in
+     * gameManager in ZombiesPlugin
+     * @param gameManager
+     */
     public void setGameManager(GameManager gameManager) {
+        // removes old game
+        if (this.gameManager != null) {
+            ZombiesPlugin.instance.removeGameManager(this.gameManager.name);
+        }
+
         this.gameManager = gameManager;
+        gameManager.gameEnded.registerEvent((s,e) -> {
+            for (ZombiesRoomUser user : players) {
+                dimensionManager.warpToRandomLobby(user.player);
+            }
+        });
+
+        // add new game
+        if (gameManager != null) {
+            ZombiesPlugin.instance.addGameManager(gameManager);
+        }
     }
 
     public GameState getGameState() {

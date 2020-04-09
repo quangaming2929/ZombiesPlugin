@@ -11,6 +11,7 @@ public interface IInGameScoreboard {
     void onPlayerLeave(User user);
     void setPlayerCount(int count);
     void setGameState(GameState state);
+    void invalidateScoreboards ();
 
     // In game
     void setZombiesCount(int count);

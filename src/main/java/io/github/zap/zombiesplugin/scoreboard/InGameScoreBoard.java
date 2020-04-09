@@ -5,7 +5,9 @@ import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.data.SoundFx;
 import io.github.zap.zombiesplugin.data.soundfx.SingleNoteSoundFx;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.manager.GameSettings;
 import io.github.zap.zombiesplugin.manager.GameState;
+import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.player.PlayerState;
 import io.github.zap.zombiesplugin.player.User;
 import org.bukkit.*;
@@ -37,13 +39,15 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     protected float igTimer = 0;
     protected GameState state;
 
-    public InGameScoreBoard() {
+    public InGameScoreBoard(GameManager manager) {
+        this.manager = manager;
         this.sbManager = Bukkit.getScoreboardManager();
 
         strToday = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yy"));
         runTaskTimer(ZombiesPlugin.instance, 0, 10);
 
-        pnlPre = new PreGameSidePanel(strToday, "manager.getMap()", 4);
+        GameSettings currentSettings = manager.getSettings();
+        pnlPre = new PreGameSidePanel(strToday, currentSettings.getGameMap().getName(), currentSettings.getGameSize());
         joinTitle = new Title(
                 ChatColor.BOLD + "" + ChatColor.YELLOW + "Test Game",
                 ChatColor.WHITE + "Submit bug and feature request at our github issue",
@@ -68,7 +72,22 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
         if (state == GameState.PREGAME || state == GameState.COUNTDOWN) {
             pnlPre.show(user.getPlayer());
             manager.getUserManager().displayTitle(joinTitle);
-            setPlayerCount(manager.getUserManager().getPlayers().size());
+            setPlayerCount(getManager().getUserManager().getPlayers().size());
+        } else if (state == GameState.STARTED) {
+            pnlInGame.show();
+        }
+    }
+
+    @Override
+    public void invalidateScoreboards () {
+        if (state == GameState.PREGAME || state == GameState.COUNTDOWN) {
+            for (User user : getManager().getUserManager().getPlayers()) {
+                if (user.getState() != PlayerState.QUIT) {
+                    pnlPre.show(user.getPlayer());
+                }
+            }
+        } else if (state == GameState.STARTED) {
+            pnlInGame.show();
         }
     }
 
@@ -104,7 +123,8 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
                 manager.getUserManager().broadcast(ChatColor.YELLOW + "The game starts in 20 seconds!", false);
             }
         } else if (state == GameState.STARTED) {
-            pnlInGame = new IngameStatePanel(manager.getUserManager().getPlayers(), "Test Map Bro", strToday);
+            String name = manager.getSettings().getGameMap().getName();
+            pnlInGame = new IngameStatePanel(manager.getUserManager().getPlayers(), name, strToday);
             pnlInGame.show();
         }
 
@@ -125,7 +145,6 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
     public void run() {
         if (state == GameState.COUNTDOWN ) {
             if (cdTimer > 0) {
-                System.out.println(cdTimer);
                 int display = (int) Math.ceil(cdTimer);
                 pnlPre.setCountDownTime(display);
 
@@ -151,7 +170,10 @@ public class InGameScoreBoard extends BukkitRunnable implements IInGameScoreboar
         }
         else if (state == GameState.STARTED) {
             pnlInGame.setTime(getTimeStringFromSeconds(igTimer));
+            pnlInGame.setRound(currentRound);
+            pnlInGame.setZombiesLeft(zombiesLeft);
             for (User user : manager.getUserManager().getPlayers()) {
+                pnlInGame.setZombiesKills(user, user.getKills());
                 switch (user.getState()) {
                     case ALIVE:
                         pnlInGame.setPlayerStats(user, ChatColor.GOLD + "" + user.getGold());

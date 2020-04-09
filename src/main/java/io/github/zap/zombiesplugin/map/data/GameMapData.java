@@ -39,7 +39,7 @@ public class GameMapData implements IMapData<GameMap> {
     public GameMap load(Object args) {
         // TODO: @John-DND: Request review, I don't know how you serialize the map config
         //       I just add placeholder values here
-        GameMap result = new GameMap(name, new ArrayList<>(), Material.ZOMBIE_HEAD, new ArrayList<>());
+        GameMap result = new GameMap("z", name, new ArrayList<>(), Material.ZOMBIE_HEAD, new ArrayList<>());
 
         for(SpawnFilterData data : spawnFilters) {
             result.add(data.load(null));

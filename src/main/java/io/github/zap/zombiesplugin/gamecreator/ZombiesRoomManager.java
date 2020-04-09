@@ -84,10 +84,15 @@ public class ZombiesRoomManager {
     }
 
     private void joinGame (ZombiesRoomUser user, GameRoom room) {
-        user.leaveRoom();
-        room.addPlayer(user);
-        user.currentRoom = room;
-        openRoomGui(user);
+        if (room.getPlayerCount() < room.getRoomCapacity()) {
+            user.leaveRoom();
+            room.addPlayer(user);
+            user.currentRoom = room;
+            openRoomGui(user);
+        } else {
+            user.player.sendMessage(ChatColor.RED + "The current room is full!");
+            openListGui(user);
+        }
     }
 
     private void specGame (ZombiesRoomUser user, GameRoom room) {
@@ -145,7 +150,7 @@ public class ZombiesRoomManager {
             if (game.isPublic()) {
                 joinGame(user, game);
             } else { // Password protected room
-                createPasswordBox(user.player, (p,s) -> {
+                createPasswordBox(user.player, (p, s) -> {
                     if (game.isPublic() || game.getRoomPassword().equals(s)) {
                         joinGame(user, game);
                         return AnvilGUI.Response.close();

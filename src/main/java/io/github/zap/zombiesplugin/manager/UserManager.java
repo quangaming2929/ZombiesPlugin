@@ -1,6 +1,7 @@
 package io.github.zap.zombiesplugin.manager;
 
 import com.destroystokyo.paper.Title;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.events.EventHandler;
 import io.github.zap.zombiesplugin.events.UserJoinLeaveEventArgs;
@@ -14,6 +15,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 
@@ -132,9 +134,11 @@ public class UserManager implements Listener, ITickable {
         }
     }
 
+
     public User getAssociatedUser(Player player) {
         for (User p : getPlayers()) {
-            if (p.getPlayer() == player) {
+            if (p.getPlayer().getUniqueId().equals(player.getUniqueId())) {
+                p.setPlayer(player);
                 return p;
             }
         }

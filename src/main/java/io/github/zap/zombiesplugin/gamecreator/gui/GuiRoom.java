@@ -10,6 +10,7 @@ import io.github.zap.zombiesplugin.gamecreator.ZombiesRoomUser;
 import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameState;
 import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.player.PlayerState;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -58,11 +59,10 @@ public class GuiRoom implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents inventoryContents) {
         inventoryContents.set(0, 8, ClickableItem.of(leaveRoomVisual(), e -> {
-            System.out.println("z"); // TODO: Test code
             ZombiesPlugin.instance.getRoomManager().leaveRoomClick(user);
         }));
         inventoryContents.set(5, 8, ClickableItem.of(enterArenaVisual(), e -> {
-            player.sendMessage("Enter arena");
+            room.enterArena(user);
         }));
 
         updatePage(player, inventoryContents);
@@ -302,7 +302,7 @@ public class GuiRoom implements InventoryProvider {
                     return AnvilGUI.Response.close();
                 })
                 .onClose(p -> ZombiesPlugin.instance.getRoomManager().openGUI(user.player))
-                .title("Change room name")
+                .title("Change password")
                 .text("Please enter a new name here!")
                 .plugin(ZombiesPlugin.instance)
                 .item(i)
@@ -348,29 +348,50 @@ public class GuiRoom implements InventoryProvider {
                 .open(user.player);
     }
 
+    private void startGameClick () {
+        if (room.getSelectedMap() != null && room.getSelectedDiff() != null) {
+            if (room.createGame()) {
+                for (ZombiesRoomUser u : room.getPlayers()) {
+                    if (u.isReady) {
+                        room.enterArena(u);
+                    } else {
+                        String msg = ChatColor.RED + "The game is started! Since you are not ready, we don't warp you automatically.\n" +
+                                ChatColor.GREEN + "Click \"Enter arena\" in your Room GUI to join the game!";
+
+                        u.player.sendMessage(msg);
+                    }
+                }
+
+                for (ZombiesRoomUser u : room.getSpectators()) {
+                    String msg = ChatColor.RED + "The game is started, click \"Enter arena\" in your Room GUI to watch the game!";
+                    u.player.sendMessage(msg);
+                }
+            }
+        } else {
+            user.player.sendMessage(ChatColor.RED + "Please select map and mode!");
+        }
+
+
+    }
+
     private void updateGameControllerVisual(InventoryContents inventoryContents) {
         if (room.getGameState() == GameState.PREGAME) {
             if (room.isHostReady()) {
                 if (room.isAllReady()) {
-                    inventoryContents.set(5, 7, ClickableItem.of(startGameVisual(), e -> {
-                        // TODO: Placeholder action
-                        ZombiesPlugin.instance.getServer().broadcastMessage("line updateGameControllerVisual() GuiRoom.java is not implemented");
-                    }));
+                    inventoryContents.set(5, 7, ClickableItem.of(startGameVisual(), e -> startGameClick()));
                 } else {
-                    inventoryContents.set(5, 7, ClickableItem.of(forceStartGameVisual(), e -> {
-                        ZombiesPlugin.instance.getServer().broadcastMessage("line updateGameControllerVisual() GuiRoom.java is not implemented");
-                    }));
+                    inventoryContents.set(5, 7, ClickableItem.of(forceStartGameVisual(), e -> startGameClick()));
                 }
             } else {
                 inventoryContents.set(5, 7, ClickableItem.empty(null));
             }
         } else if (room.getGameState() == GameState.COUNTDOWN) { // Show cancel game
             inventoryContents.set(5, 7, ClickableItem.of(cancelGameVisual(), e -> {
-                ZombiesPlugin.instance.getServer().broadcastMessage("line updateGameControllerVisual() GuiRoom.java is not implemented");
+                user.player.sendMessage("cancel is not implemented");
             }));
         } else if (room.getGameState() == GameState.STARTED) {
             inventoryContents.set(5, 7, ClickableItem.of(abortGameVisual(), e -> {
-                ZombiesPlugin.instance.getServer().broadcastMessage("line updateGameControllerVisual() GuiRoom.java is not implemented");
+                user.player.sendMessage("abort is not implemented");
             }));
         }
     }
@@ -511,8 +532,8 @@ public class GuiRoom implements InventoryProvider {
         String[] lore = new String[] {
                 ChatColor.GRAY + "Not all players are ready to play,",
                 ChatColor.GRAY + "tell them to ready or force start",
-                ChatColor.GRAY + "will " + ChatColor.RED + "kick" + ChatColor.GRAY + " not ready players",
-                ChatColor.GRAY + "and start the game!"
+                ChatColor.GRAY + "will " + ChatColor.RED + "start" + ChatColor.GRAY + " and not warp",
+                ChatColor.GRAY + "them to the game!"
         };
 
         return createVisualItem(

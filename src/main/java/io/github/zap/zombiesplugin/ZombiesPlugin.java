@@ -5,9 +5,13 @@ import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.zap.zombiesplugin.commands.MultiverseIntegrationTestCommand;
 import io.github.zap.zombiesplugin.commands.RoomsZombiesCommand;
 import io.github.zap.zombiesplugin.commands.SpawnpointCommands;
+import io.github.zap.zombiesplugin.gamecreator.DimensionManager;
 import io.github.zap.zombiesplugin.gamecreator.ZombiesRoomManager;
+import io.github.zap.zombiesplugin.gamecreator.arenaproviders.MultiverseArena;
+import io.github.zap.zombiesplugin.gamecreator.lobbyproviders.MultiverseLobby;
 import io.github.zap.zombiesplugin.manager.GameDifficulty;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.TickManager;
@@ -36,7 +40,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public final class ZombiesPlugin extends JavaPlugin implements Listener {
@@ -45,6 +48,8 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
     private ConfigFileManager config;
     private ProtocolManager protocolManager;
     private ZombiesRoomManager roomManager;
+    private DimensionManager dimensionManager;
+    private ApiSupplier apiSupplier;
 
     private Hashtable<String, GameManager> gameManagers;
     private Hashtable<String, GameMap> maps;
@@ -59,6 +64,9 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         maps = new Hashtable<>();
         tickManager = new TickManager(2); //runs at 10 TPS
         roomManager = new ZombiesRoomManager();
+        dimensionManager = new DimensionManager(new MultiverseArena(), new MultiverseLobby());
+        dimensionManager.getLobbyNames().add("world");
+        apiSupplier = ApiSupplier.defaultSupplier();
         getServer().getPluginManager().registerEvents(this, this);
 
         registerConfigs();
@@ -107,6 +115,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     private void registerCommands() {
         getCommand("zombiesrooms").setExecutor(new RoomsZombiesCommand());
+        getCommand("mit").setExecutor(new MultiverseIntegrationTestCommand());
 
         SpawnpointCommands spCmd = new SpawnpointCommands();
         getCommand("testentity").setExecutor(spCmd);
@@ -140,7 +149,7 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         // TODO: Test code
         //String a = EncoderUtil.toBase64(e.getPlayer().getInventory().getItemInMainHand());
         //e.getPlayer().getInventory().setItemInMainHand(PlayerHeadFactory.getOak_Wood_L());
-        maps.put("test_map", new GameMap("Test map", Arrays.asList("Test bro"), Material.ZOMBIE_HEAD, Arrays.asList(GameDifficulty.NORMAL, GameDifficulty.HARD, GameDifficulty.RIP)));
+        maps.put("test", new GameMap("test", "Test map", Arrays.asList("Test bro"), Material.ZOMBIE_HEAD, Arrays.asList(GameDifficulty.NORMAL, GameDifficulty.HARD, GameDifficulty.RIP)));
 
 
         sayHelloToTester(e.getPlayer());
@@ -253,5 +262,21 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
 
     public ZombiesRoomManager getRoomManager() {
         return roomManager;
+    }
+
+    public DimensionManager getDimensionManager() {
+        return dimensionManager;
+    }
+
+    public void setDimensionManager(DimensionManager dimensionManager) {
+        this.dimensionManager = dimensionManager;
+    }
+
+    public ApiSupplier getApiSupplier() {
+        return apiSupplier;
+    }
+
+    public void setApiSupplier(ApiSupplier apiSupplier) {
+        this.apiSupplier = apiSupplier;
     }
 }

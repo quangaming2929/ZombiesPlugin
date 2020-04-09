@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +17,8 @@ public class GameMap implements IProvideDescription {
 	private final LookupHelper lookup;
 
 	// reflect the
+	// Implement Multiverse integration. Template world name "t_map_<id>"
+	private final String id;
 	private final String name;
 	// Implement IProvideDescription
 	private final List<String> description;
@@ -28,8 +29,11 @@ public class GameMap implements IProvideDescription {
 	private final ArrayList<Round> rounds;
 	private final HashMap<String,Room> rooms;
 
-	// TODO: @John-DND: Request review, I don't know how you serialize the map config
-	public GameMap(String name, List<String> description, Material mapIcon, List<GameDifficulty> acceptedDiffs) {
+	// TODO: Tachibana Yui Request review @John-DND:
+	//       I don't know how you serialize the map config.
+	//       We have a big constructor here. should we pass in GameMapData in the constructor?
+	public GameMap(String id, String name, List<String> description, Material mapIcon, List<GameDifficulty> acceptedDiffs) {
+		this.id = id;
 		lookup = new LookupHelper();
 		this.name = name;
 		this.spawnFilters = new ArrayList<>();
@@ -93,6 +97,10 @@ public class GameMap implements IProvideDescription {
 
 	public List<GameDifficulty> getAcceptedDifficulty() {
 		return acceptedDifficulty;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	@Override
