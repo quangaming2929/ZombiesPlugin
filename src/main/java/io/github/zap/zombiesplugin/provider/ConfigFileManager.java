@@ -10,6 +10,7 @@ import io.github.zap.zombiesplugin.data.ultvalue.EquipmentValue;
 import io.github.zap.zombiesplugin.data.ultvalue.LoreEquipmentValue;
 import io.github.zap.zombiesplugin.data.visuals.DefaultWeaponVisual;
 import io.github.zap.zombiesplugin.data.visuals.ExpressionVisual;
+import io.github.zap.zombiesplugin.map.data.GameMapData;
 import io.github.zap.zombiesplugin.utils.IOHelper;
 import io.gsonfire.GsonFireBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,7 +35,7 @@ public class ConfigFileManager {
         this.plugin = plugin;
         this.rootDir = configDir;
         this.customClasses = new Hashtable<>();
-        registerCustomClasses();
+        //registerCustomClasses();
 
         if (!configDir.exists()) {
             configDir.mkdir();

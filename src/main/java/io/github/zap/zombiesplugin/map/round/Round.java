@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class Round {
 	private final ArrayList<Wave> waves;
-	private int totalMobCount = 0;
 
 	public Round(ArrayList<Wave> waves) {
 		this.waves = waves;

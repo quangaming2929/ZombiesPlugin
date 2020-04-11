@@ -31,11 +31,8 @@ public class GameMap {
 	public void add(Round round) { rounds.add(round); }
 
 	public void add(Room room) {
-		room.setLookup(lookup);
 		rooms.put(room.getName(), room);
 	}
-
-	public boolean hasRoom(String name) { return rooms.containsKey(name); }
 
 	public String getName() { return name; }
 
@@ -47,16 +44,12 @@ public class GameMap {
 
 	public ArrayList<Room> getRooms() { return new ArrayList<>(rooms.values()); }
 
+	public boolean hasRoom(String name) { return rooms.containsKey(name); }
+
 	public Room getRoom(String name) {
 		if(rooms.containsKey(name)) {
 			return rooms.get(name);
 		}
 		return null;
-	}
-
-	public LookupHelper getLookupHelper() { return lookup; }
-
-	public void spawn(int round) {
-
 	}
 }

@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.pathfind;
 
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.manager.GameManager;
+import io.github.zap.zombiesplugin.map.ISpawnpointContainer;
 import io.github.zap.zombiesplugin.map.Window;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.memes.Direction;
@@ -64,7 +65,11 @@ public class PathfinderGoalEscapeWindow extends Pathfinder implements Pathfindin
 
                 if(target != null) {
                     destination = new AbstractLocation(entity.getWorld(), target.getBlockX(), target.getBlockY(), target.getBlockZ());
-                    targetWindow = manager.getSettings().getGameMap().getLookupHelper().getWindow(spawnPoint);
+
+                    ISpawnpointContainer container = spawnPoint.getContainer();
+                    if(container instanceof Window) {
+                        targetWindow = (Window)spawnPoint.getContainer();
+                    }
 
                     if(targetWindow != null) {
                         hasWindow = true;

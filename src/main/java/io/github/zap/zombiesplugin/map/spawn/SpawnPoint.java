@@ -12,12 +12,16 @@ import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
 
-public class SpawnPoint implements ISpawnpointContainer {
+import java.util.ArrayList;
+
+public class SpawnPoint {
+	private final ISpawnpointContainer container;
 	private final Location spawn;
 	private final Location target;
 
-	public SpawnPoint(Location spawn, Location target)
+	public SpawnPoint(Location spawn, Location target, ISpawnpointContainer container)
 	{
+		this.container = container;
 		this.spawn = spawn;
 		this.target = target;
 	}
@@ -31,12 +35,19 @@ public class SpawnPoint implements ISpawnpointContainer {
 		entity.setMetadata("zp_spawnpoint", this);
 	}
 
+	public boolean canSpawn() {
+		return container.canSpawn();
+	}
+
 	public Location getSpawn() {
 		return spawn;
 	}
 
-	public Location getTarget() { return target; }
+	public Location getTarget() {
+		return target;
+	}
 
-	@Override
-	public SpawnPoint getSpawnpoint() { return this; }
+	public ISpawnpointContainer getContainer() {
+		return container;
+	}
 }

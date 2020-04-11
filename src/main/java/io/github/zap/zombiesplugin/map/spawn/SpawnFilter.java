@@ -15,7 +15,7 @@ public class SpawnFilter {
 		this.spawnPoints = new ArrayList<>();
 
 		for(ISpawnpointContainer container : spawnPoints) {
-			this.spawnPoints.add(container.getSpawnpoint());
+			this.spawnPoints.addAll(container.getSpawnpoints());
 		}
 	}
 
@@ -34,15 +34,24 @@ public class SpawnFilter {
 	public void spawn(GameManager manager, ArrayList<MythicMob> mobs) {
 		int i = mobs.size() - 1;
 		int j = 0;
+		int size = spawnPoints.size();
+		int count = 0;
 
 		for(; i >= 0; i--) {
-			MythicMob sample = mobs.get(i);
-			if(acceptedMobTypes.contains(sample)) {
-				mobs.remove(i);
-				spawnPoints.get(j).spawn(manager, sample);
-
-				j++;
-				j %= spawnPoints.size();
+			MythicMob sampleMob = mobs.get(i);
+			if(acceptedMobTypes.contains(sampleMob)) {
+				for(j %= size; j < size; j %= size, count++) {
+					SpawnPoint sampleSpawn = spawnPoints.get(j++);
+					if(sampleSpawn.canSpawn()) {
+						mobs.remove(i);
+						sampleSpawn.spawn(manager, sampleMob);
+						break;
+					}
+					else if(count == size) {
+						break;
+					}
+				}
+				count = 0;
 			}
 		}
 	}
@@ -52,7 +61,7 @@ public class SpawnFilter {
 	}
 
 	public void add(ISpawnpointContainer container) {
-		spawnPoints.add(container.getSpawnpoint());
+		spawnPoints.addAll(container.getSpawnpoints());
 	}
 
 	public ArrayList<SpawnPoint> getSpawnpoints() { return spawnPoints; }

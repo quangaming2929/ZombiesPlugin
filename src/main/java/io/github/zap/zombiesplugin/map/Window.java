@@ -6,8 +6,10 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 
+import java.util.ArrayList;
+
 public class Window implements ISpawnpointContainer {
-    private SpawnPoint spawnPoint;
+    private ArrayList<SpawnPoint> spawnPoints;
     private MultiBoundingBox interiorBounds;
     private BoundingBox windowBounds;
 
@@ -19,13 +21,14 @@ public class Window implements ISpawnpointContainer {
 
     private boolean northSouthFacing;
     private Material coverMaterial;
+    private Room parentRoom;
 
     private PathfinderGoalEscapeWindow targetingAI;
 
-    public Window(BoundingBox windowBounds, MultiBoundingBox interiorBounds, SpawnPoint spawnPoint, Material coverMaterial) {
+    public Window(BoundingBox windowBounds, MultiBoundingBox interiorBounds, Material coverMaterial, Room room) {
         interiorBounds.getBounds().forEach(boundingBox -> boundingBox.expand(0.3));
 
-        this.spawnPoint = spawnPoint;
+        spawnPoints = new ArrayList<>();
         this.interiorBounds = interiorBounds;
         this.windowBounds = windowBounds;
 
@@ -34,6 +37,7 @@ public class Window implements ISpawnpointContainer {
         else windowWidth = (int)windowBounds.getDepth();
 
         this.coverMaterial = coverMaterial;
+        parentRoom = room;
     }
 
     public void breakWindow(PathfinderGoalEscapeWindow targettingAI) {
@@ -87,18 +91,52 @@ public class Window implements ISpawnpointContainer {
         }
     }
 
-    public boolean isFullyRepaired() {return brokenBlocks == 0;}
+    public boolean isFullyRepaired() {
+        return brokenBlocks == 0;
+    }
 
-    public boolean isReparable() {
+    public boolean isReparable()
+    {
         return !isFullyRepaired() && (targetingAI == null || targetingAI.finished());
     }
 
-    public MultiBoundingBox getInteriorBounds() { return interiorBounds; }
+    public MultiBoundingBox getInteriorBounds() {
+        return interiorBounds;
+    }
 
-    public BoundingBox getWindowBounds() { return windowBounds; }
+    public BoundingBox getWindowBounds() {
+        return windowBounds;
+    }
 
-    public Material getCoverMaterial() { return coverMaterial; }
+    public Material getCoverMaterial() {
+        return coverMaterial;
+    }
+
+    public Room getParentRoom() {
+        return parentRoom;
+    }
+
+    public void add(SpawnPoint spawnPoint) {
+        spawnPoints.add(spawnPoint);
+    }
 
     @Override
-    public SpawnPoint getSpawnpoint() { return spawnPoint; }
+    public boolean canSpawn() {
+        return parentRoom.isOpen();
+    }
+
+    @Override
+    public int size() {
+        return spawnPoints.size();
+    }
+
+    @Override
+    public SpawnPoint getSpawnpoint(int index) {
+        return spawnPoints.get(index);
+    }
+
+    @Override
+    public ArrayList<SpawnPoint> getSpawnpoints() {
+        return spawnPoints;
+    }
 }

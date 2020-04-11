@@ -101,26 +101,23 @@ public class User {
             boolean repairTick = tick == 10;
             for(Room room : manager.getGameManager().getSettings().getGameMap().getRooms()) {
                 if(room.isOpen()) {
-                    for(ISpawnpointContainer container : room.getSpawnPoints()) {
-                        if(container instanceof Window) {
-                            Window window = (Window)container;
-                            if(repairTick) { //one second interval
-                                if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
-                                    if(player.isSneaking()) {
-                                        window.repairWindow();
-                                        tick = 0;
-                                        break;
-                                    }
-                                    //todo: display text that says "press sneak to repair"
+                    for(Window window : room.getWindows()) {
+                        if(repairTick) { //one second interval
+                            if(MathUtils.manhattanDistance(window.getWindowBounds().getCenter(), player.getLocation()) <= 6) {
+                                if(player.isSneaking()) {
+                                    window.repairWindow();
+                                    tick = 0;
+                                    break;
                                 }
-                                tick = 0;
+                                //todo: display text that says "press sneak to repair"
                             }
+                            tick = 0;
+                        }
 
-                            //fifth of a second second interval for interior bounds check
-                            if(window.getInteriorBounds().isInBound(player.getLocation())) {
-                                player.teleport(window.getSpawnpoint().getTarget());
-                                break;
-                            }
+                        //fifth of a second second interval for interior bounds check
+                        if(window.getInteriorBounds().isInBound(player.getLocation())) {
+                            player.teleport(window.getSpawnpoint(0).getTarget());
+                            break;
                         }
                     }
                 }

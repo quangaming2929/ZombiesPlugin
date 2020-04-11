@@ -17,11 +17,10 @@ public class GameMapImporter extends Importer {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void processConfigFile(Path file, String contents) {
-        IMapData<GameMap> mapData = (IMapData<GameMap>)fileParser.fromJson(contents, IMapData.class);
-        GameMap map = mapData.load(null);
+        IMapData mapData = fileParser.fromJson(contents, IMapData.class);
+        GameMap map = (GameMap)mapData.load(null);
         ZombiesPlugin.instance.addMap(map);
     }
 

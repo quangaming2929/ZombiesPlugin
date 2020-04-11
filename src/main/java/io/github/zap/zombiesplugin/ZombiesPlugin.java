@@ -5,15 +5,21 @@ import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.github.zap.zombiesplugin.commands.MapEditorCommands;
+import io.github.zap.zombiesplugin.commands.mapeditor.MapEditorCommands;
 import io.github.zap.zombiesplugin.manager.GameManager;
 import io.github.zap.zombiesplugin.manager.TickManager;
 import io.github.zap.zombiesplugin.map.GameMap;
+import io.github.zap.zombiesplugin.map.serialize.GameMapImporter;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalEscapeWindow;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalTargetPlayerUnbounded;
 import io.github.zap.zombiesplugin.pathfind.PathfinderGoalUnboundedMeleeAttack;
 import io.github.zap.zombiesplugin.pathfind.reflect.Hack;
 import io.github.zap.zombiesplugin.provider.ConfigFileManager;
+import io.github.zap.zombiesplugin.provider.TMTaskImporter;
+import io.github.zap.zombiesplugin.provider.equipments.GunImporter;
+import io.github.zap.zombiesplugin.provider.equipments.MeleeImporter;
+import io.github.zap.zombiesplugin.provider.equipments.PerkImporter;
+import io.github.zap.zombiesplugin.provider.equipments.SkillImporter;
 import io.github.zap.zombiesplugin.utils.TabDecorator;
 import net.minecraft.server.v1_15_R1.IChatBaseComponent;
 import net.minecraft.server.v1_15_R1.PacketPlayOutChat;
@@ -67,28 +73,24 @@ public final class ZombiesPlugin extends JavaPlugin implements Listener {
         }
 
         tickManager.start();
-
-        //config = new ConfigFileManager(this, this.getDataFolder());
+        config = new ConfigFileManager(this, this.getDataFolder());
 
         // Equipments
-        //config.addImporter("Melee", new MeleeImporter());
-        //config.addImporter("Gun", new GunImporter());
-        //config.addImporter("Skill", new SkillImporter());
-        //config.addImporter("Perk", new PerkImporter());
+        config.addImporter("Melee", new MeleeImporter());
+        config.addImporter("Gun", new GunImporter());
+        config.addImporter("Skill", new SkillImporter());
+        config.addImporter("Perk", new PerkImporter());
 
         // Team Machine
-        //config.addImporter("TMTasks", new TMTaskImporter());
+        config.addImporter("TMTasks", new TMTaskImporter());
 
         // Map & Spawn point
-        //config.addImporter("SpawnPointManager", new SpawnManagerImporter());
-        //config.addImporter("GameMapImporter", new GameMapImporter());
-        //config.reload();
+        config.addImporter("GameMapImporter", new GameMapImporter());
+        config.reload();
     }
 
     private void registerCommands() {
         MapEditorCommands mapEditorCommands = new MapEditorCommands();
-        getCommand("mapeditor").setExecutor(mapEditorCommands);
-        getCommand("window").setExecutor(mapEditorCommands);
     }
 
     public ConfigFileManager getConfigManager() {
