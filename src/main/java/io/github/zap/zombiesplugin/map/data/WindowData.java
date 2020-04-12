@@ -13,7 +13,7 @@ public class WindowData implements IMapData<Window>, IEditorContext {
     public BoundingBoxData windowBounds;
     public String coverMaterial;
 
-    private RoomData parent;
+    private transient RoomData parent;
 
     public WindowData() {}
 

@@ -78,9 +78,9 @@ public class ContextManager implements Listener {
         }
         else {
             if(context != null) {
-                Tuple<Boolean, String> result = context.canExecute(this, , args);
+                Tuple<Boolean, String> result = context.canExecute(this, commandName, args);
                 if(result.x) {
-                    context.execute(this, , args);
+                    context.execute(this, commandName, args);
                 }
                 return result.y;
             }
@@ -127,5 +127,9 @@ public class ContextManager implements Listener {
             return firstLocation;
         }
         return secondLocation;
+    }
+
+    public boolean hasBounds() {
+        return firstLocation != null && secondLocation != null;
     }
 }

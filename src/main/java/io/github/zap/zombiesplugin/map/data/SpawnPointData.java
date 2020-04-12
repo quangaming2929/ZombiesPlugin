@@ -10,7 +10,7 @@ public class SpawnPointData implements IMapData<SpawnPoint>, IEditorContext {
     public LocationData spawn;
     public LocationData target;
 
-    private IMapData<?> parent;
+    private transient IMapData<?> parent;
 
     public SpawnPointData() {}
 
