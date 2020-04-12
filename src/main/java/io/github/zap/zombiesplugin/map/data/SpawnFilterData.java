@@ -32,13 +32,40 @@ public class SpawnFilterData implements IMapData<SpawnFilter>, IEditorContext {
         return new SpawnFilter(result);
     }
 
+
     @Override
     public Tuple<Boolean, String> canExecute(ContextManager session, String name, String[] args) {
-        return null;
+        switch(name) {
+            case "addmob":
+                if(args.length == 1) {
+                    if(MythicMobs.inst().getMobManager().getMythicMob(args[0]) != null) {
+                        return new Tuple<>(true, "Added mob.");
+                    }
+                    return new Tuple<>(true, "That mob type is not registered. It will be added to the list, but it may cause issues.");
+                }
+                return new Tuple<>(false, "Usage: /addmob [mob-name]");
+            case "deletemob":
+                if(args.length == 1) {
+                    if(mobNames.contains(args[0])) {
+                        return new Tuple<>(true, "Removed mob.");
+                    }
+                    return new Tuple<>(true, "A mob with that name does not exist.");
+                }
+                return new Tuple<>(false, "Usage: /removemob [mob-name]");
+            default:
+                return new Tuple<>(false, "This command cannot be run on a spawnpoint.");
+        }
     }
 
     @Override
     public void execute(ContextManager session, String name, String[] args) {
-
+        switch (name) {
+            case "addmob":
+                mobNames.add(args[0]);
+                break;
+            case "deletemob":
+                mobNames.remove(args[0]);
+                break;
+        }
     }
 }

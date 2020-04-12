@@ -2,6 +2,7 @@ package io.github.zap.zombiesplugin.commands.mapeditor;
 import io.github.zap.zombiesplugin.ZombiesPlugin;
 import io.github.zap.zombiesplugin.map.GameMap;
 import io.github.zap.zombiesplugin.map.data.GameMapData;
+import io.github.zap.zombiesplugin.map.spawn.SpawnFilter;
 import io.github.zap.zombiesplugin.utils.Tuple;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -17,6 +18,8 @@ public class ContextManager implements Listener {
 
     private Location firstLocation;
     private Location secondLocation;
+
+    private IEditorContext currentFilter;
 
     public ContextManager(Player player) {
         this.player = player;
@@ -34,7 +37,7 @@ public class ContextManager implements Listener {
                 String name = args[1];
                 switch(action) {
                     case "create":
-                        if(name != currentMapName && !ZombiesPlugin.instance.hasMap(name)) {
+                        if(!name.equals(currentMapName) && !ZombiesPlugin.instance.hasMap(name)) {
                             currentMapName = name;
                             context = new GameMapData(new GameMap(name));
                             return "Created new map '" + name + "'";
@@ -49,7 +52,7 @@ public class ContextManager implements Listener {
                             if(existingMap != null) {
                                 currentMapName = name;
                                 context = new GameMapData(existingMap);
-                                return "Set focus to '" + name + "'";
+                                return "Set focus to '" + name + "'.";
                             }
                             else {
                                 return "That map does not exist.";
@@ -84,12 +87,12 @@ public class ContextManager implements Listener {
                 }
                 return result.y;
             }
-            return "This command requires context.";
+            return "This command requires a context to run.";
         }
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    private void onPlayerInteract(PlayerInteractEvent event) {
         if(event.getPlayer() == player) {
             Block clickedBlock = event.getClickedBlock();
             if(clickedBlock != null && clickedBlock.isPassable()) {
@@ -110,8 +113,13 @@ public class ContextManager implements Listener {
             context = newContext;
             firstLocation = null;
             secondLocation = null;
+            return true;
         }
         return false;
+    }
+
+    public void setFilter(IEditorContext context) {
+        currentFilter = context;
     }
 
     public Location getFirstLocation() {

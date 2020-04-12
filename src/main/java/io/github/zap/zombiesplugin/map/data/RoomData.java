@@ -5,6 +5,7 @@ import io.github.zap.zombiesplugin.commands.mapeditor.IEditorContext;
 import io.github.zap.zombiesplugin.map.*;
 import io.github.zap.zombiesplugin.map.spawn.SpawnPoint;
 import io.github.zap.zombiesplugin.shop.Shop;
+import io.github.zap.zombiesplugin.utils.MathUtils;
 import io.github.zap.zombiesplugin.utils.Tuple;
 
 import java.util.ArrayList;
@@ -87,55 +88,70 @@ public class RoomData implements IMapData<Room>, IEditorContext {
                             if(session.hasBounds()) {
                                 return new Tuple<>(true, "Window created.");
                             }
-                            else {
-                                return new Tuple<>(false, "This command requires a bound to be defined.");
-                            }
+                            return new Tuple<>(false, "This command requires a bound to be defined.");
                         case "delete":
                             if(windows != null && windows.size() > 0) {
                                 return new Tuple<>(true, "Deleted window.");
                             }
-                            else {
-                                return new Tuple<>(false, "There are no windows to delete.");
-                            }
+                            return new Tuple<>(false, "There are no windows to delete.");
                         default:
                             return new Tuple<>(false, "Usage: /window create or /window delete");
                     }
                 }
-                else {
-                    return new Tuple<>(false, "Usage: /window create or /window delete");
-                }
+                return new Tuple<>(false, "Usage: /window create or /window delete");
             case "spawn":
                 if(args.length == 0) {
                     return new Tuple<>(true, "Added spawnpoint.");
                 }
-                else {
-                    return new Tuple<>(false, "Usage: /spawn");
-                }
+                return new Tuple<>(false, "Usage: /spawn");
             case "bounds":
                 if(args.length == 0) {
                     if(session.hasBounds()) {
                         return new Tuple<>(true, "Added bounds.");
                     }
-                    else {
-                        return new Tuple<>(false, "This command requires a bound to be defined.");
-                    }
+                    return new Tuple<>(false, "This command requires a bound to be defined.");
                 }
-                else if(args.length == 1) {
-                    if ("delete".equals(args[0].toLowerCase())) {
-                        if (bounds.bounds.size() > 0) {
-                            return new Tuple<>(true, "Deleted bounds.");
+                else if(args.length == 2) {
+                    String action = args[0].toLowerCase();
+                    String index = args[1].toLowerCase();
+                    if (action.equals("delete")) {
+                        Tuple<Boolean, Integer> parse = MathUtils.tryParseInt(index, 0);
+                        if(parse.x) {
+                            if(parse.y >= 0 && parse.y < windows.size()) {
+                                return new Tuple<>(true, "Deleted bounds.");
+                            }
+                            return new Tuple<>(false, "Index out of bounds. There are currently "+ bounds.bounds.size() + " bounds in the current room.");
                         }
-                        return new Tuple<>(false, "There are no defined bounds.");
+                        return new Tuple<>(false, "Usage: /bounds delete [index]");
                     }
-                    return new Tuple<>(false, "Usage: /bounds delete");
+                    return new Tuple<>(false, "Usage: /bounds delete [index]");
                 }
+                return new Tuple<>(false, "Usage: /bounds delete [index]");
             case "delete":
                 if(args.length == 0) {
-                    return new Tuple<>(true, "Deleted the currently focused room.");
+                    if(parent.rooms.getOrDefault(name, null) != null) {
+                        return new Tuple<>(true, "Deleted the currently focused room.");
+                    }
+                    return new Tuple<>(false, "A room with that name does not exist.");
                 }
-                else {
-                    return new Tuple<>(false, "Usage: /delete");
+                return new Tuple<>(false, "Usage: /delete");
+            case "focus":
+                if(args.length == 2) {
+                    switch(args[0].toLowerCase()) {
+                        case "window":
+                            Tuple<Boolean, Integer> parse = MathUtils.tryParseInt(args[0], 0);
+                            if(parse.x) {
+                                if(parse.y >= 0 && parse.y < windows.size()) {
+                                    return new Tuple<>(true, "Focused window.");
+                                }
+                                return new Tuple<>(false, "Index out of bounds. There are currently "+ windows.size() + " windows in the current room.");
+                            }
+                            return new Tuple<>(false, "Usage: /focus window [index]");
+                        default:
+                            return new Tuple<>(false, "Usage: /focus window [index]");
+                    }
                 }
+                return new Tuple<>(false, "Usage: /focus window [index]");
             default:
                 return new Tuple<>(false, "This command cannot be run on a room.");
         }
@@ -143,36 +159,45 @@ public class RoomData implements IMapData<Room>, IEditorContext {
 
     @Override
     public void execute(ContextManager session, String commandName, String[] args) {
-        if(commandName.equals("window")) {
-            switch(args[0].toLowerCase()) {
-                case "create":
-                    WindowData data = new WindowData();
-                    data.windowBounds = new BoundingBoxData(new BoundingBox(session.getFirstLocation(), session.getSecondLocation()));
-                    data.interiorBounds = new MultiBoundingBoxData();
-                    data.coverMaterial = session.getFirstLocation().getBlock().getType().toString();
+        switch (commandName) {
+            case "window":
+                switch(args[0].toLowerCase()) {
+                    case "create":
+                        WindowData data = new WindowData();
+                        data.windowBounds = new BoundingBoxData(new BoundingBox(session.getFirstLocation(), session.getSecondLocation()));
+                        data.interiorBounds = new MultiBoundingBoxData();
+                        data.coverMaterial = session.getFirstLocation().getBlock().getType().toString();
 
-                    session.setFocus(data);
-                    break;
-                case "delete":
-                    windows.remove(windows.size() - 1);
-                    break;
-            }
-        }
-        else if(commandName.equals("spawn")) {
-            SpawnPointData spawnPointData = new SpawnPointData();
-            spawnPointData.spawn = new LocationData(session.getLastLocation());
-        }
-        else if(commandName.equals("bounds")) {
-            if(args.length == 0) {
-                bounds.bounds.add(new BoundingBoxData(new BoundingBox(session.getFirstLocation(), session.getSecondLocation())));
-            }
-            else {
-                bounds.bounds.remove(bounds.bounds.size() - 1);
-            }
-        }
-        else if(commandName.equals("delete")) {
-            parent.rooms.remove(name);
-            session.setFocus(null);
+                        session.setFocus(data);
+                        break;
+                    case "delete":
+                        windows.remove(windows.size() - 1);
+                        break;
+                }
+                break;
+            case "spawn":
+                SpawnPointData spawnPointData = new SpawnPointData();
+                spawnPointData.spawn = new LocationData(session.getLastLocation());
+                break;
+            case "bounds":
+                if(args.length == 0) {
+                    bounds.bounds.add(new BoundingBoxData(new BoundingBox(session.getFirstLocation(), session.getSecondLocation())));
+                }
+                else {
+                    bounds.bounds.remove(Integer.parseInt(args[1]));
+                }
+                break;
+            case "delete":
+                parent.rooms.remove(name);
+                session.setFocus(null);
+                break;
+            case "focus":
+                switch (args[0].toLowerCase()) {
+                    case "window":
+                        session.setFocus(windows.get(Integer.parseInt(args[1])));
+                        break;
+                }
+                break;
         }
     }
 }

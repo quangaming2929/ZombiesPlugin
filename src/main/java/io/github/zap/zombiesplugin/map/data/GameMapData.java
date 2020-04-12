@@ -63,11 +63,28 @@ public class GameMapData implements IMapData<GameMap>, IEditorContext {
 
     @Override
     public Tuple<Boolean, String> canExecute(ContextManager session, String commandName, String[] args) {
-        return null;
+        switch(commandName) {
+            case "spawnfilter":
+                if(args.length == 1) {
+                    switch(args[0]) {
+                        case "create":
+                            return new Tuple<>(true, "Created new spawnfilter.");
+                        default:
+                            return new Tuple<>(false, "Usage: /spawnfilter create");
+                    }
+                }
+                return new Tuple<>(false, "Usage: /spawnfilter create");
+            default:
+                return new Tuple<>(false, "That command cannot be run on a spawnfilter.");
+        }
     }
 
     @Override
     public void execute(ContextManager session, String name, String[] args) {
-
+        if(name.equals("spawnfilter")) {
+            SpawnFilterData data = new SpawnFilterData();
+            session.setFilter(data);
+            spawnFilters.add(new SpawnFilterData());
+        }
     }
 }
